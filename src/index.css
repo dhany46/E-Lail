@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/* Custom Theme Variables for Tailwind v4 */
+@layer base {
+  :root {
+    --color-primary: 29 201 86;
+    --color-primary-dark: 22 163 74;
+    --color-background-light: 248 251 249;
+    --color-surface-light: 255 255 255;
+    --color-text-primary-light: 14 27 18;
+    --color-text-secondary-light: 80 149 103;
+  }
+}
+
+/* Base Styles */
+body {
+  font-family: 'Lexend', sans-serif;
+  background-color: #f8fbf9;
+  color: #0e1b12;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Custom utility classes */
+.bg-primary {
+  background-color: #1dc956 !important;
+}
+
+.bg-primary-dark {
+  background-color: #16a34a !important;
+}
+
+.text-primary {
+  color: #1dc956 !important;
+}
+
+.text-primary-dark {
+  color: #16a34a !important;
+}
+
+.hover\:bg-primary-dark:hover {
+  background-color: #16a34a !important;
+}
+
+.hover\:text-primary:hover {
+  color: #1dc956 !important;
+}
+
+.border-primary {
+  border-color: #1dc956 !important;
+}
+
+.hover\:border-primary:hover {
+  border-color: #1dc956 !important;
+}
+
+.ring-primary\/20 {
+  --tw-ring-color: rgba(29, 201, 86, 0.2) !important;
+}
+
+.bg-primary\/10 {
+  background-color: rgba(29, 201, 86, 0.1) !important;
+}
+
+.bg-primary\/20 {
+  background-color: rgba(29, 201, 86, 0.2) !important;
+}
+
+.bg-primary\/30 {
+  background-color: rgba(29, 201, 86, 0.3) !important;
+}
+
+.focus\:ring-primary\/50:focus {
+  --tw-ring-color: rgba(29, 201, 86, 0.5) !important;
+}
+
+.bg-background-light {
+  background-color: #f8fbf9 !important;
+}
+
+.bg-background-dark {
+  background-color: #112116 !important;
+}
+
+.bg-surface-light {
+  background-color: #ffffff !important;
+}
+
+.bg-surface-dark {
+  background-color: #1e2e24 !important;
+}
+
+.text-text-primary-light {
+  color: #0e1b12 !important;
+}
+
+.text-text-primary-dark {
+  color: #eef4f0 !important;
+}
+
+.text-text-secondary-light {
+  color: #509567 !important;
+}
+
+.text-text-secondary-dark {
+  color: #8bc49e !important;
+}
+
+.font-display {
+  font-family: 'Lexend', sans-serif !important;
+}
