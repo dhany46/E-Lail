@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, ChevronDown, Info, School, GraduationCap, Star, Book, Rocket, Cloud, Sparkles } from 'lucide-react';
+import { User, Mail, ChevronDown, Info, School, GraduationCap, Star, Book, Rocket, Cloud, Sparkles, Phone } from 'lucide-react';
 import logo from '../assets/logo.jpg';
 
 const Login = () => {
@@ -306,10 +306,17 @@ const Login = () => {
                                     Teknologi Utama
                                 </h4>
                                 <div className="grid grid-cols-2 gap-3">
-                                    {['React JS', 'Vite', 'Tailwind CSS', 'Lucide Icons'].map((item) => (
-                                        <div key={item} className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-xl hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
-                                            <span className="text-slate-700 font-bold text-sm">{item}</span>
+                                    {[
+                                        { name: 'React JS', icon: <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React" className="w-5 h-5" /> },
+                                        { name: 'Vite', icon: <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg" alt="Vite" className="w-5 h-5" /> },
+                                        { name: 'Tailwind CSS', icon: <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" alt="Tailwind" className="w-5 h-5" /> },
+                                        { name: 'Lucide Icons', icon: <Sparkles size={20} className="text-orange-500" /> }
+                                    ].map((item) => (
+                                        <div key={item.name} className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-xl hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors">
+                                            <div className="shrink-0 flex items-center justify-center">
+                                                {item.icon}
+                                            </div>
+                                            <span className="text-slate-700 font-bold text-sm">{item.name}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -321,13 +328,30 @@ const Login = () => {
                                     <span className="w-8 h-0.5 bg-slate-200"></span>
                                     Kontak Developer
                                 </h4>
-                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                                        <User size={20} />
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                                            <User size={24} />
+                                        </div>
+                                        <div>
+                                            <p className="text-slate-800 font-bold text-sm">Dani Ramdani, S.Kom</p>
+                                            <p className="text-emerald-600 text-xs font-bold uppercase mt-0.5">Full Stack Developer</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="text-slate-800 font-bold text-sm">Dani Ramdani, S.Kom</p>
-                                        <p className="text-emerald-600 text-xs font-bold uppercase mt-0.5">Full Stack Developer</p>
+
+                                    <div className="space-y-2 pt-3 border-t border-slate-200/60">
+                                        <a href="mailto:dhany46@gmail.com" className="flex items-center gap-3 text-slate-600 hover:text-emerald-600 transition-all group p-2 rounded-lg hover:bg-white hover:shadow-sm">
+                                            <div className="w-8 h-8 rounded-full bg-white border border-slate-200 group-hover:border-emerald-200 flex items-center justify-center shrink-0 transition-colors">
+                                                <Mail size={14} className="text-slate-400 group-hover:text-emerald-500" />
+                                            </div>
+                                            <span className="text-sm font-bold text-slate-700 group-hover:text-emerald-700">dhany46@gmail.com</span>
+                                        </a>
+                                        <a href="https://wa.me/6283820374734" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-slate-600 hover:text-emerald-600 transition-all group p-2 rounded-lg hover:bg-white hover:shadow-sm">
+                                            <div className="w-8 h-8 rounded-full bg-white border border-slate-200 group-hover:border-emerald-200 flex items-center justify-center shrink-0 transition-colors">
+                                                <Phone size={14} className="text-slate-400 group-hover:text-emerald-500" />
+                                            </div>
+                                            <span className="text-sm font-bold text-slate-700 group-hover:text-emerald-700">0838-2037-4734</span>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
