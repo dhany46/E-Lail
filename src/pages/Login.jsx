@@ -328,10 +328,10 @@ const Login = () => {
                                     <span className="w-8 h-0.5 bg-slate-200"></span>
                                     Kontak Developer
                                 </h4>
-                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                                            <User size={24} />
+                                <div className="bg-slate-50 rounded-xl p-3 border border-slate-200">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                                            <User size={20} />
                                         </div>
                                         <div>
                                             <p className="text-slate-800 font-bold text-sm">Dani Ramdani, S.Kom</p>
@@ -339,20 +339,32 @@ const Login = () => {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2 pt-3 border-t border-slate-200/60">
-                                        <a href="mailto:dhany46@gmail.com" className="flex items-center gap-3 text-slate-600 hover:text-emerald-600 transition-all group p-2 rounded-lg hover:bg-white hover:shadow-sm">
-                                            <div className="w-8 h-8 rounded-full bg-white border border-slate-200 group-hover:border-emerald-200 flex items-center justify-center shrink-0 transition-colors">
+                                    <div className="space-y-1 pt-2 border-t border-slate-200/60">
+                                        <a href="mailto:dhany46@gmail.com" className="flex items-center gap-3 text-slate-600 hover:text-emerald-600 transition-all group p-1.5 rounded-lg hover:bg-white hover:shadow-sm">
+                                            <div className="w-7 h-7 rounded-full bg-white border border-slate-200 group-hover:border-emerald-200 flex items-center justify-center shrink-0 transition-colors">
                                                 <Mail size={14} className="text-slate-400 group-hover:text-emerald-500" />
                                             </div>
                                             <span className="text-sm font-bold text-slate-700 group-hover:text-emerald-700">dhany46@gmail.com</span>
                                         </a>
-                                        <a href="https://wa.me/6283820374734" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-slate-600 hover:text-emerald-600 transition-all group p-2 rounded-lg hover:bg-white hover:shadow-sm">
-                                            <div className="w-8 h-8 rounded-full bg-white border border-slate-200 group-hover:border-emerald-200 flex items-center justify-center shrink-0 transition-colors">
+                                        <a href="https://wa.me/6283820374734" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-slate-600 hover:text-emerald-600 transition-all group p-1.5 rounded-lg hover:bg-white hover:shadow-sm">
+                                            <div className="w-7 h-7 rounded-full bg-white border border-slate-200 group-hover:border-emerald-200 flex items-center justify-center shrink-0 transition-colors">
                                                 <Phone size={14} className="text-slate-400 group-hover:text-emerald-500" />
                                             </div>
                                             <span className="text-sm font-bold text-slate-700 group-hover:text-emerald-700">0838-2037-4734</span>
                                         </a>
                                     </div>
+                                </div>
+                            </div>
+
+                            {/* Dedication */}
+                            <div className="pt-2">
+                                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100/50 text-center relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-2 opacity-10">
+                                        <Book size={40} className="text-emerald-600" />
+                                    </div>
+                                    <p className="text-emerald-800 text-xs font-medium italic leading-relaxed relative z-10">
+                                        "Didedikasikan sebagai wujud khidmat untuk kemajuan dan digitalisasi pendidikan Islam."
+                                    </p>
                                 </div>
                             </div>
                         </div>
