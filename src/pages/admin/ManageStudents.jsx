@@ -176,180 +176,163 @@ const ManageStudents = () => {
     return (
         <div className="w-full">
             {/* Breadcrumb */}
-            <p style={{ fontSize: '12px', color: '#509567', marginBottom: '8px' }}>Dashboard / Data Siswa</p>
+            <p className="text-xs text-text-secondary-light mb-2">Dashboard / Data Siswa</p>
 
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
-                    <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#0e1b12', marginBottom: '8px' }}>Manajemen Data Siswa</h1>
-                    <p style={{ fontSize: '14px', color: '#509567' }}>Kelola data siswa SD Plus 3 Al-Muhajirin.</p>
+                    <h1 className="text-2xl md:text-[28px] font-bold text-text-primary-light mb-2">Manajemen Data Siswa</h1>
+                    <p className="text-sm text-text-secondary-light">Kelola data siswa SD Plus 3 Al-Muhajirin.</p>
                 </div>
                 <button
                     onClick={handleOpenAdd}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', backgroundColor: '#1dc956', color: 'white', borderRadius: '10px', fontWeight: '600', fontSize: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(29, 201, 86, 0.3)' }}
+                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-semibold text-sm border-none cursor-pointer shadow-lg shadow-primary/30 hover:bg-primary-dark transition-all duration-200 self-start md:self-auto"
                 >
-                    <span style={{ fontSize: '18px' }}>+</span> Tambah Siswa
+                    <span className="text-lg">+</span> Tambah Siswa
                 </button>
             </div>
 
             {/* Stats Cards - Dashboard Style */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
-                <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div className="bg-white rounded-xl p-5 shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', fontWeight: '500', color: '#509567', marginBottom: '4px' }}>Total Siswa</p>
-                            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0e1b12' }}>{students.length}</h2>
+                            <p className="text-sm font-medium text-text-secondary-light mb-1">Total Siswa</p>
+                            <h2 className="text-2xl font-bold text-text-primary-light">{students.length}</h2>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#dcfce7', borderRadius: '8px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#1dc956' }}>groups</span>
+                        <div className="p-2 bg-green-100 rounded-lg">
+                            <span className="material-symbols-outlined text-[24px] text-primary">groups</span>
                         </div>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#16a34a', fontWeight: '500' }}>Siswa aktif</p>
+                    <p className="text-xs text-primary font-medium">Siswa aktif</p>
                 </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div className="bg-white rounded-xl p-5 shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', fontWeight: '500', color: '#509567', marginBottom: '4px' }}>Kelas 1-2</p>
-                            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0e1b12' }}>{countByGrade('1') + countByGrade('2')}</h2>
+                            <p className="text-sm font-medium text-text-secondary-light mb-1">Kelas 1-2</p>
+                            <h2 className="text-2xl font-bold text-text-primary-light">{countByGrade('1') + countByGrade('2')}</h2>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#dbeafe', borderRadius: '8px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#3b82f6' }}>child_care</span>
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <span className="material-symbols-outlined text-[24px] text-blue-500">child_care</span>
                         </div>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Tingkat awal</p>
+                    <p className="text-xs text-gray-500">Tingkat awal</p>
                 </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div className="bg-white rounded-xl p-5 shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', fontWeight: '500', color: '#509567', marginBottom: '4px' }}>Kelas 3-4</p>
-                            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0e1b12' }}>{countByGrade('3') + countByGrade('4')}</h2>
+                            <p className="text-sm font-medium text-text-secondary-light mb-1">Kelas 3-4</p>
+                            <h2 className="text-2xl font-bold text-text-primary-light">{countByGrade('3') + countByGrade('4')}</h2>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#fef3c7', borderRadius: '8px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#f59e0b' }}>face</span>
+                        <div className="p-2 bg-amber-100 rounded-lg">
+                            <span className="material-symbols-outlined text-[24px] text-amber-500">face</span>
                         </div>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Tingkat menengah</p>
+                    <p className="text-xs text-gray-500">Tingkat menengah</p>
                 </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div className="bg-white rounded-xl p-5 shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', fontWeight: '500', color: '#509567', marginBottom: '4px' }}>Kelas 5-6</p>
-                            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0e1b12' }}>{countByGrade('5') + countByGrade('6')}</h2>
+                            <p className="text-sm font-medium text-text-secondary-light mb-1">Kelas 5-6</p>
+                            <h2 className="text-2xl font-bold text-text-primary-light">{countByGrade('5') + countByGrade('6')}</h2>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#ede9fe', borderRadius: '8px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#8b5cf6' }}>person</span>
+                        <div className="p-2 bg-purple-100 rounded-lg">
+                            <span className="material-symbols-outlined text-[24px] text-purple-500">person</span>
                         </div>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Tingkat akhir</p>
+                    <p className="text-xs text-gray-500">Tingkat akhir</p>
                 </div>
             </div>
 
             {/* Search Bar with Filter & Sort */}
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', alignItems: 'center' }}>
-                <div style={{ flex: '1', position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: '16px', color: '#9ca3af', fontSize: '20px' }}>search</span>
+            <div className="flex flex-col md:flex-row gap-3 mb-6">
+                <div className="flex-1 relative flex items-center">
+                    <span className="material-symbols-outlined absolute left-3 text-gray-400 text-[20px]">search</span>
                     <input
                         type="text"
                         placeholder="Cari nama siswa, NIS, atau kelas..."
                         value={searchQuery}
                         onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                        style={{ width: '100%', paddingLeft: '48px', paddingRight: '16px', paddingTop: '14px', paddingBottom: '14px', backgroundColor: 'white', borderRadius: '8px', border: 'none', fontSize: '14px', outline: 'none' }}
+                        className="w-full pl-10 pr-4 py-3 bg-white rounded-lg border-none text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-gray-700"
                     />
                 </div>
-                <div style={{ position: 'relative' }}>
-                    <button
-                        onClick={() => {
-                            const nextIndex = (classList.indexOf(filterClass) + 1) % classList.length;
-                            setFilterClass(classList[nextIndex]);
-                            setCurrentPage(1);
-                        }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: filterClass !== 'Semua Kelas' ? '#dcfce7' : 'white', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', color: filterClass !== 'Semua Kelas' ? '#1dc956' : '#374151', border: filterClass !== 'Semua Kelas' ? '1px solid #1dc956' : '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}
-                    >
-                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>filter_list</span>
-                        {filterClass === 'Semua Kelas' ? 'Filter Kelas' : filterClass}
-                    </button>
-                </div>
-                {/* Sort Button */}
-                <div style={{ position: 'relative' }}>
-                    <button
-                        onClick={() => { setShowSortDropdown(!showSortDropdown); }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: 'white', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}
-                    >
-                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>swap_vert</span>
-                        Urutkan
-                    </button>
-                    {showSortDropdown && (
-                        <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '180px', overflow: 'hidden' }}>
-                            {[{ value: 'name', label: 'Nama Siswa' }, { value: 'nis', label: 'NIS' }, { value: 'class', label: 'Kelas' }].map(opt => (
-                                <button
-                                    key={opt.value}
-                                    onClick={() => { setSortBy(opt.value); setShowSortDropdown(false); }}
-                                    style={{ width: '100%', padding: '10px 16px', textAlign: 'left', backgroundColor: sortBy === opt.value ? '#dcfce7' : 'white', border: 'none', cursor: 'pointer', fontSize: '14px', color: sortBy === opt.value ? '#1dc956' : '#374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                                >
-                                    {opt.label}
-                                    {sortBy === opt.value && <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#1dc956' }}>check</span>}
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                {/* Filter & Sort Container */}
+                <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                    <div className="relative shrink-0">
+                        <button
+                            onClick={() => {
+                                const nextIndex = (classList.indexOf(filterClass) + 1) % classList.length;
+                                setFilterClass(classList[nextIndex]);
+                                setCurrentPage(1);
+                            }}
+                            className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold cursor-pointer border transition-all duration-200 shadow-sm ${filterClass !== 'Semua Kelas'
+                                ? 'bg-green-100 text-primary border-primary'
+                                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                                }`}
+                        >
+                            <span className="material-symbols-outlined text-[20px]">filter_list</span>
+                            {filterClass === 'Semua Kelas' ? 'Filter Kelas' : filterClass}
+                        </button>
+                    </div>
+                    {/* Sort Button */}
+                    <div className="relative shrink-0">
+                        <button
+                            onClick={() => { setShowSortDropdown(!showSortDropdown); }}
+                            className="flex items-center gap-2 px-5 py-3 bg-white rounded-xl text-sm font-semibold cursor-pointer text-gray-700 border border-gray-200 shadow-sm hover:bg-gray-50 transition-all duration-200"
+                        >
+                            <span className="material-symbols-outlined text-[20px]">swap_vert</span>
+                            Urutkan
+                        </button>
+                        {showSortDropdown && (
+                            <div className="absolute top-full right-0 md:left-auto md:right-0 mt-2 bg-white rounded-xl shadow-lg z-20 min-w-[180px] overflow-hidden border border-gray-100">
+                                {[{ value: 'name', label: 'Nama Siswa' }, { value: 'nis', label: 'NIS' }, { value: 'class', label: 'Kelas' }].map(opt => (
+                                    <button
+                                        key={opt.value}
+                                        onClick={() => { setSortBy(opt.value); setShowSortDropdown(false); }}
+                                        className={`w-full px-4 py-2.5 text-left border-none cursor-pointer text-sm flex items-center justify-between transition-colors ${sortBy === opt.value
+                                            ? 'bg-green-50 text-primary font-medium'
+                                            : 'bg-white text-gray-700 hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        {opt.label}
+                                        {sortBy === opt.value && <span className="material-symbols-outlined text-sm text-primary">check</span>}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
             {/* Card-based List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div className="flex flex-col gap-3">
                 {paginatedStudents.map((student) => (
                     <div
                         key={student.id}
                         onMouseEnter={() => setHoveredRow(student.id)}
                         onMouseLeave={() => setHoveredRow(null)}
-                        style={{
-                            backgroundColor: 'white',
-                            borderRadius: '12px',
-                            padding: '12px 16px',
-                            border: hoveredRow === student.id ? '2px solid #1dc956' : '2px solid transparent',
-                            boxShadow: hoveredRow === student.id ? '0 8px 24px rgba(29, 201, 86, 0.15)' : '0 1px 2px rgba(0,0,0,0.02)',
-                            transition: 'all 0.2s ease',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '16px'
-                        }}
+                        className={`bg-white rounded-xl p-4 border transition-all duration-200 flex flex-col md:flex-row items-start md:items-center gap-4 ${hoveredRow === student.id ? 'border-primary shadow-lg shadow-primary/10' : 'border-transparent shadow-sm'
+                            }`}
                     >
                         {/* 1. NIS */}
-                        <div style={{ width: '70px', flexShrink: 0 }}>
-                            <p style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>NIS</p>
-                            <p style={{ fontSize: '14px', fontWeight: '700', color: '#0e1b12', fontFamily: 'monospace' }}>{student.nis}</p>
+                        <div className="w-full md:w-auto md:min-w-[70px] shrink-0">
+                            <p className="text-[11px] text-gray-400 mb-0.5 uppercase tracking-wider">NIS</p>
+                            <p className="text-sm font-bold text-gray-900 font-mono">{student.nis}</p>
                         </div>
 
                         {/* 2. Name + Avatar + Gender */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '250px', flexShrink: 0 }}>
-                            <div style={{
-                                width: '44px',
-                                height: '44px',
-                                borderRadius: '10px',
-                                backgroundColor: student.color,
-                                color: 'white',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontWeight: 'bold',
-                                fontSize: '15px'
-                            }}>
+                        <div className="flex items-center gap-3 w-full md:w-[250px] shrink-0">
+                            <div
+                                className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white text-[15px] shrink-0"
+                                style={{ backgroundColor: student.color }}
+                            >
                                 {student.initials}
                             </div>
-                            <div>
-                                <p style={{ fontWeight: '600', color: '#0e1b12', fontSize: '14px', marginBottom: '2px' }}>{student.name}</p>
-                                <div style={{ marginTop: '4px' }}>
-                                    <span style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        fontSize: '12px',
-                                        color: student.gender === 'Laki-laki' ? '#3b82f6' : '#ec4899',
-                                        backgroundColor: student.gender === 'Laki-laki' ? '#eff6ff' : '#fdf2f8',
-                                        padding: '2px 8px',
-                                        borderRadius: '6px',
-                                        fontWeight: '500'
-                                    }}>
+                            <div className="min-w-0">
+                                <p className="font-semibold text-gray-900 text-sm truncate">{student.name}</p>
+                                <div className="mt-1">
+                                    <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md font-medium ${student.gender === 'Laki-laki' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
+                                        }`}>
                                         {student.gender === 'Laki-laki' ? <Mars size={12} /> : <Venus size={12} />}
                                         {student.gender || 'Laki-laki'}
                                     </span>
@@ -357,48 +340,24 @@ const ManageStudents = () => {
                             </div>
                         </div>
 
-                        {/* 3. Class Badge (Moved closer) */}
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            width: '220px',
-                            flexShrink: 0,
-                            padding: '4px 6px',
-                            paddingRight: '16px',
-                            backgroundColor: 'white',
-                            borderRadius: '50px',
-                            border: '1px solid #e5e7eb',
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
-                        }}>
-                            <div style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                backgroundColor: `${getClassColor(student.class)}15`,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}>
+                        {/* 3. Class Badge */}
+                        <div className="w-full md:w-[220px] shrink-0 flex items-center gap-2 p-1.5 pr-4 bg-white rounded-full border border-gray-200 shadow-sm">
+                            <div
+                                className="w-[30px] h-[30px] rounded-full flex items-center justify-center shrink-0"
+                                style={{ backgroundColor: `${getClassColor(student.class)}15` }}
+                            >
                                 <GraduationCap size={15} color={getClassColor(student.class)} />
                             </div>
-                            <span style={{
-                                color: '#374151',
-                                fontWeight: '600',
-                                fontSize: '13px',
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis'
-                            }}>
+                            <span className="text-[13px] font-semibold text-gray-700 truncate">
                                 {getClassName(student.class)}
                             </span>
                         </div>
 
                         {/* Spacer to push actions to right */}
-                        <div style={{ flex: 1 }}></div>
+                        <div className="hidden md:block flex-1"></div>
 
                         {/* 4. Actions (Far Right) */}
-                        <div style={{ display: 'flex', gap: '6px' }}>
+                        <div className="flex gap-2 w-full md:w-auto justify-end">
                             <button
                                 onClick={() => handleOpenEdit(student)}
                                 className="p-2 rounded-lg border-none cursor-pointer transition-all duration-200 bg-gray-100 text-gray-500 hover:bg-[#1dc956] hover:text-white shadow-sm hover:shadow-md hover:shadow-green-500/20"

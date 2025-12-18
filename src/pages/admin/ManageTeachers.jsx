@@ -150,228 +150,214 @@ const ManageTeachers = () => {
     return (
         <div className="w-full">
             {/* Breadcrumb */}
-            <p style={{ fontSize: '12px', color: '#509567', marginBottom: '8px' }}>Dashboard / Data Guru</p>
+            <p className="text-xs text-text-secondary-light mb-2">Dashboard / Data Guru</p>
 
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
-                    <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#0e1b12', marginBottom: '8px' }}>Manajemen Data Guru</h1>
-                    <p style={{ fontSize: '14px', color: '#509567' }}>Kelola data guru dan staff pengajar SD Plus 3 Al-Muhajirin.</p>
+                    <h1 className="text-2xl md:text-[28px] font-bold text-text-primary-light mb-2">Manajemen Data Guru</h1>
+                    <p className="text-sm text-text-secondary-light">Kelola data guru dan staff pengajar SD Plus 3 Al-Muhajirin.</p>
                 </div>
                 <button
                     onClick={handleOpenAdd}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', backgroundColor: '#1dc956', color: 'white', borderRadius: '10px', fontWeight: '600', fontSize: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(29, 201, 86, 0.3)', transition: 'all 0.2s' }}
+                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-semibold text-sm border-none cursor-pointer shadow-lg shadow-primary/30 hover:bg-primary-dark transition-all duration-200 self-start md:self-auto"
                 >
-                    <span style={{ fontSize: '18px' }}>+</span> Tambah Guru
+                    <span className="text-lg">+</span> Tambah Guru
                 </button>
             </div>
 
             {/* Stats Cards - Dashboard Style */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
-                <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-white rounded-xl p-5 shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', fontWeight: '500', color: '#509567', marginBottom: '4px' }}>Total Guru</p>
-                            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0e1b12' }}>{teachers.length}</h2>
+                            <p className="text-sm font-medium text-text-secondary-light mb-1">Total Guru</p>
+                            <h2 className="text-2xl font-bold text-text-primary-light">{teachers.length}</h2>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#dcfce7', borderRadius: '8px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#1dc956' }}>groups</span>
+                        <div className="p-2 bg-green-100 rounded-lg">
+                            <span className="material-symbols-outlined text-[24px] text-primary">groups</span>
                         </div>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#16a34a', fontWeight: '500' }}>Guru aktif</p>
+                    <p className="text-xs text-primary font-medium">Guru aktif</p>
                 </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div className="bg-white rounded-xl p-5 shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', fontWeight: '500', color: '#509567', marginBottom: '4px' }}>Wali Kelas Aktif</p>
-                            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0e1b12' }}>{teachers.filter(t => t.classCode).length}</h2>
+                            <p className="text-sm font-medium text-text-secondary-light mb-1">Wali Kelas Aktif</p>
+                            <h2 className="text-2xl font-bold text-text-primary-light">{teachers.filter(t => t.classCode).length}</h2>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#dbeafe', borderRadius: '8px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#3b82f6' }}>school</span>
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <span className="material-symbols-outlined text-[24px] text-blue-500">school</span>
                         </div>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Sudah ditugaskan</p>
+                    <p className="text-xs text-gray-500">Sudah ditugaskan</p>
                 </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div className="bg-white rounded-xl p-5 shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', fontWeight: '500', color: '#509567', marginBottom: '4px' }}>Belum Ditugaskan</p>
-                            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0e1b12' }}>{teachers.filter(t => !t.classCode).length}</h2>
+                            <p className="text-sm font-medium text-text-secondary-light mb-1">Belum Ditugaskan</p>
+                            <h2 className="text-2xl font-bold text-text-primary-light">{teachers.filter(t => !t.classCode).length}</h2>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#fef3c7', borderRadius: '8px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#f59e0b' }}>pending</span>
+                        <div className="p-2 bg-amber-100 rounded-lg">
+                            <span className="material-symbols-outlined text-[24px] text-amber-500">pending</span>
                         </div>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Menunggu penugasan</p>
+                    <p className="text-xs text-gray-500">Menunggu penugasan</p>
                 </div>
             </div>
 
             {/* Search Bar with Filter & Sort */}
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', alignItems: 'center' }}>
-                <div style={{ flex: '1', position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: '16px', color: '#9ca3af', fontSize: '20px' }}>search</span>
+            <div className="flex flex-col md:flex-row gap-3 mb-6">
+                <div className="flex-1 relative flex items-center">
+                    <span className="material-symbols-outlined absolute left-3 text-gray-400 text-[20px]">search</span>
                     <input
                         type="text"
                         placeholder="Cari nama guru, NIY, atau kelas..."
                         value={searchQuery}
                         onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                        style={{ width: '100%', paddingLeft: '48px', paddingRight: '16px', paddingTop: '14px', paddingBottom: '14px', backgroundColor: 'white', borderRadius: '8px', border: 'none', fontSize: '14px', outline: 'none' }}
+                        className="w-full pl-10 pr-4 py-3 bg-white rounded-lg border-none text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-gray-700"
                     />
                 </div>
-                <div style={{ position: 'relative' }}>
-                    <button
-                        onClick={() => { setShowFilterDropdown(!showFilterDropdown); setShowSortDropdown(false); }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: filterStatus !== 'all' ? '#dcfce7' : 'white', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', color: filterStatus !== 'all' ? '#1dc956' : '#374151', border: filterStatus !== 'all' ? '1px solid #1dc956' : '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}
-                    >
-                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>filter_list</span>
-                        Filter {filterStatus !== 'all' && `(${filterStatus === 'assigned' ? 'Wali' : 'Belum'})`}
-                    </button>
-                    {showFilterDropdown && (
-                        <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '8px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '180px', overflow: 'hidden' }}>
-                            {[{ value: 'all', label: 'Semua Guru' }, { value: 'assigned', label: 'Wali Kelas' }, { value: 'unassigned', label: 'Belum Ditugaskan' }].map(opt => (
-                                <button
-                                    key={opt.value}
-                                    onClick={() => { setFilterStatus(opt.value); setShowFilterDropdown(false); }}
-                                    style={{ width: '100%', padding: '10px 16px', textAlign: 'left', backgroundColor: filterStatus === opt.value ? '#dcfce7' : 'white', border: 'none', cursor: 'pointer', fontSize: '14px', color: filterStatus === opt.value ? '#1dc956' : '#374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                                >
-                                    {opt.label}
-                                    {filterStatus === opt.value && <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#1dc956' }}>check</span>}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
-                {/* Sort Button */}
-                <div style={{ position: 'relative' }}>
-                    <button
-                        onClick={() => { setShowSortDropdown(!showSortDropdown); setShowFilterDropdown(false); }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: 'white', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}
-                    >
-                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>swap_vert</span>
-                        Urutkan
-                    </button>
-                    {showSortDropdown && (
-                        <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '180px', overflow: 'hidden' }}>
-                            {[{ value: 'name', label: 'Nama' }, { value: 'niy', label: 'NIY' }, { value: 'class', label: 'Kelas' }].map(opt => (
-                                <button
-                                    key={opt.value}
-                                    onClick={() => { setSortBy(opt.value); setShowSortDropdown(false); }}
-                                    style={{ width: '100%', padding: '10px 16px', textAlign: 'left', backgroundColor: sortBy === opt.value ? '#dcfce7' : 'white', border: 'none', cursor: 'pointer', fontSize: '14px', color: sortBy === opt.value ? '#1dc956' : '#374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                                >
-                                    {opt.label}
-                                    {sortBy === opt.value && <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#1dc956' }}>check</span>}
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                    <div className="relative shrink-0">
+                        <button
+                            onClick={() => { setShowFilterDropdown(!showFilterDropdown); setShowSortDropdown(false); }}
+                            className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold cursor-pointer border transition-all duration-200 shadow-sm ${filterStatus !== 'all'
+                                ? 'bg-green-100 text-primary border-primary'
+                                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                                }`}
+                        >
+                            <span className="material-symbols-outlined text-[20px]">filter_list</span>
+                            Filter {filterStatus !== 'all' && `(${filterStatus === 'assigned' ? 'Wali' : 'Belum'})`}
+                        </button>
+                        {showFilterDropdown && (
+                            <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-lg z-20 min-w-[180px] overflow-hidden border border-gray-100">
+                                {[{ value: 'all', label: 'Semua Guru' }, { value: 'assigned', label: 'Wali Kelas' }, { value: 'unassigned', label: 'Belum Ditugaskan' }].map(opt => (
+                                    <button
+                                        key={opt.value}
+                                        onClick={() => { setFilterStatus(opt.value); setShowFilterDropdown(false); }}
+                                        className={`w-full px-4 py-2.5 text-left border-none cursor-pointer text-sm flex items-center justify-between transition-colors ${filterStatus === opt.value
+                                            ? 'bg-green-50 text-primary font-medium'
+                                            : 'bg-white text-gray-700 hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        {opt.label}
+                                        {filterStatus === opt.value && <span className="material-symbols-outlined text-sm text-primary">check</span>}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    {/* Sort Button */}
+                    <div className="relative shrink-0">
+                        <button
+                            onClick={() => { setShowSortDropdown(!showSortDropdown); setShowFilterDropdown(false); }}
+                            className="flex items-center gap-2 px-5 py-3 bg-white rounded-xl text-sm font-semibold cursor-pointer text-gray-700 border border-gray-200 shadow-sm hover:bg-gray-50 transition-all duration-200"
+                        >
+                            <span className="material-symbols-outlined text-[20px]">swap_vert</span>
+                            Urutkan
+                        </button>
+                        {showSortDropdown && (
+                            <div className="absolute top-full right-0 md:left-auto md:right-0 mt-2 bg-white rounded-xl shadow-lg z-20 min-w-[180px] overflow-hidden border border-gray-100">
+                                {[{ value: 'name', label: 'Nama' }, { value: 'niy', label: 'NIY' }, { value: 'class', label: 'Kelas' }].map(opt => (
+                                    <button
+                                        key={opt.value}
+                                        onClick={() => { setSortBy(opt.value); setShowSortDropdown(false); }}
+                                        className={`w-full px-4 py-2.5 text-left border-none cursor-pointer text-sm flex items-center justify-between transition-colors ${sortBy === opt.value
+                                            ? 'bg-green-50 text-primary font-medium'
+                                            : 'bg-white text-gray-700 hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        {opt.label}
+                                        {sortBy === opt.value && <span className="material-symbols-outlined text-sm text-primary">check</span>}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
             {/* Card-based Table */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className="flex flex-col gap-3">
                 {paginatedTeachers.map((teacher, index) => (
                     <div
                         key={teacher.id}
                         onMouseEnter={() => setHoveredRow(teacher.id)}
                         onMouseLeave={() => setHoveredRow(null)}
-                        style={{
-                            backgroundColor: 'white',
-                            borderRadius: '12px',
-                            padding: '16px 20px',
-                            border: hoveredRow === teacher.id ? '2px solid #1dc956' : '2px solid transparent',
-                            boxShadow: hoveredRow === teacher.id ? '0 8px 24px rgba(29, 201, 86, 0.15)' : '0 2px 8px rgba(0,0,0,0.04)',
-                            transition: 'all 0.2s ease',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between'
-                        }}
+                        className={`bg-white rounded-xl p-4 border transition-all duration-200 flex flex-col xl:flex-row items-start xl:items-center gap-4 ${hoveredRow === teacher.id ? 'border-primary shadow-lg shadow-primary/10' : 'border-transparent shadow-sm'
+                            }`}
                     >
                         {/* Left Group: NIY + Name + Contact */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full xl:w-auto overflow-hidden">
                             {/* NIY */}
-                            <div style={{ width: '70px', flexShrink: 0 }}>
-                                <p style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>NIY</p>
-                                <p style={{ fontSize: '14px', fontWeight: '700', color: '#0e1b12', fontFamily: 'monospace' }}>{teacher.niy}</p>
+                            <div className="w-full md:w-auto md:min-w-[70px] shrink-0">
+                                <p className="text-[11px] text-gray-400 mb-0.5 uppercase tracking-wider">NIY</p>
+                                <p className="text-sm font-bold text-gray-900 font-mono">{teacher.niy}</p>
                             </div>
 
                             {/* Name with Avatar */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '250px', flexShrink: 0 }}>
-                                <div style={{
-                                    width: '44px',
-                                    height: '44px',
-                                    borderRadius: '10px',
-                                    backgroundColor: teacher.color,
-                                    color: 'white',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontWeight: 'bold',
-                                    fontSize: '15px',
-                                    flexShrink: 0
-                                }}>
+                            <div className="flex items-center gap-3 w-full md:w-[250px] shrink-0">
+                                <div
+                                    className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white text-[15px] shrink-0"
+                                    style={{ backgroundColor: teacher.color }}
+                                >
                                     {teacher.initials}
                                 </div>
-                                <div style={{ minWidth: 0 }}>
-                                    <p style={{ fontWeight: '600', color: '#0e1b12', fontSize: '14px', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{teacher.name}</p>
-                                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Guru Pengajar</p>
+                                <div className="min-w-0">
+                                    <p className="font-semibold text-gray-900 text-sm truncate">{teacher.name}</p>
+                                    <p className="text-xs text-gray-500">Guru Pengajar</p>
                                 </div>
                             </div>
 
                             {/* Contact Info */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '200px', flexShrink: 0, paddingLeft: '24px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <Mail size={12} color="#9ca3af" />
-                                    <span style={{ fontSize: '12px', color: '#6b7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{teacher.email}</span>
+                            <div className="flex flex-col gap-1 w-full md:w-[200px] shrink-0 md:pl-6 border-l-0 md:border-l border-gray-100 xl:border-none">
+                                <div className="flex items-center gap-1.5">
+                                    <Mail size={12} className="text-gray-400" />
+                                    <span className="text-xs text-gray-500 truncate">{teacher.email}</span>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <Phone size={12} color="#9ca3af" />
-                                    <span style={{ fontSize: '12px', color: '#0e1b12', fontWeight: '500' }}>{teacher.phone}</span>
+                                <div className="flex items-center gap-1.5">
+                                    <Phone size={12} className="text-gray-400" />
+                                    <span className="text-xs text-gray-900 font-medium">{teacher.phone}</span>
                                 </div>
                             </div>
                         </div>
 
+                        {/* Spacer on Desktop */}
+                        <div className="hidden xl:block flex-1"></div>
+
                         {/* Right Group: Class + Status + Actions */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full xl:w-auto">
                             {/* Class Badge */}
-                            <div style={{ width: '220px', flexShrink: 0 }}>
-                                <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '6px',
-                                    width: '100%',
-                                    padding: '6px 10px',
-                                    backgroundColor: `${getClassColor(teacher.classCode)}15`,
-                                    borderRadius: '6px',
-                                    border: `1px solid ${getClassColor(teacher.classCode)}25`
-                                }}>
-                                    <GraduationCap size={14} color={getClassColor(teacher.classCode)} style={{ flexShrink: 0 }} />
-                                    <span style={{ color: getClassColor(teacher.classCode), fontWeight: '600', fontSize: '12px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <div className="w-full md:w-[220px] shrink-0">
+                                <div
+                                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border w-full"
+                                    style={{
+                                        backgroundColor: `${getClassColor(teacher.classCode)}15`,
+                                        borderColor: `${getClassColor(teacher.classCode)}25`
+                                    }}
+                                >
+                                    <GraduationCap size={14} color={getClassColor(teacher.classCode)} className="shrink-0" />
+                                    <span
+                                        className="text-xs font-semibold truncate"
+                                        style={{ color: getClassColor(teacher.classCode) }}
+                                    >
                                         {teacher.classCode ? getClassName(teacher.classCode) : 'Belum Ditugaskan'}
                                     </span>
                                 </div>
                             </div>
 
                             {/* Status */}
-                            <div style={{ width: '80px', flexShrink: 0 }}>
-                                <span style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    padding: '4px 10px',
-                                    backgroundColor: teacher.classCode ? '#dcfce7' : '#fef3c7',
-                                    color: teacher.classCode ? '#16a34a' : '#d97706',
-                                    borderRadius: '12px',
-                                    fontSize: '11px',
-                                    fontWeight: '600'
-                                }}>
-                                    <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: teacher.classCode ? '#16a34a' : '#d97706' }}></span>
+                            <div className="w-auto shrink-0">
+                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${teacher.classCode ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                                    }`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${teacher.classCode ? 'bg-green-600' : 'bg-amber-600'}`}></span>
                                     {teacher.classCode ? 'Aktif' : 'Pending'}
                                 </span>
                             </div>
 
                             {/* Actions */}
-                            <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                            <div className="flex gap-2 w-full md:w-auto justify-end">
                                 <button
                                     onClick={() => handleOpenEdit(teacher)}
                                     className="p-2 rounded-lg border-none cursor-pointer transition-all duration-200 bg-gray-100 text-gray-500 hover:bg-[#1dc956] hover:text-white shadow-sm hover:shadow-md hover:shadow-green-500/20"

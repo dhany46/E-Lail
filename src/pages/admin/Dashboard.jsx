@@ -33,7 +33,7 @@ const Dashboard = () => {
             </div>
 
             {/* Stats Grid - Clickable */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {/* Stat 1 - Total Siswa */}
                 <Link to="/admin/students" className="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-sm flex flex-col justify-between h-32 hover:shadow-md transition-shadow cursor-pointer">
                     <div className="flex justify-between items-start">
@@ -98,7 +98,7 @@ const Dashboard = () => {
             </div>
 
             {/* Chart & Activity Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                 {/* Chart */}
                 <div className="lg:col-span-2 bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm p-6">
                     <div className="flex items-center justify-between mb-6">
