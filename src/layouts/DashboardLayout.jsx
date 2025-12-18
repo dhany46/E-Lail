@@ -35,7 +35,7 @@ const DashboardLayout = () => {
             )}
 
             {/* Sidebar */}
-            <aside className={`w-64 h-full bg-white/70 backdrop-blur-md border-r border-white/20 flex flex-col flex-shrink-0 transition-transform duration-300 z-50 fixed inset-y-0 left-0 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            <aside className={`w-60 h-full bg-white/70 backdrop-blur-md border-r border-white/20 flex flex-col flex-shrink-0 transition-transform duration-300 z-50 fixed inset-y-0 left-0 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}>
                 <div className="p-6 flex items-center gap-3">
                     <div
@@ -147,8 +147,8 @@ const DashboardLayout = () => {
                 </header>
 
                 {/* Content Outlet */}
-                <div className="flex-1 overflow-y-auto p-4 sm:p-8">
-                    <div className="w-full max-w-[1200px] xl:max-w-[1400px] 2xl:max-w-[1800px] mx-auto">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+                    <div className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto">
                         <Outlet />
                     </div>
                 </div>
