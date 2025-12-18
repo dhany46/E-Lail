@@ -181,7 +181,7 @@ const ManageStudents = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl md:text-[28px] font-bold text-text-primary-light mb-2">Manajemen Data Siswa</h1>
+                    <h1 className="text-2xl md:text-3xl font-bold text-text-primary-light mb-2">Manajemen Data Siswa</h1>
                     <p className="text-sm text-text-secondary-light">Kelola data siswa SD Plus 3 Al-Muhajirin.</p>
                 </div>
                 <button
@@ -201,7 +201,7 @@ const ManageStudents = () => {
                             <h2 className="text-2xl font-bold text-text-primary-light">{students.length}</h2>
                         </div>
                         <div className="p-2 bg-green-100 rounded-lg">
-                            <span className="material-symbols-outlined text-[24px] text-primary">groups</span>
+                            <span className="material-symbols-outlined text-2xl text-primary">groups</span>
                         </div>
                     </div>
                     <p className="text-xs text-primary font-medium">Siswa aktif</p>
@@ -213,7 +213,7 @@ const ManageStudents = () => {
                             <h2 className="text-2xl font-bold text-text-primary-light">{countByGrade('1') + countByGrade('2')}</h2>
                         </div>
                         <div className="p-2 bg-blue-100 rounded-lg">
-                            <span className="material-symbols-outlined text-[24px] text-blue-500">child_care</span>
+                            <span className="material-symbols-outlined text-2xl text-blue-500">child_care</span>
                         </div>
                     </div>
                     <p className="text-xs text-gray-500">Tingkat awal</p>
@@ -225,7 +225,7 @@ const ManageStudents = () => {
                             <h2 className="text-2xl font-bold text-text-primary-light">{countByGrade('3') + countByGrade('4')}</h2>
                         </div>
                         <div className="p-2 bg-amber-100 rounded-lg">
-                            <span className="material-symbols-outlined text-[24px] text-amber-500">face</span>
+                            <span className="material-symbols-outlined text-2xl text-amber-500">face</span>
                         </div>
                     </div>
                     <p className="text-xs text-gray-500">Tingkat menengah</p>
@@ -237,7 +237,7 @@ const ManageStudents = () => {
                             <h2 className="text-2xl font-bold text-text-primary-light">{countByGrade('5') + countByGrade('6')}</h2>
                         </div>
                         <div className="p-2 bg-purple-100 rounded-lg">
-                            <span className="material-symbols-outlined text-[24px] text-purple-500">person</span>
+                            <span className="material-symbols-outlined text-2xl text-purple-500">person</span>
                         </div>
                     </div>
                     <p className="text-xs text-gray-500">Tingkat akhir</p>
@@ -247,7 +247,7 @@ const ManageStudents = () => {
             {/* Search Bar with Filter & Sort */}
             <div className="flex flex-col md:flex-row gap-3 mb-6">
                 <div className="flex-1 relative flex items-center">
-                    <span className="material-symbols-outlined absolute left-3 text-gray-400 text-[20px]">search</span>
+                    <span className="material-symbols-outlined absolute left-3 text-gray-400 text-xl">search</span>
                     <input
                         type="text"
                         placeholder="Cari nama siswa, NIS, atau kelas..."
@@ -270,7 +270,7 @@ const ManageStudents = () => {
                                 : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                                 }`}
                         >
-                            <span className="material-symbols-outlined text-[20px]">filter_list</span>
+                            <span className="material-symbols-outlined text-xl">filter_list</span>
                             {filterClass === 'Semua Kelas' ? 'Filter Kelas' : filterClass}
                         </button>
                     </div>
@@ -280,11 +280,11 @@ const ManageStudents = () => {
                             onClick={() => { setShowSortDropdown(!showSortDropdown); }}
                             className="flex items-center gap-2 px-5 py-3 bg-white rounded-xl text-sm font-semibold cursor-pointer text-gray-700 border border-gray-200 shadow-sm hover:bg-gray-50 transition-all duration-200"
                         >
-                            <span className="material-symbols-outlined text-[20px]">swap_vert</span>
+                            <span className="material-symbols-outlined text-xl">swap_vert</span>
                             Urutkan
                         </button>
                         {showSortDropdown && (
-                            <div className="absolute top-full right-0 md:left-auto md:right-0 mt-2 bg-white rounded-xl shadow-lg z-20 min-w-[180px] overflow-hidden border border-gray-100">
+                            <div className="absolute top-full right-0 md:left-auto md:right-0 mt-2 bg-white rounded-xl shadow-lg z-20 min-w-[11.25rem] overflow-hidden border border-gray-100">
                                 {[{ value: 'name', label: 'Nama Siswa' }, { value: 'nis', label: 'NIS' }, { value: 'class', label: 'Kelas' }].map(opt => (
                                     <button
                                         key={opt.value}
@@ -315,15 +315,15 @@ const ManageStudents = () => {
                             }`}
                     >
                         {/* 1. NIS */}
-                        <div className="w-full md:w-auto md:min-w-[70px] shrink-0">
-                            <p className="text-[11px] text-gray-400 mb-0.5 uppercase tracking-wider">NIS</p>
+                        <div className="w-full md:w-auto md:min-w-[4.375rem] shrink-0">
+                            <p className="text-[0.6875rem] text-gray-400 mb-0.5 uppercase tracking-wider">NIS</p>
                             <p className="text-sm font-bold text-gray-900 font-mono">{student.nis}</p>
                         </div>
 
                         {/* 2. Name + Avatar + Gender */}
-                        <div className="flex items-center gap-3 w-full md:w-[250px] shrink-0">
+                        <div className="flex items-center gap-3 w-full md:w-[15.625rem] shrink-0">
                             <div
-                                className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white text-[15px] shrink-0"
+                                className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white text-[0.9375rem] shrink-0"
                                 style={{ backgroundColor: student.color }}
                             >
                                 {student.initials}
@@ -341,14 +341,14 @@ const ManageStudents = () => {
                         </div>
 
                         {/* 3. Class Badge */}
-                        <div className="w-full md:w-[220px] shrink-0 flex items-center gap-2 p-1.5 pr-4 bg-white rounded-full border border-gray-200 shadow-sm">
+                        <div className="w-full md:w-[13.75rem] shrink-0 flex items-center gap-2 p-1.5 pr-4 bg-white rounded-full border border-gray-200 shadow-sm">
                             <div
-                                className="w-[30px] h-[30px] rounded-full flex items-center justify-center shrink-0"
+                                className="w-[1.875rem] h-[1.875rem] rounded-full flex items-center justify-center shrink-0"
                                 style={{ backgroundColor: `${getClassColor(student.class)}15` }}
                             >
                                 <GraduationCap size={15} color={getClassColor(student.class)} />
                             </div>
-                            <span className="text-[13px] font-semibold text-gray-700 truncate">
+                            <span className="text-[0.8125rem] font-semibold text-gray-700 truncate">
                                 {getClassName(student.class)}
                             </span>
                         </div>
@@ -393,7 +393,7 @@ const ManageStudents = () => {
                     <div>
                         <div className="flex items-center gap-2 mb-4">
                             <h4 className="text-sm font-bold text-gray-500 tracking-wider uppercase flex items-center gap-2">
-                                <span className="material-symbols-outlined text-[18px]">badge</span>
+                                <span className="material-symbols-outlined text-lg">badge</span>
                                 Informasi Pribadi
                             </h4>
                         </div>

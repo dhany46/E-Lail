@@ -23,16 +23,16 @@ const Settings = () => {
     return (
         <div className="w-full">
             {/* Breadcrumb */}
-            <p style={{ fontSize: '12px', color: '#509567', marginBottom: '8px' }}>Dashboard / Pengaturan</p>
+            <p className="text-xs text-text-secondary-light mb-2">Dashboard / Pengaturan</p>
 
-            <div style={{ marginBottom: '24px' }}>
-                <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#0e1b12', marginBottom: '8px' }}>Pengaturan</h1>
-                <p style={{ fontSize: '14px', color: '#509567' }}>Konfigurasi aplikasi Buku Lail Online.</p>
+            <div className="mb-6">
+                <h1 className="text-3xl font-bold text-text-primary-light mb-2">Pengaturan</h1>
+                <p className="text-sm text-text-secondary-light">Konfigurasi aplikasi Buku Lail Online.</p>
             </div>
 
             {/* School Info Section */}
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px', paddingBottom: '16px' }}>
+            <div className="bg-white rounded-xl p-5 mb-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-50">
                     <h2 className="text-lg font-bold text-text-primary-light">Informasi Sekolah</h2>
                 </div>
 
@@ -115,16 +115,16 @@ const Settings = () => {
                     </div>
 
                     <div>
-                        <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>Alamat Sekolah</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Alamat Sekolah</label>
                         <textarea
                             defaultValue="Jl. Pendidikan No. 123, Kota Belajar"
                             rows={3}
                             className="w-full px-3 py-2 bg-background-light border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm resize-y"
                         />
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div className="grid grid-cols-2 gap-5">
                         <div>
-                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>Nomor Telepon</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Nomor Telepon</label>
                             <input
                                 type="text"
                                 defaultValue="(021) 555-0123"
@@ -132,7 +132,7 @@ const Settings = () => {
                             />
                         </div>
                         <div>
-                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px' }}>Email</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
                             <input
                                 type="email"
                                 defaultValue="admin@sekolah.sch.id"
@@ -143,14 +143,15 @@ const Settings = () => {
                 </div>
             </div>
 
-
-
             {/* Save Button */}
             <div className="flex justify-end">
                 <button
                     onClick={handleSave}
                     disabled={isSubmitting}
-                    style={{ padding: '12px 24px', backgroundColor: isSubmitting ? '#9ca3af' : '#1dc956', color: 'white', borderRadius: '10px', fontWeight: 'bold', fontSize: '14px', border: 'none', cursor: isSubmitting ? 'not-allowed' : 'pointer', boxShadow: '0 4px 12px rgba(29, 201, 86, 0.3)', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm border-none shadow-lg transition-all ${isSubmitting
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-[#1dc956] text-white cursor-pointer shadow-green-500/30 hover:shadow-green-500/40 hover:-translate-y-0.5'
+                        }`}
                 >
                     {isSubmitting ? (
                         <>

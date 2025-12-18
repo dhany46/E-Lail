@@ -85,9 +85,9 @@ const Login = () => {
             {/* Vibrant Modern Background */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 {/* Modern Gradient Blobs */}
-                <div className="absolute top-0 -left-4 w-72 md:w-96 h-72 md:h-96 bg-emerald-300 rounded-full mix-blend-multiply filter blur-[96px] md:blur-[128px] opacity-70 animate-blob"></div>
-                <div className="absolute top-0 -right-4 w-72 md:w-96 h-72 md:h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-[96px] md:blur-[128px] opacity-70 animate-blob animation-delay-2000"></div>
-                <div className="absolute -bottom-8 left-20 w-72 md:w-96 h-72 md:h-96 bg-cyan-300 rounded-full mix-blend-multiply filter blur-[96px] md:blur-[128px] opacity-70 animate-blob animation-delay-4000"></div>
+                <div className="absolute top-0 -left-4 w-72 md:w-96 h-72 md:h-96 bg-emerald-300 rounded-full mix-blend-multiply filter blur-[6rem] md:blur-[8rem] opacity-70 animate-blob"></div>
+                <div className="absolute top-0 -right-4 w-72 md:w-96 h-72 md:h-96 bg-yellow-300 rounded-full mix-blend-multiply filter blur-[6rem] md:blur-[8rem] opacity-70 animate-blob animation-delay-2000"></div>
+                <div className="absolute -bottom-8 left-20 w-72 md:w-96 h-72 md:h-96 bg-cyan-300 rounded-full mix-blend-multiply filter blur-[6rem] md:blur-[8rem] opacity-70 animate-blob animation-delay-4000"></div>
 
                 {/* Floating 3D-ish Icons */}
                 <div className="absolute top-[10%] left-[10%] text-emerald-400 animate-float hidden md:block">
@@ -102,7 +102,7 @@ const Login = () => {
             </div>
 
             {/* Main Card - Mobile First: Stacked, Desktop: Row */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-2xl md:rounded-[32px] shadow-2xl shadow-emerald-100 flex flex-col lg:flex-row overflow-hidden w-full max-w-md lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl min-h-0 lg:min-h-[600px] relative z-10 border border-white/50">
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl md:rounded-[2rem] shadow-2xl shadow-emerald-100 flex flex-col lg:flex-row overflow-hidden w-full max-w-md lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl min-h-0 lg:min-h-[37.5rem] relative z-10 border border-white/50">
 
                 {/* Left Side (Top on Mobile) - Branding */}
                 <div className="w-full lg:w-[45%] flex flex-col items-center justify-center relative p-6 md:p-10 text-white overflow-hidden bg-gradient-to-br from-emerald-500 to-emerald-700 shrink-0">
@@ -131,7 +131,7 @@ const Login = () => {
                         {/* School Name */}
                         <div className="flex items-center gap-2 px-4 py-1.5 md:px-6 md:py-2 bg-white/90 rounded-full mb-2 md:mb-8 shadow-lg shadow-emerald-900/20">
                             <span className="text-emerald-600 text-xs md:text-base">🏫</span>
-                            <p className="text-emerald-800 font-bold tracking-widest text-[10px] md:text-xs uppercase">
+                            <p className="text-emerald-800 font-bold tracking-widest text-[0.625rem] md:text-xs uppercase">
                                 SD Plus 3 Al-Muhajirin
                             </p>
                         </div>
@@ -168,7 +168,7 @@ const Login = () => {
                                     <button
                                         type="button"
                                         onClick={toggleRole}
-                                        className={`w-full h-12 md:h-16 px-4 rounded-xl border-[3px] text-left flex items-center justify-between transition-all duration-200 group active:scale-[0.98]
+                                        className={`w-full h-12 md:h-16 px-4 rounded-xl border-[0.1875rem] text-left flex items-center justify-between transition-all duration-200 group active:scale-[0.98]
                                             ${showRoleMenu ? 'border-emerald-400 bg-emerald-50' : 'border-slate-100 bg-white hover:border-emerald-200'}`}
                                     >
                                         <div className="flex items-center gap-3">
@@ -221,7 +221,7 @@ const Login = () => {
                                     <input
                                         type={role === 'Siswa' ? 'text' : 'email'}
                                         name={role === 'Siswa' ? 'nis' : 'email'}
-                                        className={`w-full h-12 md:h-14 pl-11 pr-4 bg-white border-[3px] rounded-xl focus:outline-none focus:ring-0 transition-all font-bold text-slate-700 placeholder:text-slate-300 text-sm md:text-base
+                                        className={`w-full h-12 md:h-14 pl-11 pr-4 bg-white border-[0.1875rem] rounded-xl focus:outline-none focus:ring-0 transition-all font-bold text-slate-700 placeholder:text-slate-300 text-sm md:text-base
                                             ${currentColor === 'amber' ? 'border-slate-100 focus:border-amber-400' :
                                                 currentColor === 'emerald' ? 'border-slate-100 focus:border-emerald-400' :
                                                     'border-slate-100 focus:border-cyan-400'}`}
@@ -269,7 +269,7 @@ const Login = () => {
                         if (e.target === e.currentTarget) setShowAboutModal(false);
                     }}
                 >
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-[380px] overflow-hidden relative animate-pop-in border border-white/50 ring-1 ring-slate-100">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-[23.75rem] overflow-hidden relative animate-pop-in border border-white/50 ring-1 ring-slate-100">
                         {/* Header */}
                         <div className="bg-emerald-600 p-4 text-center relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500 rounded-full mix-blend-screen filter blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
@@ -280,7 +280,7 @@ const Login = () => {
                                 className="absolute top-3 right-3 text-emerald-100 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 rounded-full transition-all z-50 cursor-pointer"
                                 type="button"
                             >
-                                <span className="material-symbols-outlined text-[20px]">close</span>
+                                <span className="material-symbols-outlined text-xl">close</span>
                             </button>
 
                             <div className="relative z-10 flex flex-col items-center">
@@ -292,7 +292,7 @@ const Login = () => {
                                 </h3>
                                 <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-700/50 rounded-full border border-emerald-500/30">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
-                                    <span className="text-emerald-100 text-[10px] font-bold uppercase tracking-wider">Versi 1.0</span>
+                                    <span className="text-emerald-100 text-[0.625rem] font-bold uppercase tracking-wider">Versi 1.0</span>
                                 </div>
                             </div>
                         </div>
@@ -301,14 +301,14 @@ const Login = () => {
                         <div className="p-4 space-y-4">
                             {/* Technology Stack */}
                             <div>
-                                <h4 className="text-slate-400 font-extrabold text-[10px] uppercase tracking-widest mb-2 flex items-center gap-2">
-                                    <span className="w-6 h-[2px] bg-slate-200"></span>
+                                <h4 className="text-slate-400 font-extrabold text-[0.625rem] uppercase tracking-widest mb-2 flex items-center gap-2">
+                                    <span className="w-6 h-0.5 bg-slate-200"></span>
                                     Teknologi Utama
                                 </h4>
                                 <div className="grid grid-cols-2 gap-2">
                                     {['React JS', 'Vite', 'Tailwind CSS', 'Lucide Icons'].map((item) => (
                                         <div key={item} className="flex items-center gap-2 p-2 bg-slate-50 border border-slate-100 rounded-lg">
-                                            <span className="text-slate-700 font-bold text-[10px]">{item}</span>
+                                            <span className="text-slate-700 font-bold text-[0.625rem]">{item}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -316,13 +316,13 @@ const Login = () => {
 
                             {/* Contact */}
                             <div>
-                                <h4 className="text-slate-400 font-extrabold text-[10px] uppercase tracking-widest mb-2 flex items-center gap-2">
-                                    <span className="w-6 h-[2px] bg-slate-200"></span>
+                                <h4 className="text-slate-400 font-extrabold text-[0.625rem] uppercase tracking-widest mb-2 flex items-center gap-2">
+                                    <span className="w-6 h-0.5 bg-slate-200"></span>
                                     Kontak Developer
                                 </h4>
                                 <div className="bg-slate-50 rounded-xl p-3 border border-slate-200">
                                     <p className="text-slate-800 font-bold text-xs">Dani Ramdani, S.Kom</p>
-                                    <p className="text-emerald-600 text-[10px] font-bold uppercase">Full Stack Developer</p>
+                                    <p className="text-emerald-600 text-[0.625rem] font-bold uppercase">Full Stack Developer</p>
                                 </div>
                             </div>
                         </div>

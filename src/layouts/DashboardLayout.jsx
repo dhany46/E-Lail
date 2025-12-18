@@ -12,7 +12,7 @@ const SidebarItem = ({ icon, label, to, active }) => {
                 : 'text-text-primary-light hover:bg-gray-100'
                 }`}
         >
-            <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: active ? "'FILL' 1, 'wght' 400" : "'FILL' 0, 'wght' 400" }}>{icon}</span>
+            <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: active ? "'FILL' 1, 'wght' 400" : "'FILL' 0, 'wght' 400" }}>{icon}</span>
             <span className="text-sm font-medium">{label}</span>
         </Link>
     );
@@ -57,7 +57,7 @@ const DashboardLayout = () => {
                         onClick={() => setIsSidebarOpen(false)}
                         className="md:hidden ml-auto p-1 hover:bg-gray-100 rounded-lg text-gray-500"
                     >
-                        <span className="material-symbols-outlined text-[20px]">close</span>
+                        <span className="material-symbols-outlined text-xl">close</span>
                     </button>
                 </div>
 
@@ -105,7 +105,7 @@ const DashboardLayout = () => {
                         onClick={handleLogout}
                         className="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-primary-dark text-white text-sm font-bold leading-normal tracking-wide transition-colors shadow-sm"
                     >
-                        <span className="material-symbols-outlined text-[18px]">logout</span>
+                        <span className="material-symbols-outlined text-lg">logout</span>
                         <span className="truncate">Logout</span>
                     </button>
                 </div>
@@ -121,7 +121,7 @@ const DashboardLayout = () => {
                             onClick={() => setIsSidebarOpen(true)}
                             className="md:hidden p-2 -ml-2 hover:bg-gray-100/50 rounded-lg text-gray-600 transition-colors"
                         >
-                            <span className="material-symbols-outlined text-[24px]">menu</span>
+                            <span className="material-symbols-outlined text-2xl">menu</span>
                         </button>
 
                         <div className="flex items-center gap-2 text-sm">
@@ -134,7 +134,7 @@ const DashboardLayout = () => {
                     <div className="flex items-center gap-6">
                         <label className="relative hidden md:block">
                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                <span className="material-symbols-outlined text-[20px]">search</span>
+                                <span className="material-symbols-outlined text-xl">search</span>
                             </span>
                             <input
                                 className="w-64 bg-background-light border-none rounded-full py-2 pl-10 pr-4 text-sm text-text-primary-light placeholder-gray-400 focus:ring-2 focus:ring-primary/50 outline-none"

@@ -58,7 +58,7 @@ const Toast = ({ message, type = 'success', onClose }) => {
                 pointer-events-auto
                 relative overflow-hidden
                 flex items-center gap-3 p-4 pr-10
-                min-w-[300px] max-w-md
+                min-w-[18.75rem] max-w-md
                 rounded-xl border ${style.border}
                 ${style.bg} ${style.shadow}
                 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]
