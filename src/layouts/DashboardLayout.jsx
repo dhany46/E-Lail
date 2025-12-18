@@ -20,13 +20,23 @@ const SidebarItem = ({ icon, label, to, active }) => {
 
 const DashboardLayout = () => {
     const location = useLocation();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
         <div className="bg-transparent text-text-primary-light font-display antialiased overflow-hidden h-screen flex relative">
             <Background />
+
+            {/* Mobile Overlay */}
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
-            {/* Sidebar */}
-            <aside className="w-64 h-full bg-white/70 backdrop-blur-md border-r border-white/20 flex flex-col flex-shrink-0 transition-colors duration-200 z-10">
+            <aside className={`w-64 h-full bg-white/70 backdrop-blur-md border-r border-white/20 flex flex-col flex-shrink-0 transition-transform duration-300 z-50 fixed inset-y-0 left-0 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                }`}>
                 <div className="p-6 flex items-center gap-3">
                     <div
                         className="bg-center bg-no-repeat bg-cover bg-white rounded-full size-12 shrink-0 shadow-sm border border-gray-100"
@@ -36,6 +46,13 @@ const DashboardLayout = () => {
                         <h1 className="text-text-primary-light text-base font-bold leading-tight truncate">Buku Lail Online</h1>
                         <p className="text-text-secondary-light text-xs font-medium truncate">SD Plus 3 Al-Muhajirin</p>
                     </div>
+                    {/* Close button for mobile */}
+                    <button
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="md:hidden ml-auto p-1 hover:bg-gray-100 rounded-lg text-gray-500"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">close</span>
+                    </button>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto px-4 py-2 space-y-1">
@@ -88,15 +105,25 @@ const DashboardLayout = () => {
             {/* Main Content Area */}
             <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-transparent z-10">
                 {/* Top Header */}
-                <header className="bg-white/70 backdrop-blur-md border-b border-white/20 h-16 flex items-center justify-between px-8 shrink-0">
-                    <div className="flex items-center gap-2 text-sm">
-                        <a className="text-text-secondary-light hover:text-primary transition-colors" href="#">Home</a>
-                        <span className="text-gray-400">/</span>
-                        <span className="text-text-primary-light font-medium">Dashboard</span>
+                <header className="bg-white/70 backdrop-blur-md border-b border-white/20 h-16 flex items-center justify-between px-4 sm:px-8 shrink-0 gap-4">
+                    <div className="flex items-center gap-4">
+                        {/* Mobile Toggle Button */}
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            className="md:hidden p-2 -ml-2 hover:bg-gray-100/50 rounded-lg text-gray-600 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-[24px]">menu</span>
+                        </button>
+
+                        <div className="flex items-center gap-2 text-sm">
+                            <a className="text-text-secondary-light hover:text-primary transition-colors hidden sm:block" href="#">Home</a>
+                            <span className="text-gray-400 hidden sm:block">/</span>
+                            <span className="text-text-primary-light font-medium">Dashboard</span>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-6">
-                        <label className="relative hidden sm:block">
+                        <label className="relative hidden md:block">
                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                                 <span className="material-symbols-outlined text-[20px]">search</span>
                             </span>
@@ -106,7 +133,7 @@ const DashboardLayout = () => {
                                 type="text"
                             />
                         </label>
-                        <div className="flex items-center gap-3 pl-6">
+                        <div className="flex items-center gap-3 pl-0 sm:pl-6">
                             <div className="text-right hidden md:block">
                                 <p className="text-sm font-semibold text-text-primary-light leading-none">Admin Sekolah</p>
                                 <p className="text-xs text-text-secondary-light mt-1">Super Admin</p>
@@ -120,12 +147,11 @@ const DashboardLayout = () => {
                 </header>
 
                 {/* Content Outlet */}
-                <div className="flex-1 overflow-y-auto p-8">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-8">
                     <Outlet />
                 </div>
             </main>
         </div>
     );
 };
-
 export default DashboardLayout;
