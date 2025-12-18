@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.jpg';
 import Background from '../components/ui/Background';
 
@@ -19,8 +19,14 @@ const SidebarItem = ({ icon, label, to, active }) => {
 };
 
 const DashboardLayout = () => {
-    const location = useLocation();
+    const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const handleLogout = () => {
+        // Here you might want to clear auth tokens or state if you had them
+        console.log('User logged out');
+        navigate('/');
+    };
 
     return (
         <div className="bg-transparent text-text-primary-light font-display antialiased overflow-hidden h-screen flex relative">
@@ -95,7 +101,10 @@ const DashboardLayout = () => {
                 </nav>
 
                 <div className="p-4">
-                    <button className="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-primary-dark text-white text-sm font-bold leading-normal tracking-wide transition-colors shadow-sm">
+                    <button
+                        onClick={handleLogout}
+                        className="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-primary-dark text-white text-sm font-bold leading-normal tracking-wide transition-colors shadow-sm"
+                    >
                         <span className="material-symbols-outlined text-[18px]">logout</span>
                         <span className="truncate">Logout</span>
                     </button>
