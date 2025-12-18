@@ -132,7 +132,7 @@ const ManageClasses = () => {
 
 
     return (
-        <div className="max-w-[1200px] mx-auto">
+        <div className="w-full">
             {/* Breadcrumb */}
             <p className="text-xs text-text-secondary-light mb-2">Dashboard / Manajemen Kelas</p>
 
@@ -169,8 +169,8 @@ const ManageClasses = () => {
                         <button
                             onClick={() => { setShowFilterDropdown(!showFilterDropdown); setShowSortDropdown(false); }}
                             className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold cursor-pointer border transition-all duration-200 shadow-sm ${filterGrade !== 'all'
-                                    ? 'bg-green-100 text-primary border-primary'
-                                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                                ? 'bg-green-100 text-primary border-primary'
+                                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                                 }`}
                         >
                             <span className="material-symbols-outlined text-[20px]">filter_list</span>
@@ -183,8 +183,8 @@ const ManageClasses = () => {
                                         key={opt.value}
                                         onClick={() => { setFilterGrade(opt.value); setShowFilterDropdown(false); }}
                                         className={`w-full px-4 py-2.5 text-left border-none cursor-pointer text-sm transition-colors ${filterGrade === opt.value
-                                                ? 'bg-green-50 text-primary font-medium'
-                                                : 'bg-white text-gray-700 hover:bg-gray-50'
+                                            ? 'bg-green-50 text-primary font-medium'
+                                            : 'bg-white text-gray-700 hover:bg-gray-50'
                                             }`}
                                     >
                                         {opt.label}
@@ -209,8 +209,8 @@ const ManageClasses = () => {
                                         key={opt.value}
                                         onClick={() => { setSortBy(opt.value); setShowSortDropdown(false); }}
                                         className={`w-full px-4 py-2.5 text-left border-none cursor-pointer text-sm flex items-center justify-between transition-colors ${sortBy === opt.value
-                                                ? 'bg-green-50 text-primary font-medium'
-                                                : 'bg-white text-gray-700 hover:bg-gray-50'
+                                            ? 'bg-green-50 text-primary font-medium'
+                                            : 'bg-white text-gray-700 hover:bg-gray-50'
                                             }`}
                                     >
                                         {opt.label}

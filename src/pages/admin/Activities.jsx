@@ -96,7 +96,7 @@ const Activities = () => {
     };
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="w-full">
             {/* Breadcrumb */}
             <p style={{ fontSize: '12px', color: '#509567', marginBottom: '8px' }}>Dashboard / Kegiatan Ibadah</p>
 

@@ -26,7 +26,7 @@ const Dashboard = () => {
         ];
 
     return (
-        <div className="max-w-[1200px] mx-auto space-y-8">
+        <div className="w-full space-y-8">
             <div>
                 <h1 className="text-3xl font-bold text-text-primary-light dark:text-text-primary-dark tracking-tight">Assalamualaikum, Admin 👋</h1>
                 <p className="text-text-secondary-light dark:text-text-secondary-dark mt-2">Berikut adalah ringkasan aktivitas ibadah SD Plus 3 Al-Muhajirin hari ini.</p>

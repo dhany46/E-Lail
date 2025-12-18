@@ -148,7 +148,9 @@ const DashboardLayout = () => {
 
                 {/* Content Outlet */}
                 <div className="flex-1 overflow-y-auto p-4 sm:p-8">
-                    <Outlet />
+                    <div className="w-full max-w-[1200px] xl:max-w-[1400px] 2xl:max-w-[1800px] mx-auto">
+                        <Outlet />
+                    </div>
                 </div>
             </main>
         </div>

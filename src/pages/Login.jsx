@@ -105,7 +105,7 @@ const Login = () => {
             </div>
 
             {/* Main Card - Big Radius, Soft Shadow */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-2xl shadow-emerald-100 flex flex-col lg:flex-row overflow-hidden w-full max-w-[850px] min-h-[480px] relative z-10 border border-white/50">
+            <div className="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-2xl shadow-emerald-100 flex flex-col lg:flex-row overflow-hidden w-full max-w-[850px] xl:max-w-[1100px] 2xl:max-w-[1400px] min-h-[480px] xl:min-h-[600px] 2xl:min-h-[750px] relative z-10 border border-white/50">
 
                 {/* Left Side - Vibrant Brand Gradient */}
                 <div className="w-full lg:w-[45%] flex flex-col items-center justify-center relative p-6 text-white overflow-hidden bg-gradient-to-br from-emerald-500 to-emerald-700 shrink-0">
@@ -117,7 +117,7 @@ const Login = () => {
 
                     <div className="relative z-10 flex flex-col items-center text-center">
                         {/* Bouncing Logo - Rounded Full to hide black corners */}
-                        <div className="w-24 h-24 lg:w-32 lg:h-32 bg-white/20 backdrop-blur-sm rounded-full p-3 mb-3 lg:mb-4 shadow-2xl flex items-center justify-center animate-float ring-4 ring-white/30">
+                        <div className="w-24 h-24 lg:w-32 lg:h-32 xl:w-40 xl:h-40 2xl:w-48 2xl:h-48 bg-white/20 backdrop-blur-sm rounded-full p-3 mb-3 lg:mb-4 shadow-2xl flex items-center justify-center animate-float ring-4 ring-white/30">
                             <div className="w-full h-full rounded-full flex items-center justify-center overflow-hidden shadow-inner bg-black">
                                 <img src={logo} alt="Logo" className="w-full h-full object-contain scale-110" />
                             </div>
@@ -125,24 +125,24 @@ const Login = () => {
 
                         {/* Bold Typography (No Serif!) */}
                         <div className="relative mb-4 lg:mb-6 group cursor-default z-20">
-                            <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight drop-shadow-xl text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 to-amber-400 transform transition-transform group-hover:scale-105 duration-300">
+                            <h1 className="text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold tracking-tight drop-shadow-xl text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 to-amber-400 transform transition-transform group-hover:scale-105 duration-300">
                                 Buku Lail Online
                             </h1>
                             <div className="absolute -top-6 -right-6 text-3xl animate-bounce delay-700 hidden lg:block">✨</div>
                         </div>
 
                         {/* School Name - Solid Pill */}
-                        <div className="flex items-center gap-2 px-6 py-2 bg-white/90 rounded-full mb-6 lg:mb-8 shadow-lg shadow-emerald-900/20 transform hover:-translate-y-1 transition-all duration-300">
+                        <div className="flex items-center gap-2 px-6 py-2 xl:px-8 xl:py-3 bg-white/90 rounded-full mb-6 lg:mb-8 shadow-lg shadow-emerald-900/20 transform hover:-translate-y-1 transition-all duration-300">
                             <span className="text-emerald-600">🏫</span>
-                            <p className="text-emerald-800 font-bold tracking-widest text-[10px] lg:text-xs uppercase">
+                            <p className="text-emerald-800 font-bold tracking-widest text-[10px] lg:text-xs xl:text-sm 2xl:text-base uppercase">
                                 SD Plus 3 Al-Muhajirin
                             </p>
                         </div>
 
                         {/* Modern Glass Quote */}
-                        <div className="w-full bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl relative group transition-all hover:bg-white/20 cursor-default hover:scale-[1.02] duration-300 hidden lg:block">
+                        <div className="w-full bg-white/10 backdrop-blur-md rounded-3xl p-6 xl:p-8 border border-white/20 shadow-xl relative group transition-all hover:bg-white/20 cursor-default hover:scale-[1.02] duration-300 hidden lg:block">
                             <div className="absolute -top-3 -left-2 text-3xl">🌟</div>
-                            <p className="text-sm font-bold leading-relaxed text-emerald-50 drop-shadow-md">
+                            <p className="text-sm xl:text-base 2xl:text-lg font-bold leading-relaxed text-emerald-50 drop-shadow-md">
                                 "Yuk jadi anak hebat! 🚀 Catat amal baikmu, raih bintang, dan buat bangga Ayah Bunda!"
                             </p>
                             <div className="absolute -bottom-3 -right-2 text-3xl">🚀</div>
@@ -152,14 +152,14 @@ const Login = () => {
 
                 {/* Right Side - Chunky UI */}
                 <div className="w-full lg:w-[55%] bg-white/60 flex flex-col justify-center items-center p-6 lg:p-8 relative flex-1">
-                    <div className="w-full max-w-[400px]">
+                    <div className="w-full max-w-[400px] xl:max-w-[500px] 2xl:max-w-[600px]">
 
                         {/* Friendly Heading */}
                         <div className="mb-6 lg:mb-8 text-center lg:text-left">
-                            <h2 className="text-xl lg:text-2xl font-extrabold text-slate-800 mb-1 flex items-center justify-center lg:justify-start gap-2">
+                            <h2 className="text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-extrabold text-slate-800 mb-1 flex items-center justify-center lg:justify-start gap-2">
                                 Assalamu’alaikum! <span className="animate-bounce inline-block">👋</span>
                             </h2>
-                            <p className="text-slate-500 text-xs lg:text-sm font-medium">
+                            <p className="text-slate-500 text-xs lg:text-sm xl:text-base 2xl:text-lg font-medium">
                                 Siap mengejar prestasi dan pahala hari ini?
                             </p>
                         </div>
@@ -168,12 +168,12 @@ const Login = () => {
 
                             {/* Chunky Role Selector */}
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Login Sebagai</label>
+                                <label className="text-xs xl:text-sm 2xl:text-base font-bold text-slate-400 uppercase tracking-wider ml-1">Login Sebagai</label>
                                 <div className="relative">
                                     <button
                                         type="button"
                                         onClick={toggleRole}
-                                        className={`w-full h-14 px-4 rounded-xl border-[3px] text-left flex items-center justify-between transition-all duration-200 group active:scale-[0.98]
+                                        className={`w-full h-14 xl:h-16 2xl:h-20 px-4 rounded-xl border-[3px] text-left flex items-center justify-between transition-all duration-200 group active:scale-[0.98]
                                             ${showRoleMenu ? 'border-emerald-400 bg-emerald-50' : 'border-slate-100 bg-white hover:border-emerald-200'}`}
                                     >
                                         <div className="flex items-center gap-3">
@@ -182,8 +182,8 @@ const Login = () => {
                                                 {role === 'Admin' ? <School size={18} /> : role === 'Guru' ? <GraduationCap size={18} /> : <User size={18} />}
                                             </div>
                                             <div className="flex flex-col justify-center">
-                                                <span className="font-extrabold text-slate-700 text-base leading-tight">{role}</span>
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide leading-none mt-0.5">
+                                                <span className="font-extrabold text-slate-700 text-base xl:text-lg 2xl:text-xl leading-tight">{role}</span>
+                                                <span className="text-[10px] xl:text-xs 2xl:text-sm font-bold text-slate-400 uppercase tracking-wide leading-none mt-0.5">
                                                     {role === 'Siswa' ? 'Murid Hebat' : role === 'Guru' ? 'Guru Teladan' : 'Admin Sekolah'}
                                                 </span>
                                             </div>
@@ -218,7 +218,7 @@ const Login = () => {
 
                             {/* Chunky Input */}
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">
+                                <label className="text-xs xl:text-sm 2xl:text-base font-bold text-slate-400 uppercase tracking-wider ml-1">
                                     {role === 'Siswa' ? 'Nomor Induk Siswa' : `Email ${role}`}
                                 </label>
                                 <div className="relative group">
@@ -229,7 +229,7 @@ const Login = () => {
                                     <input
                                         type={role === 'Siswa' ? 'text' : 'email'}
                                         name={role === 'Siswa' ? 'nis' : 'email'}
-                                        className={`w-full h-12 pl-12 pr-4 bg-white border-[3px] rounded-xl focus:outline-none focus:ring-0 transition-all font-bold text-slate-700 placeholder:text-slate-300 text-sm
+                                        className={`w-full h-12 xl:h-14 2xl:h-16 pl-12 pr-4 bg-white border-[3px] rounded-xl focus:outline-none focus:ring-0 transition-all font-bold text-slate-700 placeholder:text-slate-300 text-sm xl:text-base 2xl:text-lg
                                             ${currentColor === 'amber' ? 'border-slate-100 focus:border-amber-400' :
                                                 currentColor === 'emerald' ? 'border-slate-100 focus:border-emerald-400' :
                                                     'border-slate-100 focus:border-cyan-400'}`}
@@ -244,10 +244,10 @@ const Login = () => {
                             {/* Big Action Button */}
                             <button
                                 type="submit"
-                                className={`w-full h-12 text-white font-extrabold rounded-xl shadow-lg transition-all text-base mt-2 transform hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] flex items-center justify-center gap-2
+                                className={`w-full h-12 xl:h-14 2xl:h-16 text-white font-extrabold rounded-xl shadow-lg transition-all text-base xl:text-lg 2xl:text-xl mt-2 transform hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] flex items-center justify-center gap-2
                                     ${role === 'Admin' ? 'bg-amber-500 hover:bg-amber-600 shadow-amber-200' :
                                         role === 'Guru' ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200' :
-                                            'bg-cyan-500 hover:bg-cyan-600 shadow-cyan-200'}`}
+                                            'bg-cyan-500 hover:bg-cyan-600 shadow-cyan-200'}`} WITHOUT role='Siswa'
                             >
                                 <span>Masuk Sekarang</span>
                                 <Rocket size={20} className="animate-pulse" />
