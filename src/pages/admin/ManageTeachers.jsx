@@ -209,18 +209,7 @@ const ManageTeachers = () => {
                     </div>
                     <p className="text-xs text-gray-500">Memegang kelas</p>
                 </div>
-                <div className="bg-white rounded-xl p-5 shadow-sm flex flex-col justify-between h-32">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-sm font-medium text-text-secondary-light mb-1">Status PNS</p>
-                            <h2 className="text-2xl font-bold text-text-primary-light">{teachers.filter(t => t.status === 'PNS').length}</h2>
-                        </div>
-                        <div className="p-2 bg-purple-100 rounded-lg">
-                            <span className="material-symbols-outlined text-2xl text-purple-500">verified</span>
-                        </div>
-                    </div>
-                    <p className="text-xs text-gray-500">Pegawai Negeri</p>
-                </div>
+
             </div>
 
             {/* Search and Filters */}
@@ -229,30 +218,14 @@ const ManageTeachers = () => {
                     <span className="material-symbols-outlined absolute left-3 text-gray-400 text-xl">search</span>
                     <input
                         type="text"
-                        placeholder="Cari nama guru, NIP, atau mata pelajaran..."
+                        placeholder="Cari nama guru atau NIP..."
                         value={searchQuery}
                         onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                         className="w-full pl-10 pr-4 py-3 bg-white rounded-lg border-none text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-gray-700"
                     />
                 </div>
                 <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-                    <div className="relative shrink-0">
-                        <button
-                            onClick={() => {
-                                const statuses = ['Semua Status', ...availableStatus];
-                                const nextIndex = (statuses.indexOf(filterStatus) + 1) % statuses.length;
-                                setFilterStatus(statuses[nextIndex]);
-                                setCurrentPage(1);
-                            }}
-                            className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold cursor-pointer border transition-all duration-200 shadow-sm ${filterStatus !== 'Semua Status'
-                                ? 'bg-green-100 text-primary border-primary'
-                                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
-                                }`}
-                        >
-                            <span className="material-symbols-outlined text-xl">filter_list</span>
-                            {filterStatus === 'Semua Status' ? 'Filter Status' : filterStatus}
-                        </button>
-                    </div>
+
                     <div className="relative shrink-0">
                         <button
                             onClick={() => { setShowSortDropdown(!showSortDropdown); }}
@@ -263,7 +236,7 @@ const ManageTeachers = () => {
                         </button>
                         {showSortDropdown && (
                             <div className="absolute top-full right-0 md:left-auto md:right-0 mt-2 bg-white rounded-xl shadow-lg z-20 min-w-[11.25rem] overflow-hidden border border-gray-100">
-                                {[{ value: 'name', label: 'Nama Guru' }, { value: 'nip', label: 'NIP' }, { value: 'subject', label: 'Mata Pelajaran' }].map(opt => (
+                                {[{ value: 'name', label: 'Nama Guru' }, { value: 'nip', label: 'NIP' }].map(opt => (
                                     <button
                                         key={opt.value}
                                         onClick={() => { setSortBy(opt.value); setShowSortDropdown(false); }}
@@ -309,10 +282,6 @@ const ManageTeachers = () => {
                             <div className="min-w-0">
                                 <p className="font-semibold text-gray-900 text-sm truncate">{teacher.name}</p>
                                 <div className="mt-1 flex items-center gap-2">
-                                    <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md font-medium ${teacher.status === 'PNS' ? 'bg-purple-50 text-purple-600' : 'bg-gray-100 text-gray-600'
-                                        }`}>
-                                        {teacher.status}
-                                    </span>
                                     <span className={`inline-flex items-center gap-1 text-[0.6875rem] px-1.5 py-0.5 rounded-md font-medium text-gray-500 bg-gray-50`}>
                                         {teacher.gender}
                                     </span>
@@ -332,14 +301,7 @@ const ManageTeachers = () => {
                                     </span>
                                 </div>
                             )}
-                            <div className="flex items-center gap-2">
-                                <div className="p-1 bg-blue-50 rounded text-blue-500">
-                                    <span className="material-symbols-outlined text-sm">book_2</span>
-                                </div>
-                                <span className="text-[0.8125rem] text-gray-600">
-                                    Pengajar {teacher.subject}
-                                </span>
-                            </div>
+
                         </div>
 
                         {/* Spacer */}
@@ -407,7 +369,7 @@ const ManageTeachers = () => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* NIP */}
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-800 mb-2">NIP</label>
@@ -425,79 +387,6 @@ const ManageTeachers = () => {
                                             className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white border hover:border-green-200 border-transparent transition-all placeholder-gray-400 text-gray-900 font-medium"
                                             required
                                         />
-                                    </div>
-                                </div>
-
-                                {/* Status Kepegawaian */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-800 mb-2">Status</label>
-                                    <div className={`relative ${showStatusDropdown ? 'z-50' : ''}`}>
-                                        <div
-                                            onClick={() => setShowStatusDropdown(!showStatusDropdown)}
-                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl text-sm border hover:border-green-200 border-transparent transition-all cursor-pointer text-gray-900 font-medium flex items-center justify-between"
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <div className="p-1 bg-green-100 rounded-lg">
-                                                        <span className="material-symbols-outlined text-sm text-primary">verified</span>
-                                                    </div>
-                                                </div>
-                                                <span>{formData.status || "Pilih Status"}</span>
-                                            </div>
-                                            <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${showStatusDropdown ? 'rotate-180' : ''}`} />
-                                        </div>
-                                        {showStatusDropdown && (
-                                            <div className="absolute z-50 left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 py-2">
-                                                {availableStatus.map(status => (
-                                                    <div
-                                                        key={status}
-                                                        onClick={() => { setFormData({ ...formData, status }); setShowStatusDropdown(false); }}
-                                                        className="px-4 py-3 hover:bg-green-50 cursor-pointer flex items-center justify-between transition-colors"
-                                                    >
-                                                        <span className="text-sm font-medium text-gray-900">{status}</span>
-                                                        {formData.status === status && <Check size={16} className="text-green-600" />}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Subject & Class Assignment */}
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Mata Pelajaran */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-800 mb-2">Mata Pelajaran</label>
-                                    <div className={`relative ${showSubjectDropdown ? 'z-40' : ''}`}>
-                                        <div
-                                            onClick={() => setShowSubjectDropdown(!showSubjectDropdown)}
-                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl text-sm border hover:border-green-200 border-transparent transition-all cursor-pointer text-gray-900 font-medium flex items-center justify-between"
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <div className="p-1 bg-green-100 rounded-lg">
-                                                        <span className="material-symbols-outlined text-sm text-primary">book_2</span>
-                                                    </div>
-                                                </div>
-                                                <span>{formData.subject || "Pilih Mapel"}</span>
-                                            </div>
-                                            <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${showSubjectDropdown ? 'rotate-180' : ''}`} />
-                                        </div>
-                                        {showSubjectDropdown && (
-                                            <div className="absolute z-50 left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 max-h-60 overflow-y-auto py-2">
-                                                {availableSubjects.map(sub => (
-                                                    <div
-                                                        key={sub}
-                                                        onClick={() => { setFormData({ ...formData, subject: sub }); setShowSubjectDropdown(false); }}
-                                                        className="px-4 py-3 hover:bg-green-50 cursor-pointer flex items-center justify-between transition-colors"
-                                                    >
-                                                        <span className="text-sm font-medium text-gray-900">{sub}</span>
-                                                        {formData.subject === sub && <Check size={16} className="text-green-600" />}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
 
@@ -638,7 +527,7 @@ const ManageTeachers = () => {
                     </div>
                 </div>
             </Modal>
-        </div>
+        </div >
     );
 };
 

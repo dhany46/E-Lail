@@ -269,46 +269,47 @@ const Login = () => {
                         if (e.target === e.currentTarget) setShowAboutModal(false);
                     }}
                 >
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-[23.75rem] overflow-hidden relative animate-pop-in border border-white/50 ring-1 ring-slate-100">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative animate-pop-in border border-white/50 ring-1 ring-slate-100">
                         {/* Header */}
-                        <div className="bg-emerald-600 p-4 text-center relative overflow-hidden">
+                        <div className="bg-emerald-600 p-6 text-center relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-32 h-32 bg-emerald-500 rounded-full mix-blend-screen filter blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
                             <div className="absolute bottom-0 right-0 w-32 h-32 bg-teal-400 rounded-full mix-blend-screen filter blur-3xl opacity-30 translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
 
                             <button
                                 onClick={() => setShowAboutModal(false)}
-                                className="absolute top-3 right-3 text-emerald-100 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 rounded-full transition-all z-50 cursor-pointer"
+                                className="absolute top-4 right-4 text-emerald-100 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-all z-50 cursor-pointer"
                                 type="button"
                             >
                                 <span className="material-symbols-outlined text-xl">close</span>
                             </button>
 
                             <div className="relative z-10 flex flex-col items-center">
-                                <div className="p-2 bg-white/20 backdrop-blur-md rounded-xl mb-2 shadow-lg ring-1 ring-white/30">
-                                    <Book size={20} className="text-white" />
+                                <div className="p-3 bg-white/20 backdrop-blur-md rounded-2xl mb-3 shadow-lg ring-1 ring-white/30">
+                                    <Book size={28} className="text-white" />
                                 </div>
-                                <h3 className="text-white text-lg font-black tracking-tight mb-1">
+                                <h3 className="text-white text-2xl font-black tracking-tight mb-2">
                                     Buku Lail Online
                                 </h3>
-                                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-700/50 rounded-full border border-emerald-500/30">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
-                                    <span className="text-emerald-100 text-[0.625rem] font-bold uppercase tracking-wider">Versi 1.0</span>
+                                <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-700/50 rounded-full border border-emerald-500/30">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+                                    <span className="text-emerald-50 text-xs font-bold uppercase tracking-wider">Versi 1.0</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Content */}
-                        <div className="p-4 space-y-4">
+                        <div className="p-6 space-y-6">
                             {/* Technology Stack */}
                             <div>
-                                <h4 className="text-slate-400 font-extrabold text-[0.625rem] uppercase tracking-widest mb-2 flex items-center gap-2">
-                                    <span className="w-6 h-0.5 bg-slate-200"></span>
+                                <h4 className="text-slate-400 font-extrabold text-xs uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <span className="w-8 h-0.5 bg-slate-200"></span>
                                     Teknologi Utama
                                 </h4>
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-2 gap-3">
                                     {['React JS', 'Vite', 'Tailwind CSS', 'Lucide Icons'].map((item) => (
-                                        <div key={item} className="flex items-center gap-2 p-2 bg-slate-50 border border-slate-100 rounded-lg">
-                                            <span className="text-slate-700 font-bold text-[0.625rem]">{item}</span>
+                                        <div key={item} className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-xl hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
+                                            <span className="text-slate-700 font-bold text-sm">{item}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -316,22 +317,27 @@ const Login = () => {
 
                             {/* Contact */}
                             <div>
-                                <h4 className="text-slate-400 font-extrabold text-[0.625rem] uppercase tracking-widest mb-2 flex items-center gap-2">
-                                    <span className="w-6 h-0.5 bg-slate-200"></span>
+                                <h4 className="text-slate-400 font-extrabold text-xs uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <span className="w-8 h-0.5 bg-slate-200"></span>
                                     Kontak Developer
                                 </h4>
-                                <div className="bg-slate-50 rounded-xl p-3 border border-slate-200">
-                                    <p className="text-slate-800 font-bold text-xs">Dani Ramdani, S.Kom</p>
-                                    <p className="text-emerald-600 text-[0.625rem] font-bold uppercase">Full Stack Developer</p>
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                                        <User size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-slate-800 font-bold text-sm">Dani Ramdani, S.Kom</p>
+                                        <p className="text-emerald-600 text-xs font-bold uppercase mt-0.5">Full Stack Developer</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Footer */}
-                        <div className="p-3 bg-slate-50 border-t border-slate-100 flex justify-center">
+                        <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-center">
                             <button
                                 onClick={() => setShowAboutModal(false)}
-                                className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-xs transition-all"
+                                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-slate-200 transform active:scale-[0.98]"
                             >
                                 Tutup Panel
                             </button>
