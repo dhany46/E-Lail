@@ -100,14 +100,24 @@ const DashboardLayout = () => {
                     />
                 </nav>
 
-                <div className="p-4">
-                    <button
-                        onClick={handleLogout}
-                        className="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-primary-dark text-white text-sm font-bold leading-normal tracking-wide transition-colors shadow-sm"
-                    >
-                        <span className="material-symbols-outlined text-lg">logout</span>
-                        <span className="truncate">Logout</span>
-                    </button>
+                <div className="px-4 py-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between group">
+                        <div className="flex items-center gap-3">
+                            <div className="size-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-sm">
+                                AS
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-sm font-bold text-gray-900">Admin Sekolah</span>
+                                <span className="text-xs text-gray-500">Super Admin</span>
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="size-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-red-500 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-lg">logout</span>
+                        </button>
+                    </div>
                 </div>
             </aside>
 

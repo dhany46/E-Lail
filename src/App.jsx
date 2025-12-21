@@ -11,6 +11,17 @@ import Activities from './pages/admin/Activities';
 import Settings from './pages/admin/Settings';
 import './index.css';
 
+import StudentLayout from './layouts/StudentLayout';
+import StudentDashboard from './pages/student/Dashboard';
+import StudentHistory from './pages/student/History';
+import StudentInput from './pages/student/Input';
+import StudentProfile from './pages/student/Profile';
+import TeacherLayout from './layouts/TeacherLayout';
+import TeacherDashboard from './pages/teacher/Dashboard';
+import TeacherReports from './pages/teacher/ReportManagement';
+import TeacherStudentDetail from './pages/teacher/StudentDetail';
+import PagePlaceholder from './components/ui/PagePlaceholder'; // Create this simple component if it doesn't exist, or inline it. The previous tool call created it.
+
 function App() {
   return (
     <ToastProvider>
@@ -29,6 +40,27 @@ function App() {
             <Route path="settings" element={<Settings />} />
           </Route>
 
+          {/* Student Routes */}
+          <Route path="/student" element={<StudentLayout />}>
+            <Route index element={<Navigate to="/student/dashboard" replace />} />
+            <Route path="dashboard" element={<StudentDashboard />} />
+            <Route path="input" element={<StudentInput />} />
+            <Route path="history" element={<StudentHistory />} />
+            <Route path="leaderboard" element={<PagePlaceholder title="Peringkat Siswa" />} />
+            <Route path="profile" element={<StudentProfile />} />
+          </Route>
+
+          {/* Teacher Routes */}
+          <Route path="/teacher" element={<TeacherLayout />}>
+            <Route index element={<Navigate to="/teacher/dashboard" replace />} />
+            <Route path="dashboard" element={<TeacherDashboard />} />
+            <Route path="reports" element={<TeacherReports />} />
+            <Route path="students" element={<TeacherStudentDetail />} />
+            <Route path="settings" element={<PagePlaceholder title="Pengaturan Guru" />} />
+          </Route>
+
+          {/* Default Redirect - Update to catch root */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
