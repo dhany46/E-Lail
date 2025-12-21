@@ -98,50 +98,50 @@ const Activities = () => {
     return (
         <div className="w-full">
             {/* Breadcrumb */}
-            <p style={{ fontSize: '12px', color: '#509567', marginBottom: '8px' }}>Dashboard / Kegiatan Ibadah</p>
+            <p className="text-xs text-text-secondary-light mb-2">Dashboard / Kegiatan Ibadah</p>
 
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
-                    <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#0e1b12', marginBottom: '8px' }}>Kegiatan Ibadah</h1>
-                    <p style={{ fontSize: '14px', color: '#509567' }}>Atur jenis ibadah dan poin penghargaan untuk siswa</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-text-primary-light mb-2">Kegiatan Ibadah</h1>
+                    <p className="text-sm text-text-secondary-light">Atur jenis ibadah dan poin penghargaan untuk siswa</p>
                 </div>
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div className="bg-white p-5 rounded-xl shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', color: '#509567', fontWeight: '500' }}>Total Jenis Kegiatan</p>
-                            <h3 style={{ fontSize: '30px', fontWeight: 'bold', color: '#0e1b12', marginTop: '4px' }}>{totalActivities}</h3>
+                            <p className="text-sm text-text-secondary-light font-medium">Total Jenis Kegiatan</p>
+                            <h3 className="text-3xl font-bold text-text-primary-light mt-1">{totalActivities}</h3>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#eff6ff', borderRadius: '8px', color: '#2563eb' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>checklist</span>
+                        <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+                            <span className="material-symbols-outlined text-2xl">checklist</span>
                         </div>
                     </div>
                 </div>
 
-                <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div className="bg-white p-5 rounded-xl shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', color: '#509567', fontWeight: '500' }}>Total Poin Harian</p>
-                            <h3 style={{ fontSize: '30px', fontWeight: 'bold', color: '#0e1b12', marginTop: '4px' }}>{totalDailyPoints}</h3>
+                            <p className="text-sm text-text-secondary-light font-medium">Total Poin Harian</p>
+                            <h3 className="text-3xl font-bold text-text-primary-light mt-1">{totalDailyPoints}</h3>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#dcfce7', borderRadius: '8px', color: '#16a34a' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>stars</span>
+                        <div className="p-2 bg-green-50 rounded-lg text-green-600">
+                            <span className="material-symbols-outlined text-2xl">stars</span>
                         </div>
                     </div>
                 </div>
 
-                <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div className="bg-white p-5 rounded-xl shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', color: '#509567', fontWeight: '500' }}>Kegiatan Wajib</p>
-                            <h3 style={{ fontSize: '30px', fontWeight: 'bold', color: '#0e1b12', marginTop: '4px' }}>{wajibCount}</h3>
+                            <p className="text-sm text-text-secondary-light font-medium">Kegiatan Wajib</p>
+                            <h3 className="text-3xl font-bold text-text-primary-light mt-1">{wajibCount}</h3>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#ffedd5', borderRadius: '8px', color: '#ea580c' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>priority_high</span>
+                        <div className="p-2 bg-orange-100 rounded-lg text-orange-600">
+                            <span className="material-symbols-outlined text-2xl">priority_high</span>
                         </div>
                     </div>
                 </div>
@@ -152,14 +152,14 @@ const Activities = () => {
                 {/* Table Section */}
                 <div className="lg:col-span-2 space-y-4">
                     {/* Search */}
-                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                        <span className="material-symbols-outlined" style={{ position: 'absolute', left: '12px', color: '#9ca3af', fontSize: '20px', pointerEvents: 'none' }}>search</span>
+                    <div className="relative flex items-center">
+                        <span className="material-symbols-outlined absolute left-3 text-gray-400 text-xl pointer-events-none">search</span>
                         <input
                             type="text"
                             placeholder="Cari nama kegiatan ibadah..."
                             value={searchQuery}
                             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                            style={{ width: '100%', paddingLeft: '40px', paddingRight: '16px', paddingTop: '10px', paddingBottom: '10px', backgroundColor: 'white', borderRadius: '8px', border: 'none', fontSize: '14px', outline: 'none' }}
+                            className="w-full pl-10 pr-4 py-2.5 bg-white rounded-lg border-none text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-gray-700"
                         />
                     </div>
 
@@ -228,7 +228,7 @@ const Activities = () => {
                             {editingId ? 'Edit Kegiatan' : 'Tambah Kegiatan Baru'}
                         </h2>
                         <div className="p-1.5 bg-primary/10 rounded-full">
-                            <span className="material-symbols-outlined text-primary text-[20px]">add</span>
+                            <span className="material-symbols-outlined text-primary text-xl">add</span>
                         </div>
                     </div>
 
@@ -295,20 +295,15 @@ const Activities = () => {
                             </button>
                             <button
                                 type="submit"
-                                style={{ padding: '12px 24px', backgroundColor: '#1dc956', color: 'white', borderRadius: '10px', fontWeight: 'bold', fontSize: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(29, 201, 86, 0.3)', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flex: 1 }}
+                                className="flex-1 py-3 px-6 bg-[#1dc956] text-white rounded-xl font-bold text-sm border-none cursor-pointer shadow-lg shadow-green-500/30 hover:shadow-green-500/40 transition-all flex items-center justify-center gap-2"
                             >
-                                <span className="material-symbols-outlined text-[18px]">save</span>
+                                <span className="material-symbols-outlined text-lg">save</span>
                                 Simpan
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
-            {/* Simple Add/Edit Modal (Can be upgraded later) */}
-            {/* Note: The form handling logic above (handleEdit/handleSubmit) seems to rely on inline form rendering or a modal that might not be visible in this snippet. 
-                Assuming the form is rendered somewhere or handled differently. Based on previous code, there was no separate modal for Add, 
-                so I will assume the Add/Edit logic is fine or unrelated to this specific task, which is fixing DELETE.
-                However, I will append the Delete Modal here. */}
 
             {/* Delete Confirmation Modal */}
             <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} title={

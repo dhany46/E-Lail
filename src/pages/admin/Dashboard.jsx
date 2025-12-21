@@ -33,7 +33,7 @@ const Dashboard = () => {
             </div>
 
             {/* Stats Grid - Clickable */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {/* Stat 1 - Total Siswa */}
                 <Link to="/admin/students" className="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-sm flex flex-col justify-between h-32 hover:shadow-md transition-shadow cursor-pointer">
                     <div className="flex justify-between items-start">
@@ -42,11 +42,11 @@ const Dashboard = () => {
                             <h3 className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark mt-1">452</h3>
                         </div>
                         <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
-                            <span className="material-symbols-outlined text-[24px]">groups</span>
+                            <span className="material-symbols-outlined text-2xl">groups</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 font-medium">
-                        <span className="material-symbols-outlined text-[16px]">trending_up</span>
+                        <span className="material-symbols-outlined text-base">trending_up</span>
                         <span>+12 minggu ini</span>
                     </div>
                 </Link>
@@ -59,7 +59,7 @@ const Dashboard = () => {
                             <h3 className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark mt-1">24</h3>
                         </div>
                         <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600 dark:text-purple-400">
-                            <span className="material-symbols-outlined text-[24px]">badge</span>
+                            <span className="material-symbols-outlined text-2xl">badge</span>
                         </div>
                     </div>
                     <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">Aktif memantau</p>
@@ -73,7 +73,7 @@ const Dashboard = () => {
                             <h3 className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark mt-1">12</h3>
                         </div>
                         <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400">
-                            <span className="material-symbols-outlined text-[24px]">school</span>
+                            <span className="material-symbols-outlined text-2xl">school</span>
                         </div>
                     </div>
                     <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">Tahun Ajaran 2023/2024</p>
@@ -87,18 +87,18 @@ const Dashboard = () => {
                             <h3 className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark mt-1">1,203</h3>
                         </div>
                         <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                            <span className="material-symbols-outlined text-[24px]">auto_stories</span>
+                            <span className="material-symbols-outlined text-2xl">auto_stories</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 font-medium">
-                        <span className="material-symbols-outlined text-[16px]">trending_up</span>
+                        <span className="material-symbols-outlined text-base">trending_up</span>
                         <span>92% Partisipasi</span>
                     </div>
                 </Link>
             </div>
 
             {/* Chart & Activity Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                 {/* Chart */}
                 <div className="lg:col-span-2 bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm p-6">
                     <div className="flex items-center justify-between mb-6">
@@ -140,7 +140,7 @@ const Dashboard = () => {
                         <Link to="/admin/activities" className="text-xs font-semibold text-primary hover:text-primary-dark transition-colors">Lihat Semua</Link>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto pr-2 space-y-4 max-h-[400px]">
+                    <div className="flex-1 overflow-y-auto pr-2 space-y-4 max-h-[25rem]">
                         {[
                             { name: 'Ahmad Fulan', class: 'Kelas 5A', action: 'Sholat Dhuha', time: '2 menit yang lalu', color: 'bg-blue-100 text-blue-600', icon: 'person' },
                             { name: 'Siti Aminah', class: 'Kelas 3B', action: 'Tadarus Al-Quran', time: '15 menit yang lalu', color: 'bg-pink-100 text-pink-600', icon: 'person_2' },
@@ -150,12 +150,12 @@ const Dashboard = () => {
                         ].map((activity, i) => (
                             <div key={i} className="flex items-start gap-3 pb-3 last:pb-0 hover:bg-gray-50 dark:hover:bg-gray-800/30 -mx-2 px-2 py-1 rounded-lg transition-colors cursor-pointer">
                                 <div className={`size-8 rounded-full flex items-center justify-center shrink-0 ${activity.color}`}>
-                                    <span className="material-symbols-outlined text-[16px]">{activity.icon}</span>
+                                    <span className="material-symbols-outlined text-base">{activity.icon}</span>
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-text-primary-light dark:text-text-primary-dark">{activity.name}</p>
                                     <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark">{activity.class} • {activity.action}</p>
-                                    <p className="text-[10px] text-gray-400 mt-1">{activity.time}</p>
+                                    <p className="text-[0.625rem] text-gray-400 mt-1">{activity.time}</p>
                                 </div>
                             </div>
                         ))}

@@ -22,12 +22,12 @@ const ManageClasses = () => {
 
     // Warna berdasarkan tingkat kelas
     const gradeColors = {
-        '1': '#1dc956',  // Hijau - Kelas 1
-        '2': '#3b82f6',  // Biru - Kelas 2
-        '3': '#f59e0b',  // Kuning/Orange - Kelas 3
-        '4': '#8b5cf6',  // Ungu - Kelas 4
-        '5': '#ef4444',  // Merah - Kelas 5
-        '6': '#06b6d4',  // Cyan - Kelas 6
+        '1': '#1dc956',  // Hijau
+        '2': '#3b82f6',  // Biru
+        '3': '#f59e0b',  // Orange
+        '4': '#8b5cf6',  // Ungu
+        '5': '#ef4444',  // Merah
+        '6': '#06b6d4',  // Cyan
     };
 
     const getGradeColor = (code) => {
@@ -67,7 +67,6 @@ const ManageClasses = () => {
             }
         });
 
-    // Pagination
     const totalPages = Math.ceil(filteredClasses.length / itemsPerPage);
     const paginatedClasses = filteredClasses.slice(
         (currentPage - 1) * itemsPerPage,
@@ -129,8 +128,6 @@ const ManageClasses = () => {
         }
     };
 
-
-
     return (
         <div className="w-full">
             {/* Breadcrumb */}
@@ -139,7 +136,7 @@ const ManageClasses = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl md:text-[28px] font-bold text-text-primary-light mb-2">Manajemen Kelas</h1>
+                    <h1 className="text-2xl md:text-3xl font-bold text-text-primary-light mb-2">Manajemen Kelas</h1>
                     <p className="text-sm text-text-secondary-light">Kelola daftar kelas, wali kelas, dan guru kelas untuk tahun ajaran aktif</p>
                 </div>
                 <button
@@ -153,7 +150,7 @@ const ManageClasses = () => {
             {/* Search & Filter */}
             <div className="flex flex-col md:flex-row gap-3 mb-6">
                 <div className="flex-1 relative flex items-center">
-                    <span className="material-symbols-outlined absolute left-3 text-gray-400 text-[20px]">search</span>
+                    <span className="material-symbols-outlined absolute left-3 text-gray-400 text-xl">search</span>
                     <input
                         type="text"
                         placeholder="Cari nama kelas, wali kelas, atau guru kelas..."
@@ -173,11 +170,11 @@ const ManageClasses = () => {
                                 : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                                 }`}
                         >
-                            <span className="material-symbols-outlined text-[20px]">filter_list</span>
+                            <span className="material-symbols-outlined text-xl">filter_list</span>
                             Filter {filterGrade !== 'all' && `(${filterGrade})`}
                         </button>
                         {showFilterDropdown && (
-                            <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-lg z-20 min-w-[160px] overflow-hidden border border-gray-100">
+                            <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-lg z-20 min-w-[10rem] overflow-hidden border border-gray-100">
                                 {[{ value: 'all', label: 'Semua Kelas' }, { value: '1', label: 'Kelas 1' }, { value: '2', label: 'Kelas 2' }, { value: '3', label: 'Kelas 3' }, { value: '4', label: 'Kelas 4' }, { value: '5', label: 'Kelas 5' }, { value: '6', label: 'Kelas 6' }].map(opt => (
                                     <button
                                         key={opt.value}
@@ -199,11 +196,11 @@ const ManageClasses = () => {
                             onClick={() => { setShowSortDropdown(!showSortDropdown); setShowFilterDropdown(false); }}
                             className="flex items-center gap-2 px-5 py-3 bg-white rounded-xl text-sm font-semibold cursor-pointer text-gray-700 border border-gray-200 shadow-sm hover:bg-gray-50 transition-all duration-200"
                         >
-                            <span className="material-symbols-outlined text-[20px]">swap_vert</span>
+                            <span className="material-symbols-outlined text-xl">swap_vert</span>
                             Urutkan
                         </button>
                         {showSortDropdown && (
-                            <div className="absolute top-full right-0 md:left-auto md:right-0 mt-2 bg-white rounded-xl shadow-lg z-20 min-w-[180px] overflow-hidden border border-gray-100">
+                            <div className="absolute top-full right-0 md:left-auto md:right-0 mt-2 bg-white rounded-xl shadow-lg z-20 min-w-[11.25rem] overflow-hidden border border-gray-100">
                                 {[{ value: 'code', label: 'Kode Kelas' }, { value: 'name', label: 'Nama Kelas' }, { value: 'students', label: 'Jumlah Siswa' }, { value: 'wali', label: 'Wali Kelas' }].map(opt => (
                                     <button
                                         key={opt.value}
@@ -252,7 +249,7 @@ const ManageClasses = () => {
                                 <div>
                                     <h3 className="text-base font-bold text-gray-900 m-0 leading-tight">{cls.name}</h3>
                                     <span
-                                        className="text-[13px] font-semibold px-2 py-0.5 rounded-md mt-1 inline-block border bg-white"
+                                        className="text-[0.8125rem] font-semibold px-2 py-0.5 rounded-md mt-1 inline-block border bg-white"
                                         style={{
                                             color: getGradeColor(cls.code),
                                             borderColor: `${getGradeColor(cls.code)}30`
@@ -295,7 +292,7 @@ const ManageClasses = () => {
                         <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
                             <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200">
                                 <Users size={14} className="text-gray-500" />
-                                <span className="text-[13px] font-semibold text-gray-600">{cls.students} Siswa</span>
+                                <span className="text-[0.8125rem] font-semibold text-gray-600">{cls.students} Siswa</span>
                             </div>
                             <div className="flex gap-2">
                                 <button

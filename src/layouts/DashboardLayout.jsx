@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.jpg';
 import Background from '../components/ui/Background';
 
@@ -12,15 +12,21 @@ const SidebarItem = ({ icon, label, to, active }) => {
                 : 'text-text-primary-light hover:bg-gray-100'
                 }`}
         >
-            <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: active ? "'FILL' 1, 'wght' 400" : "'FILL' 0, 'wght' 400" }}>{icon}</span>
+            <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: active ? "'FILL' 1, 'wght' 400" : "'FILL' 0, 'wght' 400" }}>{icon}</span>
             <span className="text-sm font-medium">{label}</span>
         </Link>
     );
 };
 
 const DashboardLayout = () => {
-    const location = useLocation();
+    const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const handleLogout = () => {
+        // Here you might want to clear auth tokens or state if you had them
+        console.log('User logged out');
+        navigate('/');
+    };
 
     return (
         <div className="bg-transparent text-text-primary-light font-display antialiased overflow-hidden h-screen flex relative">
@@ -35,7 +41,7 @@ const DashboardLayout = () => {
             )}
 
             {/* Sidebar */}
-            <aside className={`w-64 h-full bg-white/70 backdrop-blur-md border-r border-white/20 flex flex-col flex-shrink-0 transition-transform duration-300 z-50 fixed inset-y-0 left-0 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            <aside className={`w-60 h-full bg-white/70 backdrop-blur-md border-r border-white/20 flex flex-col flex-shrink-0 transition-transform duration-300 z-50 fixed inset-y-0 left-0 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}>
                 <div className="p-6 flex items-center gap-3">
                     <div
@@ -51,7 +57,7 @@ const DashboardLayout = () => {
                         onClick={() => setIsSidebarOpen(false)}
                         className="md:hidden ml-auto p-1 hover:bg-gray-100 rounded-lg text-gray-500"
                     >
-                        <span className="material-symbols-outlined text-[20px]">close</span>
+                        <span className="material-symbols-outlined text-xl">close</span>
                     </button>
                 </div>
 
@@ -94,11 +100,24 @@ const DashboardLayout = () => {
                     />
                 </nav>
 
-                <div className="p-4">
-                    <button className="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-primary-dark text-white text-sm font-bold leading-normal tracking-wide transition-colors shadow-sm">
-                        <span className="material-symbols-outlined text-[18px]">logout</span>
-                        <span className="truncate">Logout</span>
-                    </button>
+                <div className="px-4 py-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between group">
+                        <div className="flex items-center gap-3">
+                            <div className="size-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-sm">
+                                AS
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-sm font-bold text-gray-900">Admin Sekolah</span>
+                                <span className="text-xs text-gray-500">Super Admin</span>
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="size-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-red-500 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-lg">logout</span>
+                        </button>
+                    </div>
                 </div>
             </aside>
 
@@ -112,7 +131,7 @@ const DashboardLayout = () => {
                             onClick={() => setIsSidebarOpen(true)}
                             className="md:hidden p-2 -ml-2 hover:bg-gray-100/50 rounded-lg text-gray-600 transition-colors"
                         >
-                            <span className="material-symbols-outlined text-[24px]">menu</span>
+                            <span className="material-symbols-outlined text-2xl">menu</span>
                         </button>
 
                         <div className="flex items-center gap-2 text-sm">
@@ -125,7 +144,7 @@ const DashboardLayout = () => {
                     <div className="flex items-center gap-6">
                         <label className="relative hidden md:block">
                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                <span className="material-symbols-outlined text-[20px]">search</span>
+                                <span className="material-symbols-outlined text-xl">search</span>
                             </span>
                             <input
                                 className="w-64 bg-background-light border-none rounded-full py-2 pl-10 pr-4 text-sm text-text-primary-light placeholder-gray-400 focus:ring-2 focus:ring-primary/50 outline-none"
@@ -147,8 +166,8 @@ const DashboardLayout = () => {
                 </header>
 
                 {/* Content Outlet */}
-                <div className="flex-1 overflow-y-auto p-4 sm:p-8">
-                    <div className="w-full max-w-[1200px] xl:max-w-[1400px] 2xl:max-w-[1800px] mx-auto">
+                <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+                    <div className="w-full max-w-full md:max-w-screen-md lg:max-w-screen-lg xl:max-w-5xl 2xl:max-w-7xl mx-auto">
                         <Outlet />
                     </div>
                 </div>

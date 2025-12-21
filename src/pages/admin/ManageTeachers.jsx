@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
-import { Pencil, Trash2, ChevronLeft, ChevronRight, Mail, Phone, GraduationCap, User, Hash, School, ChevronDown, Check, Save } from 'lucide-react';
+import { Plus, Filter, Pencil, Trash2, Hash, User, School, UserPlus, Mars, Venus, CheckCircle2, ChevronDown, Check, GraduationCap } from 'lucide-react';
 import Modal from '../../components/ui/Modal';
 import Pagination from '../../components/ui/Pagination';
 import { useToast } from '../../context/ToastContext';
 
 const ManageTeachers = () => {
     const toast = useToast();
-    // Daftar kelas dari manajemen kelas
+    const [teachers, setTeachers] = useState([
+        { id: 1, nip: '198501012010011001', name: 'Ust. Ahmad Dahlan', classAssigned: '5A', subject: 'PAI', initials: 'AD', color: '#1dc956', gender: 'Laki-laki', status: 'PNS' },
+        { id: 2, nip: '199002022015012002', name: 'Usth. Siti Khadijah', classAssigned: '4A', subject: 'Matematika', initials: 'SK', color: '#f59e0b', gender: 'Perempuan', status: 'GTY' },
+        { id: 3, nip: '198803032012011003', name: 'Ust. Ali Imran', classAssigned: '6B', subject: 'Bahasa Arab', initials: 'AI', color: '#8b5cf6', gender: 'Laki-laki', status: 'PNS' },
+        { id: 4, nip: '199204042018012004', name: 'Usth. Fatimah Az-Zahra', classAssigned: '1A', subject: 'Tematik', initials: 'FA', color: '#3b82f6', gender: 'Perempuan', status: 'GTY' },
+        { id: 5, nip: '198705052011011005', name: 'Ust. Umar bin Khattab', classAssigned: '3B', subject: 'PJOK', initials: 'UK', color: '#ef4444', gender: 'Laki-laki', status: 'PNS' },
+        { id: 6, nip: '199506062020012006', name: 'Usth. Aisyah R.A', classAssigned: '2A', subject: 'Bahasa Inggris', initials: 'AR', color: '#06b6d4', gender: 'Perempuan', status: 'Honorer' },
+        { id: 7, nip: '198307072008011007', name: 'Ust. Khalid Basalamah', classAssigned: '5B', subject: 'Tahfidz', initials: 'KB', color: '#1dc956', gender: 'Laki-laki', status: 'GTY' },
+        { id: 8, nip: '199108082016012008', name: 'Usth. Hafshah', classAssigned: '4B', subject: 'Tematik', initials: 'HF', color: '#f59e0b', gender: 'Perempuan', status: 'PNS' },
+    ]);
+
     const availableClasses = [
         { code: '1A', name: 'Kelas 1 Abu Bakar' },
         { code: '1B', name: 'Kelas 1 Umar bin Khattab' },
@@ -21,40 +31,30 @@ const ManageTeachers = () => {
         { code: '6A', name: 'Kelas 6 Ar-Razi' },
         { code: '6B', name: 'Kelas 6 Al-Biruni' },
     ];
-
-    const [teachers, setTeachers] = useState([
-        { id: 1, niy: '19850112', name: 'Ust. Ahmad Fauzi', email: 'ahmad.fauzi@almuhajirin.sch.id', phone: '081234567890', classCode: '1A', initials: 'AF', color: '#1dc956' },
-        { id: 2, niy: '19900315', name: 'Usth. Siti Aminah', email: 'siti.aminah@almuhajirin.sch.id', phone: '081234567891', classCode: '1B', initials: 'SA', color: '#f59e0b' },
-        { id: 3, niy: '19880520', name: 'Ust. Budi Santoso', email: 'budi.santoso@almuhajirin.sch.id', phone: '081234567892', classCode: '2A', initials: 'BS', color: '#8b5cf6' },
-        { id: 4, niy: '19920708', name: 'Usth. Dewi Sartika', email: 'dewi.sartika@almuhajirin.sch.id', phone: '081234567893', classCode: '2B', initials: 'DS', color: '#3b82f6' },
-        { id: 5, niy: '19870225', name: 'Ust. Candra Wijaya', email: 'candra.wijaya@almuhajirin.sch.id', phone: '081234567894', classCode: '3A', initials: 'CW', color: '#ef4444' },
-        { id: 6, niy: '19950410', name: 'Usth. Rina Maryana', email: 'rina.maryana@almuhajirin.sch.id', phone: '081234567895', classCode: '3B', initials: 'RM', color: '#06b6d4' },
-        { id: 7, niy: '19830615', name: 'Ust. Hasan Basri', email: 'hasan.basri@almuhajirin.sch.id', phone: '081234567896', classCode: '4A', initials: 'HB', color: '#1dc956' },
-        { id: 8, niy: '19910820', name: 'Usth. Fatimah Azzahra', email: 'fatimah.azzahra@almuhajirin.sch.id', phone: '081234567897', classCode: '4B', initials: 'FA', color: '#f59e0b' },
-        { id: 9, niy: '19890105', name: 'Ust. Ridwan Kamil', email: 'ridwan.kamil@almuhajirin.sch.id', phone: '081234567898', classCode: '5A', initials: 'RK', color: '#8b5cf6' },
-        { id: 10, niy: '19940318', name: 'Usth. Maryam Jamilah', email: 'maryam.jamilah@almuhajirin.sch.id', phone: '081234567899', classCode: '5B', initials: 'MJ', color: '#3b82f6' },
-        { id: 11, niy: '19860722', name: 'Ust. Umar Faruq', email: 'umar.faruq@almuhajirin.sch.id', phone: '081234567800', classCode: '6A', initials: 'UF', color: '#ef4444' },
-        { id: 12, niy: '19930901', name: 'Usth. Aisyah Putri', email: 'aisyah.putri@almuhajirin.sch.id', phone: '081234567801', classCode: '6B', initials: 'AP', color: '#06b6d4' },
-    ]);
+    const availableSubjects = ['PAI', 'Matematika', 'Bahasa Indonesia', 'Bahasa Arab', 'Bahasa Inggris', 'IPA', 'IPS', 'PJOK', 'Seni Budaya', 'Tematik', 'Tahfidz', 'Komputer'];
+    const availableStatus = ['PNS', 'GTY', 'GTT', 'Honorer'];
 
     const [searchQuery, setSearchQuery] = useState('');
-    const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'assigned', 'unassigned'
+    const [filterStatus, setFilterStatus] = useState('Semua Status');
     const [sortBy, setSortBy] = useState('name');
     const [showSortDropdown, setShowSortDropdown] = useState(false);
-    const [showFilterDropdown, setShowFilterDropdown] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [editingTeacher, setEditingTeacher] = useState(null);
     const [showClassDropdown, setShowClassDropdown] = useState(false);
+    const [showSubjectDropdown, setShowSubjectDropdown] = useState(false);
+    const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [teacherToDelete, setTeacherToDelete] = useState(null);
+    const [editingTeacher, setEditingTeacher] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [formData, setFormData] = useState({ niy: '', name: '', email: '', phone: '', classCode: '' });
+    const [formData, setFormData] = useState({ nip: '', name: '', classAssigned: '', subject: '', gender: 'Laki-laki', status: 'GTY' });
     const [hoveredRow, setHoveredRow] = useState(null);
 
     const itemsPerPage = 5;
 
     const getClassName = (code) => {
         const cls = availableClasses.find(c => c.code === code);
-        return cls ? cls.name : '-';
+        return cls ? cls.name : code;
     };
 
     const getClassColor = (code) => {
@@ -64,24 +64,20 @@ const ManageTeachers = () => {
         return colors[grade] || '#6b7280';
     };
 
-    const filteredTeachers = teachers.filter(t => {
-        const matchSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            t.niy.includes(searchQuery) ||
-            t.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            t.phone.includes(searchQuery) ||
-            getClassName(t.classCode).toLowerCase().includes(searchQuery.toLowerCase());
-
-        const matchFilter = filterStatus === 'all' ||
-            (filterStatus === 'assigned' && t.classCode) ||
-            (filterStatus === 'unassigned' && !t.classCode);
-
-        return matchSearch && matchFilter;
-    }).sort((a, b) => {
-        if (sortBy === 'name') return a.name.localeCompare(b.name);
-        if (sortBy === 'niy') return a.niy.localeCompare(b.niy);
-        if (sortBy === 'class') return (a.classCode || '').localeCompare(b.classCode || '');
-        return 0;
-    });
+    const filteredTeachers = teachers
+        .filter(t => {
+            const matchSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                t.nip.includes(searchQuery) ||
+                t.subject.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchStatus = filterStatus === 'Semua Status' || t.status === filterStatus;
+            return matchSearch && matchStatus;
+        })
+        .sort((a, b) => {
+            if (sortBy === 'name') return a.name.localeCompare(b.name);
+            if (sortBy === 'nip') return a.nip.localeCompare(b.nip);
+            if (sortBy === 'subject') return a.subject.localeCompare(b.subject);
+            return 0;
+        });
 
     const totalPages = Math.ceil(filteredTeachers.length / itemsPerPage);
     const paginatedTeachers = filteredTeachers.slice(
@@ -91,13 +87,20 @@ const ManageTeachers = () => {
 
     const handleOpenAdd = () => {
         setEditingTeacher(null);
-        setFormData({ niy: '', name: '', email: '', phone: '', classCode: '' });
+        setFormData({ nip: '', name: '', classAssigned: '', subject: '', gender: 'Laki-laki', status: 'GTY' });
         setShowAddModal(true);
     };
 
     const handleOpenEdit = (teacher) => {
         setEditingTeacher(teacher);
-        setFormData({ niy: teacher.niy, name: teacher.name, email: teacher.email, phone: teacher.phone, classCode: teacher.classCode });
+        setFormData({
+            nip: teacher.nip,
+            name: teacher.name,
+            classAssigned: teacher.classAssigned,
+            subject: teacher.subject,
+            gender: teacher.gender || 'Laki-laki',
+            status: teacher.status || 'GTY'
+        });
         setShowAddModal(true);
     };
 
@@ -108,7 +111,7 @@ const ManageTeachers = () => {
         setIsSubmitting(true);
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        const initials = formData.name.split(' ').filter(n => n).slice(0, 2).map(n => n[0]).join('').toUpperCase();
+        const initials = formData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
         const colors = ['#1dc956', '#f59e0b', '#8b5cf6', '#3b82f6', '#ef4444', '#06b6d4'];
 
         if (editingTeacher) {
@@ -130,10 +133,7 @@ const ManageTeachers = () => {
         setIsSubmitting(false);
     };
 
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [teacherToDelete, setTeacherToDelete] = useState(null);
-
-    const handleDelete = (teacher) => {
+    const handleDeleteClick = (teacher) => {
         setTeacherToDelete(teacher);
         setShowDeleteModal(true);
     };
@@ -147,413 +147,326 @@ const ManageTeachers = () => {
         }
     };
 
+    // Custom Header for Modal
+    const ModalHeader = (
+        <div className="flex items-start gap-3">
+            <div className="p-2 bg-green-50 rounded-lg text-primary">
+                <UserPlus size={24} />
+            </div>
+            <div>
+                <h3 className="text-xl font-bold text-gray-900 leading-tight">
+                    {editingTeacher ? 'Edit Data Guru' : 'Tambah Data Guru'}
+                </h3>
+                <p className="text-sm text-gray-500 mt-1 font-normal">
+                    {editingTeacher ? 'Perbarui informasi data guru.' : 'Input data guru baru ke dalam sistem.'}
+                </p>
+            </div>
+        </div>
+    );
+
     return (
         <div className="w-full">
             {/* Breadcrumb */}
-            <p style={{ fontSize: '12px', color: '#509567', marginBottom: '8px' }}>Dashboard / Data Guru</p>
+            <p className="text-xs text-text-secondary-light mb-2">Dashboard / Data Guru</p>
 
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
-                    <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#0e1b12', marginBottom: '8px' }}>Manajemen Data Guru</h1>
-                    <p style={{ fontSize: '14px', color: '#509567' }}>Kelola data guru dan staff pengajar SD Plus 3 Al-Muhajirin.</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-text-primary-light mb-2">Manajemen Data Guru</h1>
+                    <p className="text-sm text-text-secondary-light">Kelola data guru dan staf pengajar.</p>
                 </div>
                 <button
                     onClick={handleOpenAdd}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px', backgroundColor: '#1dc956', color: 'white', borderRadius: '10px', fontWeight: '600', fontSize: '14px', border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(29, 201, 86, 0.3)', transition: 'all 0.2s' }}
+                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-semibold text-sm border-none cursor-pointer shadow-lg shadow-primary/30 hover:bg-primary-dark transition-all duration-200 self-start md:self-auto"
                 >
-                    <span style={{ fontSize: '18px' }}>+</span> Tambah Guru
+                    <span className="text-lg">+</span> Tambah Guru
                 </button>
             </div>
 
-            {/* Stats Cards - Dashboard Style */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
-                <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-white rounded-xl p-5 shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', fontWeight: '500', color: '#509567', marginBottom: '4px' }}>Total Guru</p>
-                            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0e1b12' }}>{teachers.length}</h2>
+                            <p className="text-sm font-medium text-text-secondary-light mb-1">Total Guru</p>
+                            <h2 className="text-2xl font-bold text-text-primary-light">{teachers.length}</h2>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#dcfce7', borderRadius: '8px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#1dc956' }}>groups</span>
+                        <div className="p-2 bg-green-100 rounded-lg">
+                            <span className="material-symbols-outlined text-2xl text-primary">supervisor_account</span>
                         </div>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#16a34a', fontWeight: '500' }}>Guru aktif</p>
+                    <p className="text-xs text-primary font-medium">Aktif mengajar</p>
                 </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div className="bg-white rounded-xl p-5 shadow-sm flex flex-col justify-between h-32">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <p style={{ fontSize: '14px', fontWeight: '500', color: '#509567', marginBottom: '4px' }}>Wali Kelas Aktif</p>
-                            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0e1b12' }}>{teachers.filter(t => t.classCode).length}</h2>
+                            <p className="text-sm font-medium text-text-secondary-light mb-1">Wali Kelas</p>
+                            <h2 className="text-2xl font-bold text-text-primary-light">{teachers.filter(t => t.classAssigned).length}</h2>
                         </div>
-                        <div style={{ padding: '8px', backgroundColor: '#dbeafe', borderRadius: '8px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#3b82f6' }}>school</span>
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <span className="material-symbols-outlined text-2xl text-blue-500">class</span>
                         </div>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Sudah ditugaskan</p>
+                    <p className="text-xs text-gray-500">Memegang kelas</p>
                 </div>
-                <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '120px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div>
-                            <p style={{ fontSize: '14px', fontWeight: '500', color: '#509567', marginBottom: '4px' }}>Belum Ditugaskan</p>
-                            <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#0e1b12' }}>{teachers.filter(t => !t.classCode).length}</h2>
-                        </div>
-                        <div style={{ padding: '8px', backgroundColor: '#fef3c7', borderRadius: '8px' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#f59e0b' }}>pending</span>
-                        </div>
-                    </div>
-                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Menunggu penugasan</p>
-                </div>
+
             </div>
 
-            {/* Search Bar with Filter & Sort */}
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', alignItems: 'center' }}>
-                <div style={{ flex: '1', position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <span className="material-symbols-outlined" style={{ position: 'absolute', left: '16px', color: '#9ca3af', fontSize: '20px' }}>search</span>
+            {/* Search and Filters */}
+            <div className="flex flex-col md:flex-row gap-3 mb-6">
+                <div className="flex-1 relative flex items-center">
+                    <span className="material-symbols-outlined absolute left-3 text-gray-400 text-xl">search</span>
                     <input
                         type="text"
-                        placeholder="Cari nama guru, NIY, atau kelas..."
+                        placeholder="Cari nama guru atau NIP..."
                         value={searchQuery}
                         onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                        style={{ width: '100%', paddingLeft: '48px', paddingRight: '16px', paddingTop: '14px', paddingBottom: '14px', backgroundColor: 'white', borderRadius: '8px', border: 'none', fontSize: '14px', outline: 'none' }}
+                        className="w-full pl-10 pr-4 py-3 bg-white rounded-lg border-none text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-gray-700"
                     />
                 </div>
-                <div style={{ position: 'relative' }}>
-                    <button
-                        onClick={() => { setShowFilterDropdown(!showFilterDropdown); setShowSortDropdown(false); }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: filterStatus !== 'all' ? '#dcfce7' : 'white', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', color: filterStatus !== 'all' ? '#1dc956' : '#374151', border: filterStatus !== 'all' ? '1px solid #1dc956' : '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}
-                    >
-                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>filter_list</span>
-                        Filter {filterStatus !== 'all' && `(${filterStatus === 'assigned' ? 'Wali' : 'Belum'})`}
-                    </button>
-                    {showFilterDropdown && (
-                        <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '8px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '180px', overflow: 'hidden' }}>
-                            {[{ value: 'all', label: 'Semua Guru' }, { value: 'assigned', label: 'Wali Kelas' }, { value: 'unassigned', label: 'Belum Ditugaskan' }].map(opt => (
-                                <button
-                                    key={opt.value}
-                                    onClick={() => { setFilterStatus(opt.value); setShowFilterDropdown(false); }}
-                                    style={{ width: '100%', padding: '10px 16px', textAlign: 'left', backgroundColor: filterStatus === opt.value ? '#dcfce7' : 'white', border: 'none', cursor: 'pointer', fontSize: '14px', color: filterStatus === opt.value ? '#1dc956' : '#374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                                >
-                                    {opt.label}
-                                    {filterStatus === opt.value && <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#1dc956' }}>check</span>}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
-                {/* Sort Button */}
-                <div style={{ position: 'relative' }}>
-                    <button
-                        onClick={() => { setShowSortDropdown(!showSortDropdown); setShowFilterDropdown(false); }}
-                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', backgroundColor: 'white', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}
-                    >
-                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>swap_vert</span>
-                        Urutkan
-                    </button>
-                    {showSortDropdown && (
-                        <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, minWidth: '180px', overflow: 'hidden' }}>
-                            {[{ value: 'name', label: 'Nama' }, { value: 'niy', label: 'NIY' }, { value: 'class', label: 'Kelas' }].map(opt => (
-                                <button
-                                    key={opt.value}
-                                    onClick={() => { setSortBy(opt.value); setShowSortDropdown(false); }}
-                                    style={{ width: '100%', padding: '10px 16px', textAlign: 'left', backgroundColor: sortBy === opt.value ? '#dcfce7' : 'white', border: 'none', cursor: 'pointer', fontSize: '14px', color: sortBy === opt.value ? '#1dc956' : '#374151', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                                >
-                                    {opt.label}
-                                    {sortBy === opt.value && <span className="material-symbols-outlined" style={{ fontSize: '16px', color: '#1dc956' }}>check</span>}
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+
+                    <div className="relative shrink-0">
+                        <button
+                            onClick={() => { setShowSortDropdown(!showSortDropdown); }}
+                            className="flex items-center gap-2 px-5 py-3 bg-white rounded-xl text-sm font-semibold cursor-pointer text-gray-700 border border-gray-200 shadow-sm hover:bg-gray-50 transition-all duration-200"
+                        >
+                            <span className="material-symbols-outlined text-xl">swap_vert</span>
+                            Urutkan
+                        </button>
+                        {showSortDropdown && (
+                            <div className="absolute top-full right-0 md:left-auto md:right-0 mt-2 bg-white rounded-xl shadow-lg z-20 min-w-[11.25rem] overflow-hidden border border-gray-100">
+                                {[{ value: 'name', label: 'Nama Guru' }, { value: 'nip', label: 'NIP' }].map(opt => (
+                                    <button
+                                        key={opt.value}
+                                        onClick={() => { setSortBy(opt.value); setShowSortDropdown(false); }}
+                                        className={`w-full px-4 py-2.5 text-left border-none cursor-pointer text-sm flex items-center justify-between transition-colors ${sortBy === opt.value
+                                            ? 'bg-green-50 text-primary font-medium'
+                                            : 'bg-white text-gray-700 hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        {opt.label}
+                                        {sortBy === opt.value && <span className="material-symbols-outlined text-sm text-primary">check</span>}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
-            {/* Card-based Table */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {paginatedTeachers.map((teacher, index) => (
+            {/* Teachers List */}
+            <div className="flex flex-col gap-3">
+                {paginatedTeachers.map((teacher) => (
                     <div
                         key={teacher.id}
                         onMouseEnter={() => setHoveredRow(teacher.id)}
                         onMouseLeave={() => setHoveredRow(null)}
-                        style={{
-                            backgroundColor: 'white',
-                            borderRadius: '12px',
-                            padding: '16px 20px',
-                            border: hoveredRow === teacher.id ? '2px solid #1dc956' : '2px solid transparent',
-                            boxShadow: hoveredRow === teacher.id ? '0 8px 24px rgba(29, 201, 86, 0.15)' : '0 2px 8px rgba(0,0,0,0.04)',
-                            transition: 'all 0.2s ease',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between'
-                        }}
+                        className={`bg-white rounded-xl p-4 border transition-all duration-200 flex flex-col md:flex-row items-start md:items-center gap-4 ${hoveredRow === teacher.id ? 'border-primary shadow-lg shadow-primary/10' : 'border-transparent shadow-sm'
+                            }`}
                     >
-                        {/* Left Group: NIY + Name + Contact */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-                            {/* NIY */}
-                            <div style={{ width: '70px', flexShrink: 0 }}>
-                                <p style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>NIY</p>
-                                <p style={{ fontSize: '14px', fontWeight: '700', color: '#0e1b12', fontFamily: 'monospace' }}>{teacher.niy}</p>
-                            </div>
+                        {/* 1. NIP */}
+                        <div className="w-full md:w-auto md:min-w-[7.5rem] shrink-0">
+                            <p className="text-[0.6875rem] text-gray-400 mb-0.5 uppercase tracking-wider">NIP</p>
+                            <p className="text-sm font-bold text-gray-900 font-mono tracking-tight">{teacher.nip}</p>
+                        </div>
 
-                            {/* Name with Avatar */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '250px', flexShrink: 0 }}>
-                                <div style={{
-                                    width: '44px',
-                                    height: '44px',
-                                    borderRadius: '10px',
-                                    backgroundColor: teacher.color,
-                                    color: 'white',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontWeight: 'bold',
-                                    fontSize: '15px',
-                                    flexShrink: 0
-                                }}>
-                                    {teacher.initials}
-                                </div>
-                                <div style={{ minWidth: 0 }}>
-                                    <p style={{ fontWeight: '600', color: '#0e1b12', fontSize: '14px', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{teacher.name}</p>
-                                    <p style={{ fontSize: '12px', color: '#6b7280' }}>Guru Pengajar</p>
-                                </div>
+                        {/* 2. Name + Avatar + Status */}
+                        <div className="flex items-center gap-3 w-full md:w-[17.5rem] shrink-0">
+                            <div
+                                className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white text-[0.9375rem] shrink-0"
+                                style={{ backgroundColor: teacher.color }}
+                            >
+                                {teacher.initials}
                             </div>
-
-                            {/* Contact Info */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '200px', flexShrink: 0, paddingLeft: '24px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <Mail size={12} color="#9ca3af" />
-                                    <span style={{ fontSize: '12px', color: '#6b7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{teacher.email}</span>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <Phone size={12} color="#9ca3af" />
-                                    <span style={{ fontSize: '12px', color: '#0e1b12', fontWeight: '500' }}>{teacher.phone}</span>
+                            <div className="min-w-0">
+                                <p className="font-semibold text-gray-900 text-sm truncate">{teacher.name}</p>
+                                <div className="mt-1 flex items-center gap-2">
+                                    <span className={`inline-flex items-center gap-1 text-[0.6875rem] px-1.5 py-0.5 rounded-md font-medium text-gray-500 bg-gray-50`}>
+                                        {teacher.gender}
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Right Group: Class + Status + Actions */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            {/* Class Badge */}
-                            <div style={{ width: '220px', flexShrink: 0 }}>
-                                <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '6px',
-                                    width: '100%',
-                                    padding: '6px 10px',
-                                    backgroundColor: `${getClassColor(teacher.classCode)}15`,
-                                    borderRadius: '6px',
-                                    border: `1px solid ${getClassColor(teacher.classCode)}25`
-                                }}>
-                                    <GraduationCap size={14} color={getClassColor(teacher.classCode)} style={{ flexShrink: 0 }} />
-                                    <span style={{ color: getClassColor(teacher.classCode), fontWeight: '600', fontSize: '12px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {teacher.classCode ? getClassName(teacher.classCode) : 'Belum Ditugaskan'}
+                        {/* 3. Class/Subject Info */}
+                        <div className="w-full md:w-[15.625rem] shrink-0 flex flex-col gap-1">
+                            {teacher.classAssigned && (
+                                <div className="flex items-center gap-2">
+                                    <div className="p-1 bg-green-50 rounded text-primary">
+                                        <GraduationCap size={14} />
+                                    </div>
+                                    <span className="text-[0.8125rem] font-semibold text-gray-700 truncate">
+                                        Wali Kelas {getClassName(teacher.classAssigned)}
                                     </span>
                                 </div>
-                            </div>
+                            )}
 
-                            {/* Status */}
-                            <div style={{ width: '80px', flexShrink: 0 }}>
-                                <span style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    padding: '4px 10px',
-                                    backgroundColor: teacher.classCode ? '#dcfce7' : '#fef3c7',
-                                    color: teacher.classCode ? '#16a34a' : '#d97706',
-                                    borderRadius: '12px',
-                                    fontSize: '11px',
-                                    fontWeight: '600'
-                                }}>
-                                    <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: teacher.classCode ? '#16a34a' : '#d97706' }}></span>
-                                    {teacher.classCode ? 'Aktif' : 'Pending'}
-                                </span>
-                            </div>
+                        </div>
 
-                            {/* Actions */}
-                            <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-                                <button
-                                    onClick={() => handleOpenEdit(teacher)}
-                                    className="p-2 rounded-lg border-none cursor-pointer transition-all duration-200 bg-gray-100 text-gray-500 hover:bg-[#1dc956] hover:text-white shadow-sm hover:shadow-md hover:shadow-green-500/20"
-                                >
-                                    <Pencil size={16} />
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(teacher)}
-                                    className="p-2 rounded-lg border-none cursor-pointer transition-all duration-200 bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 shadow-sm hover:shadow-md hover:shadow-red-500/20"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
+                        {/* Spacer */}
+                        <div className="hidden md:block flex-1"></div>
+
+                        {/* 4. Actions */}
+                        <div className="flex gap-2 w-full md:w-auto justify-end">
+                            <button
+                                onClick={() => handleOpenEdit(teacher)}
+                                className="p-2 rounded-lg border-none cursor-pointer transition-all duration-200 bg-gray-100 text-gray-500 hover:bg-[#1dc956] hover:text-white shadow-sm hover:shadow-md hover:shadow-green-500/20"
+                            >
+                                <Pencil size={16} />
+                            </button>
+                            <button
+                                onClick={() => handleDeleteClick(teacher)}
+                                className="p-2 rounded-lg border-none cursor-pointer transition-all duration-200 bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 shadow-sm hover:shadow-md hover:shadow-red-500/20"
+                            >
+                                <Trash2 size={16} />
+                            </button>
                         </div>
                     </div>
                 ))}
             </div>
 
             {/* Pagination Component */}
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                totalItems={filteredTeachers.length}
-                itemsPerPage={itemsPerPage}
-            />
+            <div style={{ marginTop: '20px', borderRadius: '12px', overflow: 'hidden' }}>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={filteredTeachers.length}
+                    itemsPerPage={itemsPerPage}
+                />
+            </div>
 
             {/* Add/Edit Modal */}
-            <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)} title={editingTeacher ? 'Edit Data Guru' : 'Tambah Guru Baru'}>
+            <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)} title={ModalHeader}>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-                    <div className="space-y-4">
-                        {/* Nama Guru */}
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-800 mb-2">Nama Guru</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <div className="p-1 bg-green-100 rounded-full">
-                                        <User size={14} className="text-primary" />
-                                    </div>
-                                </div>
-                                <input
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="Masukkan nama lengkap guru"
-                                    className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white border hover:border-green-200 border-transparent transition-all placeholder-gray-400 text-gray-900 font-medium"
-                                    required
-                                />
-                            </div>
+                    {/* Form Fields */}
+                    <div>
+                        <div className="flex items-center gap-2 mb-4">
+                            <h4 className="text-sm font-bold text-gray-500 tracking-wider uppercase flex items-center gap-2">
+                                <span className="material-symbols-outlined text-lg">badge</span>
+                                Informasi Guru
+                            </h4>
                         </div>
-
-                        {/* NIY */}
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-800 mb-2">NIY (Nomor Induk Yayasan)</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <div className="p-1 bg-green-100 rounded-lg">
-                                        <Hash size={14} className="text-primary" />
+                        <div className="space-y-4">
+                            {/* Nama Lengkap */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-800 mb-2">Nama Lengkap</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <div className="p-1 bg-green-100 rounded-full">
+                                            <User size={14} className="text-primary" />
+                                        </div>
                                     </div>
+                                    <input
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        placeholder="Contoh: Ust. Ahmad Dahlan"
+                                        className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white border hover:border-green-200 border-transparent transition-all placeholder-gray-400 text-gray-900 font-medium"
+                                        required
+                                    />
                                 </div>
-                                <input
-                                    type="text"
-                                    value={formData.niy}
-                                    onChange={(e) => setFormData({ ...formData, niy: e.target.value })}
-                                    placeholder="Contoh: 19850112"
-                                    className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white border hover:border-green-200 border-transparent transition-all placeholder-gray-400 text-gray-900 font-medium"
-                                    required
-                                />
                             </div>
-                        </div>
 
-                        {/* Email */}
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-800 mb-2">Email</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <div className="p-1 bg-green-100 rounded-lg">
-                                        <Mail size={14} className="text-primary" />
-                                    </div>
-                                </div>
-                                <input
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    placeholder="Contoh: nama@almuhajirin.sch.id"
-                                    className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white border hover:border-green-200 border-transparent transition-all placeholder-gray-400 text-gray-900 font-medium"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        {/* Nomor HP */}
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-800 mb-2">Nomor HP</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <div className="p-1 bg-green-100 rounded-lg">
-                                        <Phone size={14} className="text-primary" />
-                                    </div>
-                                </div>
-                                <input
-                                    type="tel"
-                                    value={formData.phone}
-                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                    placeholder="Contoh: 081234567890"
-                                    className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white border hover:border-green-200 border-transparent transition-all placeholder-gray-400 text-gray-900 font-medium"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        {/* Kelas yang Dipegang */}
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-800 mb-2">Kelas yang Dipegang</label>
-                            <div className={`relative ${showClassDropdown ? 'z-50' : ''}`}>
-                                <div
-                                    onClick={() => setShowClassDropdown(!showClassDropdown)}
-                                    className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl text-sm border hover:border-green-200 border-transparent transition-all cursor-pointer text-gray-900 font-medium flex items-center justify-between"
-                                >
-                                    <div className="flex items-center gap-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* NIP */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-800 mb-2">NIP</label>
+                                    <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <div className="p-1 bg-green-100 rounded-lg">
-                                                <GraduationCap size={14} className="text-primary" />
+                                                <Hash size={14} className="text-primary" />
                                             </div>
                                         </div>
-                                        <span className={`${!formData.classCode ? 'text-gray-400' : 'text-gray-900'}`}>
-                                            {formData.classCode
-                                                ? availableClasses.find(c => c.code === formData.classCode)?.name
-                                                    ? `${formData.classCode} - ${availableClasses.find(c => c.code === formData.classCode).name}`
-                                                    : formData.classCode
-                                                : "Pilih Kelas (Opsional)"}
-                                        </span>
+                                        <input
+                                            type="text"
+                                            value={formData.nip}
+                                            onChange={(e) => setFormData({ ...formData, nip: e.target.value })}
+                                            placeholder="Contoh: 1985..."
+                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white border hover:border-green-200 border-transparent transition-all placeholder-gray-400 text-gray-900 font-medium"
+                                            required
+                                        />
                                     </div>
-                                    <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${showClassDropdown ? 'rotate-180' : ''}`} />
                                 </div>
 
-                                {/* Custom Dropdown Menu */}
-                                {showClassDropdown && (
-                                    <div className="absolute z-50 left-0 right-0 mt-2 bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 max-h-60 overflow-y-auto py-2">
+                                {/* Wali Kelas (Optional) */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-800 mb-2">Wali Kelas (Opsional)</label>
+                                    <div className={`relative ${showClassDropdown ? 'z-50' : ''}`}>
                                         <div
-                                            onClick={() => {
-                                                setFormData({ ...formData, classCode: '' });
-                                                setShowClassDropdown(false);
-                                            }}
-                                            className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 transition-colors border-b border-gray-50 text-gray-500"
+                                            onClick={() => setShowClassDropdown(!showClassDropdown)}
+                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl text-sm border hover:border-green-200 border-transparent transition-all cursor-pointer text-gray-900 font-medium flex items-center justify-between"
                                         >
-                                            Tidak Ada
-                                        </div>
-                                        {availableClasses.map(cls => (
-                                            <div
-                                                key={cls.code}
-                                                onClick={() => {
-                                                    setFormData({ ...formData, classCode: cls.code });
-                                                    setShowClassDropdown(false);
-                                                }}
-                                                className="px-4 py-3 hover:bg-green-50 cursor-pointer flex items-center gap-3 transition-colors border-b border-gray-50 last:border-none"
-                                            >
-                                                <div className={`p-2 rounded-full flex-shrink-0 ${formData.classCode === cls.code ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
-                                                    <GraduationCap size={16} />
+                                            <div className="flex items-center gap-2">
+                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <div className="p-1 bg-green-100 rounded-lg">
+                                                        <GraduationCap size={14} className="text-primary" />
+                                                    </div>
                                                 </div>
-                                                <div className="flex-1">
-                                                    <p className={`text-sm font-bold ${formData.classCode === cls.code ? 'text-green-700' : 'text-gray-900'}`}>
-                                                        {cls.code}
-                                                    </p>
-                                                    <p className="text-xs text-gray-500 font-medium">{cls.name}</p>
-                                                </div>
-                                                {formData.classCode === cls.code && (
-                                                    <Check size={18} className="text-green-600" />
-                                                )}
+                                                <span className={`${!formData.classAssigned ? 'text-gray-400' : 'text-gray-900'}`}>
+                                                    {formData.classAssigned || "Bukan Wali Kelas"}
+                                                </span>
                                             </div>
-                                        ))}
+                                            <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${showClassDropdown ? 'rotate-180' : ''}`} />
+                                        </div>
+                                        {showClassDropdown && (
+                                            <div className="absolute z-50 left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 max-h-60 overflow-y-auto py-2">
+                                                <div
+                                                    onClick={() => { setFormData({ ...formData, classAssigned: '' }); setShowClassDropdown(false); }}
+                                                    className="px-4 py-3 hover:bg-green-50 cursor-pointer flex items-center gap-3 transition-colors border-b border-gray-50"
+                                                >
+                                                    <span className="text-sm font-medium text-gray-500 italic">Tidak menjabat wali kelas</span>
+                                                </div>
+                                                {availableClasses.map(cls => (
+                                                    <div
+                                                        key={cls.code}
+                                                        onClick={() => { setFormData({ ...formData, classAssigned: cls.code }); setShowClassDropdown(false); }}
+                                                        className="px-4 py-3 hover:bg-green-50 cursor-pointer flex items-center gap-3 transition-colors"
+                                                    >
+                                                        <span className="text-sm font-medium text-gray-900">{cls.code} - {cls.name}</span>
+                                                        {formData.classAssigned === cls.code && <Check size={16} className="text-green-600" />}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                </div>
+                            </div>
+
+                            {/* Gender */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-800 mb-2">Jenis Kelamin</label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, gender: 'Laki-laki' })}
+                                        className={`flex items-center justify-center gap-3 p-3 rounded-xl border transition-all ${formData.gender === 'Laki-laki'
+                                            ? 'bg-green-50 border-primary text-primary ring-1 ring-primary'
+                                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        <Mars size={18} />
+                                        <span className="font-semibold text-sm">Laki-laki</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, gender: 'Perempuan' })}
+                                        className={`flex items-center justify-center gap-3 p-3 rounded-xl border transition-all ${formData.gender === 'Perempuan'
+                                            ? 'bg-green-50 border-primary text-primary ring-1 ring-primary'
+                                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        <Venus size={18} />
+                                        <span className="font-semibold text-sm">Perempuan</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Divider */}
-                    <div className="h-px bg-gray-100 my-2"></div>
-
                     {/* Footer Actions */}
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 pt-4">
                         <button
                             type="button"
                             onClick={() => setShowAddModal(false)}
@@ -567,17 +480,7 @@ const ManageTeachers = () => {
                             className={`flex-1 py-3 px-4 border-none rounded-xl text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all cursor-pointer flex items-center justify-center gap-2 ${isSubmitting ? 'bg-green-400 cursor-not-allowed' : 'bg-primary hover:bg-primary-dark'
                                 }`}
                         >
-                            {isSubmitting ? (
-                                <>
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                <>
-                                    <Save size={18} />
-                                    Simpan Guru
-                                </>
-                            )}
+                            {isSubmitting ? 'Menyimpan...' : 'Simpan'}
                         </button>
                     </div>
                 </form>
@@ -616,7 +519,7 @@ const ManageTeachers = () => {
                         </button>
                         <button
                             onClick={confirmDelete}
-                            className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-600/20 transition-all cursor-pointer flex items-center gap-2"
+                            className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-200 transition-all cursor-pointer flex items-center gap-2"
                         >
                             <Trash2 size={18} />
                             Hapus Data
@@ -624,7 +527,7 @@ const ManageTeachers = () => {
                     </div>
                 </div>
             </Modal>
-        </div>
+        </div >
     );
 };
 
