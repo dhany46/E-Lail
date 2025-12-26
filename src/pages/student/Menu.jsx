@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import InputDesktop from './input/InputDesktop';
-import InputMobile from './input/InputMobile';
+import MenuDesktop from './menu/MenuDesktop';
+import MenuMobile from './menu/MenuMobile';
 
 // Force HMR update
-const Input = () => {
+const Menu = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
     useEffect(() => {
@@ -15,7 +15,7 @@ const Input = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    return isMobile ? <InputMobile /> : <InputDesktop />;
+    return isMobile ? <MenuMobile /> : <MenuDesktop />;
 };
 
-export default Input;
+export default Menu;

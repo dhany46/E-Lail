@@ -24,7 +24,7 @@ const Background = () => {
     `;
 
     return (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 bg-slate-50">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10 bg-slate-50 hidden md:block">
             <style>{floatAnimation}</style>
 
             {/* Modern Gradient Blobs */}

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import InputDesktop from './input/InputDesktop';
-import InputMobile from './input/InputMobile';
+import LeaderboardDesktop from './leaderboard/LeaderboardDesktop';
+import LeaderboardMobile from './leaderboard/LeaderboardMobile';
 
-// Force HMR update
-const Input = () => {
+const Leaderboard = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
     useEffect(() => {
@@ -15,7 +14,7 @@ const Input = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    return isMobile ? <InputMobile /> : <InputDesktop />;
+    return isMobile ? <LeaderboardMobile /> : <LeaderboardDesktop />;
 };
 
-export default Input;
+export default Leaderboard;

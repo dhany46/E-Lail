@@ -15,7 +15,9 @@ import StudentLayout from './layouts/StudentLayout';
 import StudentDashboard from './pages/student/Dashboard';
 import StudentHistory from './pages/student/History';
 import StudentInput from './pages/student/Input';
+import StudentMenu from './pages/student/Menu';
 import StudentProfile from './pages/student/Profile';
+import StudentLeaderboard from './pages/student/Leaderboard';
 import TeacherLayout from './layouts/TeacherLayout';
 import TeacherDashboard from './pages/teacher/Dashboard';
 import TeacherReports from './pages/teacher/ReportManagement';
@@ -46,8 +48,12 @@ function App() {
             <Route path="dashboard" element={<StudentDashboard />} />
             <Route path="input" element={<StudentInput />} />
             <Route path="history" element={<StudentHistory />} />
-            <Route path="leaderboard" element={<PagePlaceholder title="Peringkat Siswa" />} />
+            <Route path="leaderboard" element={<StudentLeaderboard />} />
+            <Route path="menu" element={<StudentMenu />} />
             <Route path="profile" element={<StudentProfile />} />
+            <Route path="progress" element={<PagePlaceholder title="Misi Harian" />} />
+            <Route path="pending" element={<PagePlaceholder title="Menunggu Verifikasi" />} />
+            <Route path="notes" element={<PagePlaceholder title="Catatan Guru" />} />
           </Route>
 
           {/* Teacher Routes */}
