@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // --- Sub-Components ---
 
@@ -276,58 +276,67 @@ const TeacherNotes = ({ note }) => {
 };
 
 // Menu Cards Component
-const MenuCards = ({ stats }) => {
+const MenuCards = ({ stats, activities }) => {
     const navigate = useNavigate();
 
     // Fallback stats if undefined
     const safeStats = stats || { todayCount: 4, targetDaily: 5 }; // Defaulting to 4/5 for demo based on screenshot
     const progressPercentage = Math.min((safeStats.todayCount / safeStats.targetDaily) * 100, 100);
 
+    // Calculate pending verification count
+    const pendingCount = activities?.filter(a => a.status === 'Menunggu').length || 0;
+
     const cards = [
         {
-            title: "Lapor Ibadah",
-            subtitle: "Catat kegiatanmu",
-            icon: "📝", // Emoji back for fun
+            title: "Input Ibadah",
+            subtitle: "Catat amalmu yuk! ✨",
+            icon: "📝",
             path: "/student/input",
-            bg: "bg-gradient-to-br from-amber-400 to-orange-500", // Adjusted for "smooth light" feel
+            bg: "bg-gradient-to-br from-amber-400 to-orange-500",
             shadow: "shadow-orange-200",
             delay: "0s"
         },
         {
-            title: "Riwayat",
-            // subtitle: "Lihat catatan lalu",
-            subtitle: `${safeStats.todayCount}/${safeStats.targetDaily} Selesai • ${Math.round(progressPercentage)}%`, // New progress subtitle
-            icon: "📚",
+            title: "Target Harian",
+            subtitle: `${safeStats.todayCount}/${safeStats.targetDaily} Tuntas • ${Math.round(progressPercentage)}%`,
+            icon: `${safeStats.todayCount}/${safeStats.targetDaily}`,
+            isCount: true,
             path: "/student/history",
             bg: "bg-gradient-to-br from-blue-400 to-blue-600",
             shadow: "shadow-blue-200",
             delay: "0.1s",
-            hasProgress: true, // Flag to render progress bar
+            hasProgress: true,
             progress: progressPercentage
         },
         {
-            title: "Peringkat",
-            subtitle: "Juara minggu ini",
-            icon: "🏆",
+            title: "Leaderboard",
+            subtitle: "Siapa paling rajin? 🏆",
+            icon: "👑",
             path: "/student/leaderboard",
             bg: "bg-gradient-to-br from-purple-400 to-purple-600",
             shadow: "shadow-purple-200",
             delay: "0.2s"
         },
         {
-            title: "Jadwal Sholat",
-            subtitle: "Waktu ibadah",
-            icon: "🕌",
-            path: "/student/input",
-            bg: "bg-gradient-to-br from-teal-300 to-teal-500",
-            shadow: "shadow-teal-200",
+            title: "Verifikasi",
+            subtitle: "Menunggu dicek guru 🧐",
+            icon: pendingCount, // Display count as icon
+            isCount: true,
+            path: "/student/history",
+            bg: "bg-gradient-to-br from-emerald-400 to-emerald-600",
+            shadow: "shadow-emerald-200",
             delay: "0.3s"
         }
     ];
 
     return (
-        <div className="mt-6 mb-4 px-1">
-            <h3 className="text-sm font-bold text-gray-800 mb-3 ml-1">Menu Utama</h3>
+        <div className="mt-6 mb-4">
+            <div className="flex items-center gap-2 mb-4">
+                <div className="size-8 rounded-full bg-blue-100/50 text-blue-600 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-lg">category</span>
+                </div>
+                <h3 className="text-base font-bold text-slate-800">Menu Utama</h3>
+            </div>
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {cards.map((card, idx) => (
                     <button
@@ -345,8 +354,8 @@ const MenuCards = ({ stats }) => {
 
                         <div className="relative z-10 w-full">
                             {/* Bouncy Icon Container */}
-                            <div className="size-10 sm:size-12 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center mb-4 sm:mb-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] border border-white/20 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300">
-                                <span className="text-xl sm:text-2xl filter drop-shadow-sm">{card.icon}</span>
+                            <div className={`size-10 sm:size-12 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center mb-4 sm:mb-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] border border-white/20 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300 ${card.isCount ? 'text-white font-black' : ''} ${card.isCount && card.icon.toString().length > 2 ? 'text-lg sm:text-xl' : card.isCount ? 'text-2xl sm:text-3xl' : ''}`}>
+                                <span className={`${!card.isCount ? 'text-xl sm:text-2xl filter drop-shadow-sm' : ''}`}>{card.icon}</span>
                             </div>
                             <h4 className="font-extrabold text-base sm:text-lg text-white mb-0.5 leading-tight tracking-wide drop-shadow-md">{card.title}</h4>
                             <p className="text-[10px] sm:text-xs font-semibold text-white/90">{card.subtitle}</p>
@@ -370,33 +379,72 @@ const MenuCards = ({ stats }) => {
 
 // Activity List Component
 const ActivityList = ({ activities }) => {
-    // Show only last 5 activities
-    const recentActivities = activities?.slice(0, 5) || [];
+    // Show only last 8 activities
+    const recentActivities = activities?.slice(0, 8) || [];
+
+    const getStatusConfig = (status) => {
+        if (status === 'Terverifikasi') {
+            return {
+                icon: 'check_circle',
+                color: 'text-emerald-500',
+                bg: 'bg-emerald-50',
+                label: 'Terverifikasi'
+            };
+        }
+        return {
+            icon: 'hourglass_top',
+            color: 'text-amber-500',
+            bg: 'bg-amber-50',
+            label: 'Menunggu'
+        };
+    };
 
     return (
         <div className="space-y-3">
             {recentActivities.length > 0 ? (
-                recentActivities.map((activity, idx) => (
-                    <div key={idx} className="bg-white rounded-2xl p-4 flex items-center justify-between shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-slate-50 animate-fade-in-up"
-                        style={{ animationDelay: `${0.1 * idx}s` }}
-                    >
-                        <div className="flex items-center gap-3 overflow-hidden">
-                            <div className="size-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg shrink-0">
-                                <span className="material-symbols-outlined text-xl">{activity.icon || 'history'}</span>
+                recentActivities.map((activity, idx) => {
+                    const statusConfig = getStatusConfig(activity.status);
+                    return (
+                        <div key={idx} className="bg-white rounded-[1.2rem] p-4 flex items-center justify-between shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-slate-50 animate-fade-in-up group hover:bg-gray-50/50 transition-colors"
+                            style={{ animationDelay: `${0.1 * idx}s` }}
+                        >
+                            <div className="flex items-center gap-4 overflow-hidden">
+                                {/* Activity Icon */}
+                                <div className="size-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                    <span className="material-symbols-outlined text-[1.4rem]">
+                                        {activity.icon || 'history'}
+                                    </span>
+                                </div>
+
+                                {/* Text Content */}
+                                <div className="min-w-0 flex-1">
+                                    <h4 className="text-[13px] font-bold text-gray-800 line-clamp-1 mb-0.5 leading-tight">
+                                        {activity.title}
+                                    </h4>
+                                    <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
+                                        <span>{activity.time}</span>
+                                        <span className="text-gray-300">•</span>
+                                        <span>Hari ini</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="min-w-0 flex-1">
-                                <h4 className="text-sm font-bold text-gray-800 line-clamp-1">{activity.title}</h4>
-                                <p className="text-[10px] text-gray-400 font-medium truncate">{activity.time} • {activity.status}</p>
+
+                            {/* Right Side: Points & Status */}
+                            <div className="flex flex-col items-end gap-1 shrink-0 ml-2">
+                                <div className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full shadow-sm border border-emerald-100/50">
+                                    +{activity.points}
+                                </div>
+                                <div className={`flex items-center gap-0.5 text-[9px] font-medium ${statusConfig.color}`}>
+                                    <span className="material-symbols-outlined text-[10px]">{statusConfig.icon}</span>
+                                    <span>{statusConfig.label}</span>
+                                </div>
                             </div>
                         </div>
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full shrink-0 ml-2">
-                            +{activity.points}
-                        </span>
-                    </div>
-                ))
+                    );
+                })
             ) : (
                 <div className="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                    <span className="material-symbols-outlined text-2xl mb-2 opacity-50 text-gray-400">event_note</span>
+                    <span className="material-symbols-outlined text-3xl mb-2 opacity-30 text-gray-400">event_note</span>
                     <p className="text-xs text-gray-400 font-medium">Belum ada aktivitas hari ini</p>
                 </div>
             )}
@@ -404,21 +452,14 @@ const ActivityList = ({ activities }) => {
     );
 };
 
-const DashboardMobile = ({ activities, stats, studentInfo }) => {
-    // Mock teacher note (di sini agar bisa dipass ke HeaderMobile dan TeacherNotes)
-    const mockTeacherNote = {
-        teacherName: 'Ustadz Ahmad',
-        teacherInitials: 'UA',
-        message: 'Alhamdulillah, semangat belajar dan beribadah terus ya! Jangan lupa hafalan Juz 30 minggu depan 📖',
-        date: 'Hari ini',
-        isNew: true
-    };
+const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
+    const navigate = useNavigate();
 
     // Filter verified activities for notifications
     const verifiedActivities = activities?.filter(a => a.status === 'Terverifikasi') || [];
 
     return (
-        <div className="min-h-screen bg-[#EEF7FF] font-sans pb-32 overflow-x-hidden">
+        <div className="min-h-screen bg-[#EEF7FF] font-sans pb-20 overflow-x-hidden">
             {/* Smooth Background Gradient Decoration */}
             <div className="fixed top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
@@ -426,12 +467,12 @@ const DashboardMobile = ({ activities, stats, studentInfo }) => {
             <div className="px-6 pt-8 pb-6 sticky top-0 bg-[#EEF7FF]/95 backdrop-blur-xl z-30 transition-all duration-300 animate-fade-in-up border-b border-blue-200 shadow-sm" style={{ animationDuration: '0.6s' }}>
                 <HeaderMobile
                     student={studentInfo}
-                    teacherNote={mockTeacherNote}
+                    teacherNote={teacherNote}
                     verifiedActivities={verifiedActivities}
                 />
             </div>
 
-            <div className="px-6 space-y-5 relative z-10 pt-2">
+            <div className="px-6 space-y-8 relative z-10 pt-4">
                 {/* 1. Points Card (Delay 0.1s) */}
                 <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                     <PointsCard totalPoints={stats?.totalPoints || 0} />
@@ -439,20 +480,31 @@ const DashboardMobile = ({ activities, stats, studentInfo }) => {
 
                 {/* 2. Teacher Notes (Delay 0.2s) - Moved up as Progress is now in Menu */}
                 <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <TeacherNotes note={mockTeacherNote} />
+                    <TeacherNotes note={teacherNote} />
                 </div>
 
                 {/* 3. Menu Cards (Delay 0.3s) - Now contains Progress in Riwayat */}
                 <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <MenuCards stats={stats} />
+                    <MenuCards stats={stats} activities={activities} />
                 </div>
 
                 {/* 4. Recent Activity (Delay 0.4s) */}
                 <div className="animate-fade-in-up opacity-0 pb-6" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.9s' }}>
-                    <h3 className="text-sm font-bold text-gray-800 mb-4 ml-1 flex items-center gap-2">
-                        <span>Aktivitas Terakhir</span>
-                        <div className="h-px w-full bg-gray-100 flex-1"></div>
-                    </h3>
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                            <div className="size-8 rounded-full bg-emerald-100/50 text-emerald-600 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-lg">history</span>
+                            </div>
+                            <h3 className="text-base font-bold text-slate-800">Aktivitas Terakhir</h3>
+                        </div>
+                        <button
+                            onClick={() => navigate('/student/history')}
+                            className="text-xs font-bold text-blue-500 hover:text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1"
+                        >
+                            Lihat Semua
+                            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
                     <ActivityList activities={activities} />
                 </div>
             </div>

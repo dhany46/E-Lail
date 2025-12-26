@@ -155,10 +155,62 @@ const Dashboard = () => {
         });
     }, [activities]);
 
+    // Mock teacher note (Centralized data)
+    // Mock teacher note properties
+    const noteId = 'note-2024-10-20-v1'; // Unique ID for the note
+    const noteSentDate = '2024-10-20';
+
+    // State for note display logic
+    const [noteStatus, setNoteStatus] = useState({
+        isNew: false,
+        displayDate: new Date(noteSentDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+    });
+
+    // Effect to handle "First Seen" logic
+    useEffect(() => {
+        const today = new Date().toISOString().split('T')[0];
+        const storageKey = `teacher_note_seen_${noteId}`;
+        const firstSeenDate = localStorage.getItem(storageKey);
+
+        if (!firstSeenDate) {
+            // First time seeing this note: Mark as seen TODAY
+            localStorage.setItem(storageKey, today);
+            setNoteStatus({
+                isNew: true,
+                displayDate: 'Hari ini'
+            });
+        } else {
+            // Already seen. Check if it's been more than 1 day since first seen.
+            // Requirement: "pastikan sudah lewat 1 hari status berubah" (Ensure status changes after 1 day passed)
+            // If today is different from firstSeenDate, it's "Old"
+            if (today !== firstSeenDate) {
+                setNoteStatus({
+                    isNew: false,
+                    displayDate: new Date(noteSentDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+                });
+            } else {
+                // Still same day as first seen
+                setNoteStatus({
+                    isNew: true,
+                    displayDate: 'Hari ini'
+                });
+            }
+        }
+    }, [noteId, noteSentDate]);
+
+    const teacherNote = {
+        teacherName: 'Ustadz Ahmad',
+        teacherInitials: 'UA',
+        message: 'Alhamdulillah, semangat belajar dan beribadah terus ya! Jangan lupa hafalan Juz 30 minggu depan 📖',
+        date: noteStatus.displayDate,
+        isNew: noteStatus.isNew
+    };
+
     const props = {
         activities,
         stats,
-        studentInfo
+        studentInfo,
+        teacherNote // Pass to children
     };
 
     return isMobile ? <DashboardMobile {...props} /> : <DashboardDesktop {...props} />;

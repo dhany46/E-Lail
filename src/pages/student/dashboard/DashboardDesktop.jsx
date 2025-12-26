@@ -141,7 +141,7 @@ const LeaderboardItem = ({ rank, name, points, isFirst }) => {
     );
 };
 
-const DashboardDesktop = ({ activities, stats, studentInfo }) => {
+const DashboardDesktop = ({ activities, stats, studentInfo, teacherNote }) => {
     const navigate = useNavigate();
 
     return (
@@ -260,7 +260,7 @@ const DashboardDesktop = ({ activities, stats, studentInfo }) => {
                         <div className="flex-1 flex flex-col justify-center px-2 py-2 mb-2 bg-white/50 rounded-2xl border border-white/40">
                             <span className="text-3xl text-emerald-500/20 mb-1 text-left font-serif leading-none">"</span>
                             <p className="text-sm font-medium leading-relaxed text-gray-700 text-left font-serif italic px-2 -mt-2 pb-2">
-                                Ananda Ahmad, Alhamdulillah sholat subuhnya sudah istiqomah. Tingkatkan lagi hafalan surat pendeknya ya. Ibu bangga dengan kemajuanmu!
+                                {teacherNote?.message || "Belum ada catatan guru saat ini."}
                             </p>
                         </div>
                     </div>
