@@ -45,7 +45,7 @@ const MobileBottomNav = () => {
                                     {/* Nav Item */}
                                     <button
                                         onClick={() => navigate(item.path)}
-                                        className={`flex flex-col items-center min-w-[60px] transition-all active:scale-95 ${isActive ? 'text-blue-600' : 'text-slate-400'
+                                        className={`flex flex-col items-center min-w-[60px] transition-all active:scale-95 outline-none border-none bg-transparent ${isActive ? 'text-blue-600' : 'text-slate-400'
                                             }`}
                                     >
                                         <span
@@ -66,7 +66,7 @@ const MobileBottomNav = () => {
                             <button
                                 key={item.path}
                                 onClick={() => navigate(item.path)}
-                                className={`flex flex-col items-center min-w-[60px] transition-all active:scale-95 ${isActive ? 'text-blue-600' : 'text-slate-400'
+                                className={`flex flex-col items-center min-w-[60px] transition-all active:scale-95 outline-none border-none bg-transparent ${isActive ? 'text-blue-600' : 'text-slate-400'
                                     }`}
                             >
                                 <span

@@ -512,7 +512,7 @@ const InputMobile = () => {
             <ConfirmationModal isOpen={showConfirmModal} onClose={() => setShowConfirmModal(false)} onConfirm={confirmNavigation} />
 
             {/* Header - Sticky with Glassmorphism to match Dashboard */}
-            <div className="px-6 py-4 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
+            <div className="px-6 py-4 relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => navigate('/student/dashboard')}

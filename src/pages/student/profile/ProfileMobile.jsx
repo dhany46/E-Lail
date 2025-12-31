@@ -283,7 +283,7 @@ const ProfileMobile = () => {
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
             {/* Header - Native Style */}
-            <div className="sticky top-0 z-[60] bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl border-b border-slate-200 px-6 py-4 flex items-center justify-between transition-all duration-300">
+            <div className="relative z-[60] bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl border-b border-slate-200 px-6 py-4 flex items-center justify-between transition-all duration-300">
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => navigate('/student/dashboard')}

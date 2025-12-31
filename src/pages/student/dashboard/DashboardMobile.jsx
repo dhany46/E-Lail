@@ -707,7 +707,7 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
             <PullToRefresh onRefresh={() => window.location.reload()}>
                 <div className="min-h-full">
                     {/* Header - Sticky with Staggered Entrance */}
-                    <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] transition-all duration-300 animate-fade-in-up border-b border-slate-200" style={{ animationDuration: '0.6s' }}>
+                    <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] transition-all duration-300 animate-fade-in-up border-b border-slate-200" style={{ animationDuration: '0.6s' }}>
                         <HeaderMobile
                             student={studentInfo}
                             teacherNote={teacherNote}
@@ -770,7 +770,7 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
                 <div className="bg-white px-8 pt-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pointer-events-auto rounded-t-3xl border-t border-slate-200 shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.08)]">
                     <div className="flex items-center justify-between">
                         {/* Dashboard - Active */}
-                        <button className="flex flex-col items-center text-blue-600 min-w-[60px]">
+                        <button className="flex flex-col items-center text-blue-600 min-w-[60px] outline-none border-none bg-transparent">
                             <span className="material-symbols-outlined notranslate text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>home</span>
                             <span className="text-xs font-bold mt-1">Dashboard</span>
                         </button>
@@ -778,7 +778,7 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
                         {/* Riwayat */}
                         <button
                             onClick={() => navigate('/student/history')}
-                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px]"
+                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px] outline-none border-none bg-transparent"
                         >
                             <span className="material-symbols-outlined notranslate text-[28px]">schedule</span>
                             <span className="text-xs font-medium mt-1">Riwayat</span>
@@ -790,7 +790,7 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
                         {/* Peringkat */}
                         <button
                             onClick={() => navigate('/student/leaderboard')}
-                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px]"
+                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px] outline-none border-none bg-transparent"
                         >
                             <span className="material-symbols-outlined notranslate text-[28px]">leaderboard</span>
                             <span className="text-xs font-medium mt-1">Peringkat</span>
@@ -799,7 +799,7 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
                         {/* Profil */}
                         <button
                             onClick={() => navigate('/student/profile')}
-                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px]"
+                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px] outline-none border-none bg-transparent"
                         >
                             <span className="material-symbols-outlined notranslate text-[28px]">person</span>
                             <span className="text-xs font-medium mt-1">Profil</span>

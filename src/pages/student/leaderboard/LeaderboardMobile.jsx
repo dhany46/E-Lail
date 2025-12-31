@@ -138,7 +138,7 @@ const LeaderboardMobile = () => {
             {/* Smooth Background Gradient Decoration */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
             {/* Header */}
-            <div className="px-6 py-3 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200 animate-fade-in">
+            <div className="px-6 py-3 relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200 animate-fade-in">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => navigate('/student/dashboard')}

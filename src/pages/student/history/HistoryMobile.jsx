@@ -821,7 +821,7 @@ const HistoryMobile = () => {
             <PullToRefresh onRefresh={() => window.location.reload()}>
                 <div className="min-h-full">
                     {/* Header - Only title */}
-                    <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
+                    <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
                         <HistoryHeader verifiedActivities={verifiedActivities} />
                     </div>
 
