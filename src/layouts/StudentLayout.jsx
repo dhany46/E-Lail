@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import logo from '../assets/logo.jpg';
 import Background from '../components/ui/Background';
 import MobileBottomNav from '../components/student/MobileBottomNav';
+import PWAInstallPrompt from '../components/ui/PWAInstallPrompt';
 import { StudentProvider, useStudentContext } from '../context/StudentContext';
 
 const SidebarItem = ({ icon, label, to, active }) => {
@@ -71,7 +72,7 @@ const StudentLayoutContent = () => {
     const isFullContainerPage = ['/student/dashboard', '/student/history', '/student/input', '/student/leaderboard', '/student/profile'].includes(location.pathname);
 
     return (
-        <div className={`text-text-primary-light font-display antialiased overflow-hidden h-screen flex relative ${isFullContainerPage ? 'bg-[#EEF7FF] md:bg-transparent' : 'bg-transparent'}`}>
+        <div className="text-text-primary-light font-display antialiased overflow-hidden h-[100dvh] flex relative bg-transparent">
             {/* Hide background on mobile dashboard */}
             {!isFullContainerPage && <Background />}
             <div className="md:contents">{isFullContainerPage && <Background />}</div>
@@ -176,7 +177,7 @@ const StudentLayoutContent = () => {
             <MobileBottomNav />
 
             {/* Main Content Area */}
-            <main className={`flex-1 flex flex-col min-w-0 overflow-hidden z-10 relative ${isFullContainerPage ? 'bg-gradient-to-b from-blue-100 via-blue-50 to-white md:bg-transparent' : 'bg-transparent'}`}>
+            <main className="flex-1 flex flex-col min-w-0 overflow-hidden z-10 relative bg-transparent">
                 {/* Header for Mobile (Optional, or just keep content) */}
                 {!['/student/dashboard', '/student/menu', '/student/history', '/student/input', '/student/leaderboard', '/student/profile'].includes(location.pathname) && (
                     <div className="md:hidden p-4 pb-0 flex items-center justify-between">
@@ -190,8 +191,9 @@ const StudentLayoutContent = () => {
                 )}
 
                 {/* Content Outlet */}
-                <div className={`flex-1 overflow-y-auto scrollbar-hide scroll-smooth overscroll-y-auto pb-24 md:pb-6 ${isFullContainerPage ? 'p-0 md:p-6 lg:p-8' : 'p-4 md:p-6 lg:p-8'}`}>
-                    <div className="w-full max-w-full md:max-w-screen-xl mx-auto">
+                {/* Modified: Remove generic scrolling for full container pages to let them handle their own scrolling (and P2R) */}
+                <div className={`flex-1 ${isFullContainerPage ? 'overflow-hidden p-0 md:p-6 lg:p-8' : 'overflow-y-auto scrollbar-hide scroll-smooth overscroll-y-auto p-4 md:p-6 lg:p-8'} pb-24 md:pb-6`}>
+                    <div className="w-full max-w-full md:max-w-screen-xl mx-auto h-full">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={location.pathname}
@@ -199,6 +201,7 @@ const StudentLayoutContent = () => {
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.15 }}
+                                className="h-full"
                             >
                                 <Outlet />
                             </motion.div>
@@ -214,6 +217,7 @@ const StudentLayout = () => {
     return (
         <StudentProvider>
             <StudentLayoutContent />
+            <PWAInstallPrompt />
         </StudentProvider>
     );
 };

@@ -30,6 +30,7 @@ import {
 } from "react-icons/fa";
 import { MdVerified, MdCampaign, MdNotificationsOff } from "react-icons/md";
 import { BiSolidDonateHeart } from "react-icons/bi";
+import PullToRefresh from '../../../components/ui/PullToRefresh';
 
 const AchievementPopup = ({ onClose }) => {
     const [isVisible, setIsVisible] = useState(false);
@@ -810,417 +811,421 @@ const HistoryMobile = () => {
     const verifiedActivities = activities.filter(a => a.status === 'Terverifikasi' || a.status === 'Disetujui');
 
     return (
-        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative pb-28">
+        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative touch-manipulation animate-fade-in pb-20">
             {/* Achievement Popup */}
             {showPopup && <AchievementPopup onClose={() => setShowPopup(false)} />}
 
             {/* Smooth Background Gradient Decoration */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
-            {/* Header - Only title */}
-            <div className="px-6 py-4 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
-                <HistoryHeader verifiedActivities={verifiedActivities} />
-            </div>
-
-            <div className="space-y-5 relative z-10 px-6 mt-6">
-                {/* Daily Target Progress Card - Fun & Theme Aligned */}
-                <div className="bg-gradient-to-tr from-blue-400 via-blue-500 to-sky-500 rounded-3xl p-5 shadow-xl shadow-blue-200/50 text-white relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-10 -mt-10 blur-2xl group-hover:blur-3xl transition-all duration-700"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-sky-300/20 rounded-full -ml-8 -mb-8 blur-xl"></div>
-
-                    {/* Floating Icons Background */}
-                    <FaStar className="absolute top-4 right-12 text-white/10 text-xl animate-pulse" />
-                    <FaRocket className="absolute bottom-8 right-4 text-white/10 text-2xl rotate-12" />
-
-                    <div className="relative z-10">
-                        <div className="flex justify-between items-center mb-5">
-                            <div className="flex items-center gap-3.5">
-                                <div className="size-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/20 ring-2 ring-white/10">
-                                    <FaRocket className="text-2xl text-yellow-300 drop-shadow-sm animate-bounce-slow" />
-                                </div>
-                                <div>
-                                    <h3 className="text-base font-black text-white tracking-wide drop-shadow-sm">Misi Harianmu</h3>
-                                    <p className="text-[11px] font-bold text-blue-50 bg-blue-800/20 px-2.5 py-0.5 rounded-full mt-1 border border-white/10 inline-block">
-                                        Kumpulkan 8 Kebaikan! ✨
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-end">
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-3xl font-black tracking-tight">{todayActivitiesCount}</span>
-                                    <span className="text-sm font-bold opacity-80">/ {dailyTarget}</span>
-                                </div>
-                                <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-lg backdrop-blur-sm mt-0.5">
-                                    {progressPercent === 100 ? 'Sempurna! 🌟' : 'Semangat! 🔥'}
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* Custom Fun Progress Bar */}
-                        <div className="relative pt-1">
-                            <div className="bg-black/20 rounded-full h-4 backdrop-blur-sm overflow-hidden border border-white/10 shadow-inner p-0.5">
-                                <div
-                                    className="bg-gradient-to-r from-yellow-300 to-amber-400 h-full rounded-full transition-all duration-1000 ease-out relative shadow-[0_0_10px_rgba(253,224,71,0.5)]"
-                                    style={{ width: `${progressPercent}%` }}
-                                >
-                                    <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(45deg,rgba(255,255,255,0.4)25%,transparent_25%,transparent_50%,rgba(255,255,255,0.4)50%,rgba(255,255,255,0.4)75%,transparent_75%,transparent)] bg-[length:12px_12px] animate-[progress-stripes_1s_linear_infinite]"></div>
-                                </div>
-                            </div>
-                            {/* Milestone Markers */}
-                            <div className="absolute top-1 w-full h-4 flex justify-between px-[1%] pointer-events-none left-0 p-0.5">
-                                {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                                    <div key={i} className={`w-0.5 h-full rounded-full ${i <= todayActivitiesCount ? 'bg-white/0' : 'bg-white/20 mx-auto'}`}></div>
-                                ))}
-                            </div>
-                        </div>
+            <PullToRefresh onRefresh={() => window.location.reload()}>
+                <div className="min-h-full">
+                    {/* Header - Only title */}
+                    <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
+                        <HistoryHeader verifiedActivities={verifiedActivities} />
                     </div>
-                </div>
 
-                {/* Hero Stats (Bintangku & Ibadahku) */}
-                <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <HeroStats stats={{ totalPoints: stats.totalPoints, monthCount: stats.monthCount, targetDaily: dailyTarget }} />
-                </div>
+                    <div className="space-y-5 relative z-10 px-6 mt-6">
+                        {/* Daily Target Progress Card - Fun & Theme Aligned */}
+                        <div className="bg-gradient-to-tr from-blue-400 via-blue-500 to-sky-500 rounded-3xl p-5 shadow-xl shadow-blue-200/50 text-white relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-10 -mt-10 blur-2xl group-hover:blur-3xl transition-all duration-700"></div>
+                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-sky-300/20 rounded-full -ml-8 -mb-8 blur-xl"></div>
 
-                {/* Riwayat Container */}
-                <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 mb-8 overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    {/* Filter Header */}
-                    <div className="relative border-b border-slate-100 bg-slate-50/50">
-                        <div className="flex">
-                            {/* Date Filter Trigger */}
-                            <div className="relative z-30 w-fit shrink-0 border-r border-slate-100">
-                                <button
-                                    onClick={() => {
-                                        setIsFilterOpen(false);
-                                        setIsCalendarOpen(true);
-                                    }}
-                                    className={`h-full px-5 py-4 flex items-center gap-2 transition-colors relative ${dateFilter ? 'bg-green-50 text-green-600 pr-9' : 'bg-transparent text-slate-500 hover:bg-slate-50'}`}
-                                >
-                                    <FaCalendarAlt className={`text-lg transition-transform ${dateFilter ? 'scale-110' : ''}`} />
-                                    {dateFilter && (
-                                        <span className="text-xs font-bold whitespace-nowrap">
-                                            {new Date(dateFilter).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                                        </span>
-                                    )}
-                                </button>
+                            {/* Floating Icons Background */}
+                            <FaStar className="absolute top-4 right-12 text-white/10 text-xl animate-pulse" />
+                            <FaRocket className="absolute bottom-8 right-4 text-white/10 text-2xl rotate-12" />
 
-                                {dateFilter && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setDateFilter('');
-                                        }}
-                                        className="absolute right-1 top-1/2 -translate-y-1/2 size-5 bg-white text-rose-500 rounded-full flex items-center justify-center shadow-md hover:bg-rose-50 transition-colors pointer-events-auto z-[60]"
-                                    >
-                                        <FaTimes className="text-[10px] font-bold" />
-                                    </button>
-                                )}
-                            </div>
-
-                            {/* Category Filter Trigger */}
-                            <button
-                                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                                className="flex-1 px-5 py-4 flex items-center justify-between transition-all active:bg-slate-50 relative z-20 outline-none"
-                            >
-                                <div className="flex items-center gap-2.5 truncate">
-                                    <div className="size-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                                        <FaFilter className="text-xs" />
+                            <div className="relative z-10">
+                                <div className="flex justify-between items-center mb-5">
+                                    <div className="flex items-center gap-3.5">
+                                        <div className="size-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/20 ring-2 ring-white/10">
+                                            <FaRocket className="text-2xl text-yellow-300 drop-shadow-sm animate-bounce-slow" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-base font-black text-white tracking-wide drop-shadow-sm">Misi Harianmu</h3>
+                                            <p className="text-[11px] font-bold text-blue-50 bg-blue-800/20 px-2.5 py-0.5 rounded-full mt-1 border border-white/10 inline-block">
+                                                Kumpulkan 8 Kebaikan! ✨
+                                            </p>
+                                        </div>
                                     </div>
-                                    <span className="text-sm font-bold text-slate-700">Filter</span>
-                                    <div className="h-4 w-[1px] bg-slate-200 mx-1"></div>
-                                    <div className={`flex items-center gap-1.5 text-sm font-bold truncate ${filterOptions.find(opt => opt.id === filter)?.color || 'text-primary'
-                                        }`}>
-                                        <span className="text-base leading-none">
-                                            {filterOptions.find(opt => opt.id === filter)?.icon}
-                                        </span>
-                                        <span className="truncate">
-                                            {filterOptions.find(opt => opt.id === filter)?.label || filter}
+                                    <div className="flex flex-col items-end">
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-3xl font-black tracking-tight">{todayActivitiesCount}</span>
+                                            <span className="text-sm font-bold opacity-80">/ {dailyTarget}</span>
+                                        </div>
+                                        <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-lg backdrop-blur-sm mt-0.5">
+                                            {progressPercent === 100 ? 'Sempurna! 🌟' : 'Semangat! 🔥'}
                                         </span>
                                     </div>
                                 </div>
-                                <FaChevronDown className={`text-slate-400 text-sm transition-transform duration-300 ${isFilterOpen ? 'rotate-180' : ''}`} />
-                            </button>
-                        </div>
 
-                        {/* Category Dropdown Content */}
-                        <div className={`absolute top-full left-0 right-0 bg-white border-b border-x border-slate-100 shadow-xl rounded-b-2xl z-20 transition-all duration-300 origin-top overflow-hidden ${isFilterOpen ? 'opacity-100 scale-y-100 max-h-[400px]' : 'opacity-0 scale-y-0 max-h-0'}`}>
-                            <div className="p-3 grid grid-cols-2 gap-2.5">
-                                {filterOptions.map((opt) => (
-                                    <button
-                                        key={opt.id}
-                                        onClick={() => {
-                                            setFilter(opt.id);
-                                            setIsFilterOpen(false);
-                                            setDateFilter('');
-                                        }}
-                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all border outline-none ${filter === opt.id
-                                            ? `${opt.bg} ${opt.color} border-current ring-1 ring-current font-bold`
-                                            : 'border-transparent hover:bg-slate-50 text-slate-600 font-medium'
-                                            }`}
-                                    >
-                                        <span className="text-lg">{opt.icon}</span>
-                                        <span className="text-xs">{opt.label}</span>
-                                        {filter === opt.id && <FaCheck className="text-sm ml-auto" />}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Activity List */}
-                    <div className="pb-2">
-                        {Object.keys(groupedActivities).length === 0 ? (
-                            <div className="text-center py-20 px-6">
-                                <div className="size-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-100 animate-pulse">
-                                    <FaCalendarAlt className="text-4xl text-green-300" />
+                                {/* Custom Fun Progress Bar */}
+                                <div className="relative pt-1">
+                                    <div className="bg-black/20 rounded-full h-4 backdrop-blur-sm overflow-hidden border border-white/10 shadow-inner p-0.5">
+                                        <div
+                                            className="bg-gradient-to-r from-yellow-300 to-amber-400 h-full rounded-full transition-all duration-1000 ease-out relative shadow-[0_0_10px_rgba(253,224,71,0.5)]"
+                                            style={{ width: `${progressPercent}%` }}
+                                        >
+                                            <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(45deg,rgba(255,255,255,0.4)25%,transparent_25%,transparent_50%,rgba(255,255,255,0.4)50%,rgba(255,255,255,0.4)75%,transparent_75%,transparent)] bg-[length:12px_12px] animate-[progress-stripes_1s_linear_infinite]"></div>
+                                        </div>
+                                    </div>
+                                    {/* Milestone Markers */}
+                                    <div className="absolute top-1 w-full h-4 flex justify-between px-[1%] pointer-events-none left-0 p-0.5">
+                                        {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                                            <div key={i} className={`w-0.5 h-full rounded-full ${i <= todayActivitiesCount ? 'bg-white/0' : 'bg-white/20 mx-auto'}`}></div>
+                                        ))}
+                                    </div>
                                 </div>
-                                <h3 className="text-base font-bold text-slate-800 mb-2">Belum ada kegiatan</h3>
-                                <p className="text-xs text-slate-500 max-w-[200px] mx-auto leading-relaxed">
-                                    {dateFilter
-                                        ? "Tidak ada catatan ibadah pada tanggal yang dipilih."
-                                        : "Yuk, isi ibadah harianmu untuk mulai melihat riwayat kebaikanmu disini!"}
-                                </p>
                             </div>
-                        ) : (
-                            <div className="space-y-6 pt-4">
-                                {Object.entries(groupedActivities).map(([date, dateActivities], index) => {
-                                    // Calculate total points for this day
-                                    const dayPointTotal = dateActivities.reduce((sum, item) => sum + item.points, 0);
+                        </div>
 
-                                    return (
-                                        <div key={date}>
-                                            {/* Date Header - Elegant New Style */}
-                                            <div className="px-6 mb-4 mt-2 flex items-center justify-between relative z-10">
-                                                <div className="flex flex-col">
-                                                    <h3 className="text-base font-black text-slate-800 tracking-tight leading-none">
-                                                        {formatDateFull(date).split(',')[0]}
-                                                    </h3>
-                                                    <span className="text-xs font-medium text-slate-500 mt-1 flex items-center gap-1">
-                                                        <FaCalendarAlt className="text-[10px] opacity-70" />
-                                                        {formatDateFull(date).split(',').slice(1).join(',').trim()}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="px-2.5 py-1 rounded-lg bg-green-50 text-green-600 text-[10px] font-bold border border-green-100/50 shadow-sm flex items-center gap-1.5">
-                                                        {dateActivities.length} Aktivitas
-                                                    </span>
-                                                </div>
+                        {/* Hero Stats (Bintangku & Ibadahku) */}
+                        <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                            <HeroStats stats={{ totalPoints: stats.totalPoints, monthCount: stats.monthCount, targetDaily: dailyTarget }} />
+                        </div>
+
+                        {/* Riwayat Container */}
+                        <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 mb-8 overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                            {/* Filter Header */}
+                            <div className="relative border-b border-slate-100 bg-slate-50/50">
+                                <div className="flex">
+                                    {/* Date Filter Trigger */}
+                                    <div className="relative z-30 w-fit shrink-0 border-r border-slate-100">
+                                        <button
+                                            onClick={() => {
+                                                setIsFilterOpen(false);
+                                                setIsCalendarOpen(true);
+                                            }}
+                                            className={`h-full px-5 py-4 flex items-center gap-2 transition-colors relative ${dateFilter ? 'bg-green-50 text-green-600 pr-9' : 'bg-transparent text-slate-500 hover:bg-slate-50'}`}
+                                        >
+                                            <FaCalendarAlt className={`text-lg transition-transform ${dateFilter ? 'scale-110' : ''}`} />
+                                            {dateFilter && (
+                                                <span className="text-xs font-bold whitespace-nowrap">
+                                                    {new Date(dateFilter).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                                </span>
+                                            )}
+                                        </button>
+
+                                        {dateFilter && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setDateFilter('');
+                                                }}
+                                                className="absolute right-1 top-1/2 -translate-y-1/2 size-5 bg-white text-rose-500 rounded-full flex items-center justify-center shadow-md hover:bg-rose-50 transition-colors pointer-events-auto z-[60]"
+                                            >
+                                                <FaTimes className="text-[10px] font-bold" />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Category Filter Trigger */}
+                                    <button
+                                        onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                        className="flex-1 px-5 py-4 flex items-center justify-between transition-all active:bg-slate-50 relative z-20 outline-none"
+                                    >
+                                        <div className="flex items-center gap-2.5 truncate">
+                                            <div className="size-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                                                <FaFilter className="text-xs" />
                                             </div>
-
-                                            {/* Activities for this date */}
-                                            <div className="space-y-0">
-                                                {dateActivities.map((activity) => {
-                                                    const statusConfig = getStatusConfig(activity.status);
-                                                    const activityConfig = getActivityConfig(activity.category, activity.title);
-                                                    const isExpanded = expandedCards[activity.id];
-
-                                                    return (
-                                                        <div key={activity.id} className="mb-4 mx-4">
-                                                            <div
-                                                                className={`bg-white rounded-2xl p-4 transition-all duration-300 border border-slate-200 shadow-sm ${isExpanded ? 'ring-1 ring-green-100 border-green-200' : ''}`}
-                                                            >
-                                                                {/* Header Section */}
-                                                                <div
-                                                                    className="flex items-start gap-3.5 cursor-pointer"
-                                                                    onClick={() => toggleCardExpansion(activity.id)}
-                                                                >
-                                                                    {/* Icon Box - Activity Based Color */}
-                                                                    <div className={`size-10 rounded-xl ${activityConfig.bg} ${activityConfig.color} flex items-center justify-center shrink-0`}>
-                                                                        {activity.icon || activityConfig.icon}
-                                                                    </div>
-
-                                                                    {/* Main Info */}
-                                                                    <div className="flex-1 min-w-0 pt-0.5">
-                                                                        <div className="flex justify-between items-start">
-                                                                            <div className="pr-2">
-                                                                                <h4 className="font-semibold text-slate-800 text-[13px] leading-snug mb-1">{activity.title}</h4>
-
-                                                                                {/* Modern Date Pill */}
-                                                                                <div className="flex items-center gap-2">
-                                                                                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-50 border border-slate-100 text-[10px] font-medium text-slate-500">
-                                                                                        <span>{activity.rawDate === today ? 'Hari ini' : new Date(activity.rawDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
-                                                                                        <span className="size-0.5 bg-slate-300 rounded-full"></span>
-                                                                                        <span>{activity.time}</span>
-                                                                                    </span>
-                                                                                </div>
-                                                                            </div>
-
-                                                                            {/* Right Side: Points & Status */}
-                                                                            <div className="flex flex-col items-end shrink-0 pl-1">
-                                                                                {activity.points > 0 && (
-                                                                                    <span className="text-emerald-500 font-bold text-xs mb-0.5">+{activity.points}</span>
-                                                                                )}
-                                                                                <span className={`text-[9px] font-semibold ${statusConfig.isPending ? 'text-yellow-600' : statusConfig.color}`}>
-                                                                                    {statusConfig.label}
-                                                                                </span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {/* Chevron */}
-                                                                    <FaChevronDown className={`text-slate-300 text-lg transition-transform duration-300 pt-1 ${isExpanded ? 'rotate-180' : ''}`} />
-                                                                </div>
-
-                                                                {/* Expanded Content */}
-                                                                {isExpanded && (
-                                                                    <div className="mt-4 pt-4 border-t border-dashed border-slate-200 animate-fadeIn relative">
-                                                                        {/* Decorative Circles for 'Ticket' Look */}
-                                                                        <div className="absolute -left-6 top-[-9px] w-5 h-5 bg-white rounded-full border border-slate-100"></div>
-                                                                        <div className="absolute -right-6 top-[-9px] w-5 h-5 bg-white rounded-full border border-slate-100"></div>
-
-                                                                        <div className="space-y-4 px-1">
-                                                                            {/* Kategori */}
-                                                                            <div className="flex items-center gap-3">
-                                                                                <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 w-20 shrink-0">Kategori</span>
-                                                                                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${activityConfig.bg} ${activityConfig.color}`}>
-                                                                                    {activity.category}
-                                                                                </span>
-                                                                            </div>
-
-                                                                            {/* Keterangan */}
-                                                                            <div className="flex items-start gap-3">
-                                                                                <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 w-20 shrink-0 mt-0.5">Keterangan</span>
-                                                                                <div className="flex-1">
-                                                                                    {(activity.subtitle || activity.notes) ? (
-                                                                                        <p className="text-[11px] text-slate-600 font-medium leading-relaxed italic">
-                                                                                            "{activity.subtitle || activity.notes}"
-                                                                                        </p>
-                                                                                    ) : (
-                                                                                        <p className="text-[11px] text-slate-400 font-medium italic">
-                                                                                            -
-                                                                                        </p>
-                                                                                    )}
-                                                                                </div>
-                                                                            </div>
-
-                                                                            {/* Status - Style rapi tanpa shape box */}
-                                                                            <div className="flex items-start gap-3">
-                                                                                <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 w-20 shrink-0 mt-1">Status</span>
-                                                                                <div className="flex items-center gap-2 mt-1">
-                                                                                    {statusConfig.isPending ? (
-                                                                                        <div className="flex items-center gap-2 animate-pulse">
-                                                                                            <FaHourglassHalf className="text-yellow-600 text-sm" />
-                                                                                            <span className="text-[11px] font-semibold text-yellow-600">
-                                                                                                {statusConfig.label}
-                                                                                            </span>
-                                                                                        </div>
-                                                                                    ) : (
-                                                                                        <div className="flex items-center gap-1.5 text-[11px] font-semibold">
-                                                                                            <span className="material-symbols-outlined text-base">{statusConfig.icon}</span>
-                                                                                            <span>{statusConfig.label}</span>
-                                                                                        </div>
-                                                                                    )}
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })}
+                                            <span className="text-sm font-bold text-slate-700">Filter</span>
+                                            <div className="h-4 w-[1px] bg-slate-200 mx-1"></div>
+                                            <div className={`flex items-center gap-1.5 text-sm font-bold truncate ${filterOptions.find(opt => opt.id === filter)?.color || 'text-primary'
+                                                }`}>
+                                                <span className="text-base leading-none">
+                                                    {filterOptions.find(opt => opt.id === filter)?.icon}
+                                                </span>
+                                                <span className="truncate">
+                                                    {filterOptions.find(opt => opt.id === filter)?.label || filter}
+                                                </span>
                                             </div>
                                         </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-                        {totalPages > 1 && (
-                            <div className="flex flex-col items-center mt-6 mb-8 pt-6 border-t border-slate-50 mx-6">
-                                <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100">
-                                    <button
-                                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                        disabled={currentPage === 1}
-                                        className="size-9 flex items-center justify-center rounded-xl text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 active:scale-95 transition-all"
-                                    >
-                                        <FaChevronLeft className="text-sm" />
-                                    </button>
-
-                                    <div className="flex items-center gap-1">
-                                        {(() => {
-                                            const range = [];
-                                            const delta = 1; // Number of pages to show around current page
-
-                                            for (let i = 1; i <= totalPages; i++) {
-                                                if (
-                                                    i === 1 ||
-                                                    i === totalPages ||
-                                                    (i >= currentPage - delta && i <= currentPage + delta)
-                                                ) {
-                                                    range.push(i);
-                                                } else if (
-                                                    (i === currentPage - delta - 1 && i > 1) ||
-                                                    (i === currentPage + delta + 1 && i < totalPages)
-                                                ) {
-                                                    range.push('...');
-                                                }
-                                            }
-
-                                            // Filter duplicates just in case logic overlaps
-                                            const uniqueRange = [...new Set(range)];
-
-                                            return uniqueRange.map((page, idx) => (
-                                                <React.Fragment key={idx}>
-                                                    {page === '...' ? (
-                                                        <span className="w-8 flex justify-center text-xs text-slate-400 font-bold tracking-widest select-none">...</span>
-                                                    ) : (
-                                                        <button
-                                                            onClick={() => setCurrentPage(page)}
-                                                            className={`size-9 flex items-center justify-center rounded-xl text-sm font-bold transition-all duration-300 ${currentPage === page
-                                                                ? 'bg-gradient-to-tr from-green-500 to-emerald-500 text-white shadow-lg shadow-emerald-200 scale-110 z-10'
-                                                                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
-                                                                }`}
-                                                        >
-                                                            {page}
-                                                        </button>
-                                                    )}
-                                                </React.Fragment>
-                                            ));
-                                        })()}
-                                    </div>
-
-                                    <button
-                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                        disabled={currentPage === totalPages}
-                                        className="size-9 flex items-center justify-center rounded-xl text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 active:scale-95 transition-all"
-                                    >
-                                        <FaChevronRight className="text-sm" />
+                                        <FaChevronDown className={`text-slate-400 text-sm transition-transform duration-300 ${isFilterOpen ? 'rotate-180' : ''}`} />
                                     </button>
                                 </div>
 
-                                <p className="text-[10px] text-slate-400 font-medium mt-3 bg-slate-50/50 px-3 py-1 rounded-full border border-slate-100/50">
-                                    Halaman {currentPage} dari {totalPages}
-                                </p>
+                                {/* Category Dropdown Content */}
+                                <div className={`absolute top-full left-0 right-0 bg-white border-b border-x border-slate-100 shadow-xl rounded-b-2xl z-20 transition-all duration-300 origin-top overflow-hidden ${isFilterOpen ? 'opacity-100 scale-y-100 max-h-[400px]' : 'opacity-0 scale-y-0 max-h-0'}`}>
+                                    <div className="p-3 grid grid-cols-2 gap-2.5">
+                                        {filterOptions.map((opt) => (
+                                            <button
+                                                key={opt.id}
+                                                onClick={() => {
+                                                    setFilter(opt.id);
+                                                    setIsFilterOpen(false);
+                                                    setDateFilter('');
+                                                }}
+                                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all border outline-none ${filter === opt.id
+                                                    ? `${opt.bg} ${opt.color} border-current ring-1 ring-current font-bold`
+                                                    : 'border-transparent hover:bg-slate-50 text-slate-600 font-medium'
+                                                    }`}
+                                            >
+                                                <span className="text-lg">{opt.icon}</span>
+                                                <span className="text-xs">{opt.label}</span>
+                                                {filter === opt.id && <FaCheck className="text-sm ml-auto" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
-                        )}
+
+                            {/* Activity List */}
+                            <div className="pb-2">
+                                {Object.keys(groupedActivities).length === 0 ? (
+                                    <div className="text-center py-20 px-6">
+                                        <div className="size-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-100 animate-pulse">
+                                            <FaCalendarAlt className="text-4xl text-green-300" />
+                                        </div>
+                                        <h3 className="text-base font-bold text-slate-800 mb-2">Belum ada kegiatan</h3>
+                                        <p className="text-xs text-slate-500 max-w-[200px] mx-auto leading-relaxed">
+                                            {dateFilter
+                                                ? "Tidak ada catatan ibadah pada tanggal yang dipilih."
+                                                : "Yuk, isi ibadah harianmu untuk mulai melihat riwayat kebaikanmu disini!"}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-6 pt-4">
+                                        {Object.entries(groupedActivities).map(([date, dateActivities], index) => {
+                                            // Calculate total points for this day
+                                            const dayPointTotal = dateActivities.reduce((sum, item) => sum + item.points, 0);
+
+                                            return (
+                                                <div key={date}>
+                                                    {/* Date Header - Elegant New Style */}
+                                                    <div className="px-6 mb-4 mt-2 flex items-center justify-between relative z-10">
+                                                        <div className="flex flex-col">
+                                                            <h3 className="text-base font-black text-slate-800 tracking-tight leading-none">
+                                                                {formatDateFull(date).split(',')[0]}
+                                                            </h3>
+                                                            <span className="text-xs font-medium text-slate-500 mt-1 flex items-center gap-1">
+                                                                <FaCalendarAlt className="text-[10px] opacity-70" />
+                                                                {formatDateFull(date).split(',').slice(1).join(',').trim()}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="px-2.5 py-1 rounded-lg bg-green-50 text-green-600 text-[10px] font-bold border border-green-100/50 shadow-sm flex items-center gap-1.5">
+                                                                {dateActivities.length} Aktivitas
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Activities for this date */}
+                                                    <div className="space-y-0">
+                                                        {dateActivities.map((activity) => {
+                                                            const statusConfig = getStatusConfig(activity.status);
+                                                            const activityConfig = getActivityConfig(activity.category, activity.title);
+                                                            const isExpanded = expandedCards[activity.id];
+
+                                                            return (
+                                                                <div key={activity.id} className="mb-4 mx-4">
+                                                                    <div
+                                                                        className={`bg-white rounded-2xl p-4 transition-all duration-300 border border-slate-200 shadow-sm ${isExpanded ? 'ring-1 ring-green-100 border-green-200' : ''}`}
+                                                                    >
+                                                                        {/* Header Section */}
+                                                                        <div
+                                                                            className="flex items-start gap-3.5 cursor-pointer"
+                                                                            onClick={() => toggleCardExpansion(activity.id)}
+                                                                        >
+                                                                            {/* Icon Box - Activity Based Color */}
+                                                                            <div className={`size-10 rounded-xl ${activityConfig.bg} ${activityConfig.color} flex items-center justify-center shrink-0`}>
+                                                                                {activity.icon || activityConfig.icon}
+                                                                            </div>
+
+                                                                            {/* Main Info */}
+                                                                            <div className="flex-1 min-w-0 pt-0.5">
+                                                                                <div className="flex justify-between items-start">
+                                                                                    <div className="pr-2">
+                                                                                        <h4 className="font-semibold text-slate-800 text-[13px] leading-snug mb-1">{activity.title}</h4>
+
+                                                                                        {/* Modern Date Pill */}
+                                                                                        <div className="flex items-center gap-2">
+                                                                                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-50 border border-slate-100 text-[10px] font-medium text-slate-500">
+                                                                                                <span>{activity.rawDate === today ? 'Hari ini' : new Date(activity.rawDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                                                                                                <span className="size-0.5 bg-slate-300 rounded-full"></span>
+                                                                                                <span>{activity.time}</span>
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                    {/* Right Side: Points & Status */}
+                                                                                    <div className="flex flex-col items-end shrink-0 pl-1">
+                                                                                        {activity.points > 0 && (
+                                                                                            <span className="text-emerald-500 font-bold text-xs mb-0.5">+{activity.points}</span>
+                                                                                        )}
+                                                                                        <span className={`text-[9px] font-semibold ${statusConfig.isPending ? 'text-yellow-600' : statusConfig.color}`}>
+                                                                                            {statusConfig.label}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            {/* Chevron */}
+                                                                            <FaChevronDown className={`text-slate-300 text-lg transition-transform duration-300 pt-1 ${isExpanded ? 'rotate-180' : ''}`} />
+                                                                        </div>
+
+                                                                        {/* Expanded Content */}
+                                                                        {isExpanded && (
+                                                                            <div className="mt-4 pt-4 border-t border-dashed border-slate-200 animate-fadeIn relative">
+                                                                                {/* Decorative Circles for 'Ticket' Look */}
+                                                                                <div className="absolute -left-6 top-[-9px] w-5 h-5 bg-white rounded-full border border-slate-100"></div>
+                                                                                <div className="absolute -right-6 top-[-9px] w-5 h-5 bg-white rounded-full border border-slate-100"></div>
+
+                                                                                <div className="space-y-4 px-1">
+                                                                                    {/* Kategori */}
+                                                                                    <div className="flex items-center gap-3">
+                                                                                        <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 w-20 shrink-0">Kategori</span>
+                                                                                        <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${activityConfig.bg} ${activityConfig.color}`}>
+                                                                                            {activity.category}
+                                                                                        </span>
+                                                                                    </div>
+
+                                                                                    {/* Keterangan */}
+                                                                                    <div className="flex items-start gap-3">
+                                                                                        <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 w-20 shrink-0 mt-0.5">Keterangan</span>
+                                                                                        <div className="flex-1">
+                                                                                            {(activity.subtitle || activity.notes) ? (
+                                                                                                <p className="text-[11px] text-slate-600 font-medium leading-relaxed italic">
+                                                                                                    "{activity.subtitle || activity.notes}"
+                                                                                                </p>
+                                                                                            ) : (
+                                                                                                <p className="text-[11px] text-slate-400 font-medium italic">
+                                                                                                    -
+                                                                                                </p>
+                                                                                            )}
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                    {/* Status - Style rapi tanpa shape box */}
+                                                                                    <div className="flex items-start gap-3">
+                                                                                        <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 w-20 shrink-0 mt-1">Status</span>
+                                                                                        <div className="flex items-center gap-2 mt-1">
+                                                                                            {statusConfig.isPending ? (
+                                                                                                <div className="flex items-center gap-2 animate-pulse">
+                                                                                                    <FaHourglassHalf className="text-yellow-600 text-sm" />
+                                                                                                    <span className="text-[11px] font-semibold text-yellow-600">
+                                                                                                        {statusConfig.label}
+                                                                                                    </span>
+                                                                                                </div>
+                                                                                            ) : (
+                                                                                                <div className="flex items-center gap-1.5 text-[11px] font-semibold">
+                                                                                                    <span className="material-symbols-outlined notranslate text-base text-slate-400">calendar_month</span>
+                                                                                                    <span>{statusConfig.label}</span>
+                                                                                                </div>
+                                                                                            )}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                                {totalPages > 1 && (
+                                    <div className="flex flex-col items-center mt-6 mb-8 pt-6 border-t border-slate-50 mx-6">
+                                        <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100">
+                                            <button
+                                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                                disabled={currentPage === 1}
+                                                className="size-9 flex items-center justify-center rounded-xl text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 active:scale-95 transition-all"
+                                            >
+                                                <FaChevronLeft className="text-sm" />
+                                            </button>
+
+                                            <div className="flex items-center gap-1">
+                                                {(() => {
+                                                    const range = [];
+                                                    const delta = 1; // Number of pages to show around current page
+
+                                                    for (let i = 1; i <= totalPages; i++) {
+                                                        if (
+                                                            i === 1 ||
+                                                            i === totalPages ||
+                                                            (i >= currentPage - delta && i <= currentPage + delta)
+                                                        ) {
+                                                            range.push(i);
+                                                        } else if (
+                                                            (i === currentPage - delta - 1 && i > 1) ||
+                                                            (i === currentPage + delta + 1 && i < totalPages)
+                                                        ) {
+                                                            range.push('...');
+                                                        }
+                                                    }
+
+                                                    // Filter duplicates just in case logic overlaps
+                                                    const uniqueRange = [...new Set(range)];
+
+                                                    return uniqueRange.map((page, idx) => (
+                                                        <React.Fragment key={idx}>
+                                                            {page === '...' ? (
+                                                                <span className="w-8 flex justify-center text-xs text-slate-400 font-bold tracking-widest select-none">...</span>
+                                                            ) : (
+                                                                <button
+                                                                    onClick={() => setCurrentPage(page)}
+                                                                    className={`size-9 flex items-center justify-center rounded-xl text-sm font-bold transition-all duration-300 ${currentPage === page
+                                                                        ? 'bg-gradient-to-tr from-green-500 to-emerald-500 text-white shadow-lg shadow-emerald-200 scale-110 z-10'
+                                                                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                                                                        }`}
+                                                                >
+                                                                    {page}
+                                                                </button>
+                                                            )}
+                                                        </React.Fragment>
+                                                    ));
+                                                })()}
+                                            </div>
+
+                                            <button
+                                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                                disabled={currentPage === totalPages}
+                                                className="size-9 flex items-center justify-center rounded-xl text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 active:scale-95 transition-all"
+                                            >
+                                                <FaChevronRight className="text-sm" />
+                                            </button>
+                                        </div>
+
+                                        <p className="text-[10px] text-slate-400 font-medium mt-3 bg-slate-50/50 px-3 py-1 rounded-full border border-slate-100/50">
+                                            Halaman {currentPage} dari {totalPages}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+
                     </div>
-                </div>
 
 
-            </div>
+                    {/* Achievement Popup */}
+                    {
+                        showPopup && (
+                            <AchievementPopup
+                                onClose={() => setShowPopup(false)}
+                                title="Target Tercapai! 🎯"
+                                message="Masya Allah! Kamu hebat sekali sudah menyelesaikan 8 ibadah wajib hari ini."
+                                points="+50 XP"
+                            />
+                        )
+                    }
 
-
-            {/* Achievement Popup */}
-            {
-                showPopup && (
-                    <AchievementPopup
-                        onClose={() => setShowPopup(false)}
-                        title="Target Tercapai! 🎯"
-                        message="Masya Allah! Kamu hebat sekali sudah menyelesaikan 8 ibadah wajib hari ini."
-                        points="+50 XP"
+                    {/* Calendar Picker Modal */}
+                    <CalendarPicker
+                        isOpen={isCalendarOpen}
+                        onClose={() => setIsCalendarOpen(false)}
+                        selectedDate={dateFilter}
+                        onDateSelect={(date) => {
+                            setDateFilter(date);
+                            if (date) setFilter("Semua");
+                        }}
                     />
-                )
-            }
-
-            {/* Calendar Picker Modal */}
-            <CalendarPicker
-                isOpen={isCalendarOpen}
-                onClose={() => setIsCalendarOpen(false)}
-                selectedDate={dateFilter}
-                onDateSelect={(date) => {
-                    setDateFilter(date);
-                    if (date) setFilter("Semua");
-                }}
-            />
+                </div>
+            </PullToRefresh>
         </div >
     );
 };

@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBell, FaMosque, FaCloudSun, FaBookOpen, FaHeart, FaStar, FaStickyNote, FaHourglassHalf, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { BiSolidDonateHeart } from "react-icons/bi";
+import PullToRefresh from '../../../components/ui/PullToRefresh';
 
 // --- Sub-Components ---
 
@@ -118,7 +119,7 @@ const HeaderMobile = ({ student, teacherNote, verifiedActivities }) => {
                                 <div className="p-4 border-b border-gray-50 hover:bg-blue-50/30 transition-colors">
                                     <div className="flex gap-3">
                                         <div className="size-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                                            <span className="material-symbols-outlined text-sm">campaign</span>
+                                            <span className="material-symbols-outlined notranslate text-sm">campaign</span>
                                         </div>
                                         <div>
                                             <p className="text-xs font-bold text-gray-800 mb-0.5">Catatan Guru Baru</p>
@@ -137,7 +138,7 @@ const HeaderMobile = ({ student, teacherNote, verifiedActivities }) => {
                                 <div key={idx} className="p-4 border-b border-gray-50 hover:bg-emerald-50/30 transition-colors">
                                     <div className="flex gap-3">
                                         <div className="size-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                                            <span className="material-symbols-outlined text-sm">verified</span>
+                                            <span className="material-symbols-outlined notranslate text-sm">verified</span>
                                         </div>
                                         <div>
                                             <p className="text-xs font-bold text-gray-800 mb-0.5">Ibadah Diverifikasi</p>
@@ -218,7 +219,7 @@ const PointsCard = ({ totalPoints }) => {
                     {/* Academic Year Badge */}
                     <div className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-sm flex items-center gap-2">
                         <div className="size-6 rounded-full bg-white/20 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-sm">school</span>
+                            <span className="material-symbols-outlined notranslate text-sm">school</span>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-[8px] text-blue-100 font-medium leading-none mb-0.5">Tahun Ajaran</span>
@@ -263,7 +264,7 @@ const TeacherNotes = ({ note }) => {
         <div className="mt-5 mb-4 px-1">
             {/* Section Title - Outside Card */}
             <div className="flex items-center gap-2 mb-3">
-                <span className="material-symbols-outlined text-xl text-blue-500">chat</span>
+                <span className="material-symbols-outlined notranslate text-xl text-blue-500">chat</span>
                 <h3 className="text-base font-extrabold text-gray-800 tracking-tight">Catatan Guru</h3>
             </div>
 
@@ -369,7 +370,7 @@ const MenuCards = ({ stats, activities }) => {
         <div className="mt-6 mb-4">
             <div className="flex items-center gap-2 mb-4 px-1">
                 <div className="size-8 rounded-full bg-blue-100/50 text-blue-600 flex items-center justify-center border border-blue-100">
-                    <span className="material-symbols-outlined text-lg">grid_view</span>
+                    <span className="material-symbols-outlined notranslate text-lg">grid_view</span>
                 </div>
                 <h3 className="text-base font-extrabold text-slate-800 tracking-tight">Menu Utama</h3>
             </div>
@@ -384,7 +385,7 @@ const MenuCards = ({ stats, activities }) => {
                     >
                         {/* Decorative Large Faded Icon */}
                         <div className={`absolute -bottom-2 -right-2 text-[4rem] opacity-20 rotate-12 group-hover:rotate-0 transition-transform duration-500 ${card.iconColor}`}>
-                            {card.icon === "verified" ? <span className="material-symbols-outlined text-[4rem]">verified</span> : card.icon}
+                            {card.icon === "verified" ? <span className="material-symbols-outlined notranslate text-[4rem]">verified</span> : card.icon}
                         </div>
 
                         {/* Glass Shine */}
@@ -395,7 +396,7 @@ const MenuCards = ({ stats, activities }) => {
                             <div className="flex justify-between items-start">
                                 <div className="size-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-sm border border-white/20 text-white">
                                     {card.icon === "verified" ? (
-                                        <span className="material-symbols-outlined text-lg">verified</span>
+                                        <span className="material-symbols-outlined notranslate text-lg">verified</span>
                                     ) : (
                                         <span className="text-lg filter drop-shadow-sm">{card.icon}</span>
                                     )}
@@ -699,57 +700,113 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
     const verifiedActivities = activities?.filter(a => a.status === 'Terverifikasi') || [];
 
     return (
-        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative select-none touch-manipulation animate-fade-in pb-32">
+        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative select-none touch-manipulation animate-fade-in">
             {/* Smooth Background Gradient Decoration */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
-            {/* Header - Sticky with Staggered Entrance */}
-            <div className="px-6 py-4 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] transition-all duration-300 animate-fade-in-up border-b border-slate-200" style={{ animationDuration: '0.6s' }}>
-                <HeaderMobile
-                    student={studentInfo}
-                    teacherNote={teacherNote}
-                    verifiedActivities={verifiedActivities}
-                />
-            </div>
+            <PullToRefresh onRefresh={() => window.location.reload()}>
+                <div className="min-h-full">
+                    {/* Header - Sticky with Staggered Entrance */}
+                    <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] transition-all duration-300 animate-fade-in-up border-b border-slate-200" style={{ animationDuration: '0.6s' }}>
+                        <HeaderMobile
+                            student={studentInfo}
+                            teacherNote={teacherNote}
+                            verifiedActivities={verifiedActivities}
+                        />
+                    </div>
 
-            <div className="px-6 space-y-8 relative z-10 pt-4">
-                {/* 1. Points Card (Delay 0.1s) */}
-                <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <PointsCard totalPoints={stats?.totalPoints || 0} />
-                </div>
-
-                {/* 2. Teacher Notes (Delay 0.2s) - Moved up as Progress is now in Menu */}
-                <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <TeacherNotes note={teacherNote} />
-                </div>
-
-                {/* 3. Menu Cards (Delay 0.3s) - Now contains Progress in Riwayat */}
-                <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <MenuCards stats={stats} activities={activities} />
-                </div>
-
-                {/* 4. Recent Activity (Delay 0.4s) */}
-                <div className="animate-fade-in-up opacity-0 pb-6" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.9s' }}>
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                            <div className="size-8 rounded-full bg-emerald-100/50 text-emerald-600 flex items-center justify-center">
-                                <span className="material-symbols-outlined text-lg">history</span>
-                            </div>
-                            <h3 className="text-base font-bold text-slate-800">Aktivitas Terakhir</h3>
+                    <div className="px-6 space-y-8 relative z-10 pt-4">
+                        {/* 1. Points Card (Delay 0.1s) */}
+                        <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                            <PointsCard totalPoints={stats?.totalPoints || 0} />
                         </div>
+
+                        {/* 2. Teacher Notes (Delay 0.2s) - Moved up as Progress is now in Menu */}
+                        <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                            <TeacherNotes note={teacherNote} />
+                        </div>
+
+                        {/* 3. Menu Cards (Delay 0.3s) - Now contains Progress in Riwayat */}
+                        <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                            <MenuCards stats={stats} activities={activities} />
+                        </div>
+
+                        {/* 4. Recent Activity (Delay 0.4s) */}
+                        <div className="animate-fade-in-up opacity-0 pb-16" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.9s' }}>
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="size-8 rounded-full bg-emerald-100/50 text-emerald-600 flex items-center justify-center">
+                                        <span className="material-symbols-outlined notranslate text-lg">history</span>
+                                    </div>
+                                    <h3 className="text-base font-bold text-slate-800">Aktivitas Terakhir</h3>
+                                </div>
+                                <button
+                                    onClick={() => navigate('/student/history')}
+                                    className="text-xs font-bold text-blue-500 hover:text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1"
+                                >
+                                    Lihat Semua
+                                    <span className="material-symbols-outlined notranslate text-sm">arrow_forward</span>
+                                </button>
+                            </div>
+                            <ActivityList activities={activities} />
+                        </div>
+                    </div>
+                </div>
+            </PullToRefresh>
+
+            {/* Bottom Navigation */}
+            <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 pointer-events-none">
+                {/* FAB Button */}
+                <div className="flex justify-center pointer-events-auto">
+                    <button
+                        onClick={() => navigate('/student/input')}
+                        className="relative -mb-10 w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-[0_8px_24px_-4px_rgba(59,130,246,0.5)] active:scale-95 transition-transform z-10 border-4 border-white"
+                    >
+                        <span className="material-symbols-outlined notranslate text-white text-3xl">add</span>
+                    </button>
+                </div>
+
+                {/* Nav Bar - Full Width with Rounded Top */}
+                <div className="bg-white px-8 pt-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pointer-events-auto rounded-t-3xl border-t border-slate-200 shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.08)]">
+                    <div className="flex items-center justify-between">
+                        {/* Dashboard - Active */}
+                        <button className="flex flex-col items-center text-blue-600 min-w-[60px]">
+                            <span className="material-symbols-outlined notranslate text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>home</span>
+                            <span className="text-xs font-bold mt-1">Dashboard</span>
+                        </button>
+
+                        {/* Riwayat */}
                         <button
                             onClick={() => navigate('/student/history')}
-                            className="text-xs font-bold text-blue-500 hover:text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1"
+                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px]"
                         >
-                            Lihat Semua
-                            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                            <span className="material-symbols-outlined notranslate text-[28px]">schedule</span>
+                            <span className="text-xs font-medium mt-1">Riwayat</span>
+                        </button>
+
+                        {/* Spacer for FAB */}
+                        <div className="w-16"></div>
+
+                        {/* Peringkat */}
+                        <button
+                            onClick={() => navigate('/student/leaderboard')}
+                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px]"
+                        >
+                            <span className="material-symbols-outlined notranslate text-[28px]">leaderboard</span>
+                            <span className="text-xs font-medium mt-1">Peringkat</span>
+                        </button>
+
+                        {/* Profil */}
+                        <button
+                            onClick={() => navigate('/student/profile')}
+                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px]"
+                        >
+                            <span className="material-symbols-outlined notranslate text-[28px]">person</span>
+                            <span className="text-xs font-medium mt-1">Profil</span>
                         </button>
                     </div>
-                    <ActivityList activities={activities} />
                 </div>
             </div>
-
-            {/* Bottom Navigation handled by StudentLayout */}
         </div>
     );
 };

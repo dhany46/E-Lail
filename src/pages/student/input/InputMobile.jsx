@@ -173,7 +173,7 @@ const PrayerCardMobile = ({ id, label, icon, isChecked, onClick, onRemove, data,
                     className="absolute top-1 right-1 text-blue-500 cursor-pointer p-1 z-10 hover:bg-blue-100 rounded-full transition-colors"
                     onClick={(e) => { e.stopPropagation(); onRemove(id); }}
                 >
-                    <span className="material-symbols-outlined text-sm font-bold">close</span>
+                    <span className="material-symbols-outlined text-sm font-bold notranslate">close</span>
                 </div>
             )}
 
@@ -214,7 +214,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
             <div className="bg-white rounded-[2rem] w-full max-w-sm p-6 shadow-xl animate-pop-up">
                 <div className="text-center">
                     <div className="size-14 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="material-symbols-outlined text-3xl">warning</span>
+                        <span className="material-symbols-outlined text-3xl notranslate">warning</span>
                     </div>
                     <h3 className="text-lg font-bold text-gray-900 mb-2">Belum Disimpan!</h3>
                     <p className="text-sm text-gray-500 mb-6">Yakin mau keluar? Datamu akan hilang lho.</p>
@@ -234,7 +234,7 @@ const SuccessModal = ({ isOpen }) => {
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-sm p-8 shadow-xl animate-pop-up text-center">
                 <div className="size-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="material-symbols-outlined text-5xl animate-bounce">check</span>
+                    <span className="material-symbols-outlined text-5xl animate-bounce notranslate">check</span>
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Terikirim! 🚀</h3>
                 <p className="text-sm text-gray-500">Laporanmu sudah masuk. Barakallah!</p>
@@ -469,7 +469,7 @@ const InputMobile = () => {
                         </div>
                         <div>
                             <h3 className="text-xl font-bold text-gray-900 tracking-tight">{prayerData.label}</h3>
-                            <p className="text-sm font-medium text-gray-500">Jam berapa kamu sholat?</p>
+                            <p className="text-sm font-medium text-gray-500 px-4">Jam berapa kamu sholat?</p>
                         </div>
                     </div>
 
@@ -481,14 +481,14 @@ const InputMobile = () => {
                                 className={`flex-1 py-3.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 outline-none border-0 ring-0 focus:outline-none focus:ring-0 relative min-h-[52px] ${isCongregation ? 'bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-300/50 hover:shadow-emerald-300/70' : 'bg-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-200/50'}`}
                                 onClick={() => setIsCongregation(true)}
                             >
-                                <span className="material-symbols-outlined text-lg">groups</span>
+                                <span className="material-symbols-outlined text-lg notranslate">groups</span>
                                 <span>Berjamaah!</span>
                             </button>
                             <button
                                 className={`flex-1 py-3.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 outline-none border-0 ring-0 focus:outline-none focus:ring-0 relative min-h-[52px] ${!isCongregation ? 'bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-300/50 hover:shadow-blue-300/70' : 'bg-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-200/50'}`}
                                 onClick={() => setIsCongregation(false)}
                             >
-                                <span className="material-symbols-outlined text-lg">person</span>
+                                <span className="material-symbols-outlined text-lg notranslate">person</span>
                                 <span>Sendiri</span>
                             </button>
                         </div>
@@ -615,7 +615,7 @@ const InputMobile = () => {
                                     {errors.ayatStart && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse text-center">{errors.ayatStart}</p>}
                                 </div>
                                 <div className="flex items-center pt-8 text-slate-300">
-                                    <span className="material-symbols-outlined">arrow_right_alt</span>
+                                    <span className="material-symbols-outlined notranslate">arrow_right_alt</span>
                                 </div>
                                 <div className="flex-1">
                                     <label className="text-xs font-bold text-slate-600 uppercase tracking-wide ml-1 mb-2 block">Ayat Akhir</label>

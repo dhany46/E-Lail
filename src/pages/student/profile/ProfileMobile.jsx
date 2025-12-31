@@ -303,7 +303,7 @@ const ProfileMobile = () => {
                     onClick={() => navigate('/settings')}
                     className="w-10 h-10 rounded-full text-slate-600 active:bg-white/50 flex items-center justify-center transition-colors"
                 >
-                    <span className="material-symbols-outlined text-xl">settings</span>
+                    <span className="material-symbols-outlined notranslate text-xl">settings</span>
                 </button>
             </div>
 
@@ -318,7 +318,7 @@ const ProfileMobile = () => {
                         {/* Status Indicator */}
                         <div className="absolute 0 -bottom-1 -right-1 bg-white p-1.5 rounded-full z-20 shadow-sm">
                             <div className="bg-green-500 w-6 h-6 rounded-full flex items-center justify-center border-2 border-white">
-                                <span className="material-symbols-outlined text-xs text-white font-bold">check</span>
+                                <span className="material-symbols-outlined notranslate text-xs text-white font-bold">check</span>
                             </div>
                         </div>
                     </div>
@@ -377,7 +377,7 @@ const ProfileMobile = () => {
                                     {/* Academic Year Badge */}
                                     <div className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-sm flex items-center gap-2">
                                         <div className="size-6 rounded-full bg-white/20 flex items-center justify-center">
-                                            <span className="material-symbols-outlined text-sm">school</span>
+                                            <span className="material-symbols-outlined notranslate text-sm">school</span>
                                         </div>
                                         <div className="flex flex-col">
                                             <span className="text-[8px] text-blue-100 font-medium leading-none mb-0.5">Tahun Ajaran</span>
@@ -503,14 +503,14 @@ const ProfileMobile = () => {
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center">
-                                <span className="material-symbols-outlined text-lg">delete_sweep</span>
+                                <span className="material-symbols-outlined notranslate text-lg">delete_sweep</span>
                             </div>
                             <div className="text-left">
                                 <span className="text-sm font-semibold text-gray-800 block">Reset Data Ibadah</span>
                                 <span className="text-[10px] text-gray-400">Hapus semua riwayat (untuk testing)</span>
                             </div>
                         </div>
-                        <span className="material-symbols-outlined text-gray-400 text-lg">chevron_right</span>
+                        <span className="material-symbols-outlined notranslate text-gray-400 text-lg">chevron_right</span>
                     </button>
                 </div>
 
@@ -521,7 +521,7 @@ const ProfileMobile = () => {
                         className="group w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 to-red-500 text-white font-bold active:scale-[0.96] transition-all duration-300 flex items-center justify-center gap-2.5 shadow-lg shadow-rose-300/40 hover:shadow-xl hover:shadow-rose-300/50 outline-none ring-0 border-none"
                     >
                         <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center transition-colors group-hover:bg-white/30">
-                            <span className="material-symbols-outlined text-base group-hover:-translate-x-0.5 transition-transform text-white">logout</span>
+                            <span className="material-symbols-outlined notranslate text-base group-hover:-translate-x-0.5 transition-transform text-white">logout</span>
                         </div>
                         <span className="text-xs tracking-wide">Keluar Akun</span>
                     </button>
@@ -581,7 +581,7 @@ const ProfileMobile = () => {
                                 onClick={() => setShowAboutModal(false)}
                                 className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white p-2 rounded-full backdrop-blur-md transition-all active:scale-90 border border-white/10"
                             >
-                                <span className="material-symbols-outlined text-lg">close</span>
+                                <span className="material-symbols-outlined notranslate text-lg">close</span>
                             </button>
 
                             <div className="relative z-10 flex flex-col items-center mt-2">

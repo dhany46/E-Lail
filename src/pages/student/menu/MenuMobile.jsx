@@ -82,7 +82,7 @@ const MenuMobile = () => {
                         className="animate-fade-in-up opacity-0 bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col items-center justify-center gap-3 active:scale-95 transition-all active:bg-gray-50 aspect-[4/3] hover:shadow-md group relative overflow-hidden"
                     >
                         <div className={`size-12 rounded-full ${item.bg} ${item.color} flex items-center justify-center shadow-sm group-active:scale-90 transition-transform duration-200`}>
-                            <span className="material-symbols-outlined text-3xl">{item.icon}</span>
+                            <span className="material-symbols-outlined notranslate text-3xl">{item.icon}</span>
                         </div>
                         <span className="text-sm font-bold text-gray-700 text-center leading-tight group-active:opacity-70 transition-opacity">{item.title}</span>
                     </Link>
@@ -95,7 +95,7 @@ const MenuMobile = () => {
                     className="animate-fade-in-up opacity-0 bg-red-50 rounded-2xl p-5 shadow-sm border border-red-100 flex flex-col items-center justify-center gap-3 active:scale-95 transition-all active:bg-red-100 aspect-[4/3] col-span-2 mt-2 group"
                 >
                     <div className="size-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center shadow-sm group-active:scale-90 transition-transform">
-                        <span className="material-symbols-outlined text-3xl">logout</span>
+                        <span className="material-symbols-outlined notranslate text-3xl">logout</span>
                     </div>
                     <div className="text-center">
                         <span className="block text-sm font-bold text-red-600">Keluar Aplikasi</span>
