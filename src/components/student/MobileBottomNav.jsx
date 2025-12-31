@@ -7,7 +7,7 @@ const MobileBottomNav = () => {
 
     const navItems = [
         { icon: 'home', label: 'Dashboard', path: '/student/dashboard' },
-        { icon: 'history', label: 'Riwayat', path: '/student/history' },
+        { icon: 'schedule', label: 'Riwayat', path: '/student/history' },
         { icon: 'leaderboard', label: 'Peringkat', path: '/student/leaderboard' },
         { icon: 'person', label: 'Profil', path: '/student/profile' },
     ];
@@ -24,7 +24,7 @@ const MobileBottomNav = () => {
                             <React.Fragment key={idx}>
                                 <button
                                     onClick={() => navigate('/student/input')}
-                                    className="relative -top-5 size-14 rounded-full bg-gradient-to-r from-emerald-500 to-green-500 text-white flex items-center justify-center shadow-lg shadow-emerald-200 active:scale-95 transition-transform"
+                                    className="relative -top-5 size-14 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-200 active:scale-95 transition-transform"
                                 >
                                     <span className="material-symbols-outlined text-2xl">add</span>
                                 </button>

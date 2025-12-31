@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaBell, FaMosque, FaCloudSun, FaBookOpen, FaHeart, FaStar, FaStickyNote, FaHourglassHalf, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { BiSolidDonateHeart } from "react-icons/bi";
 
 // --- Sub-Components ---
 
@@ -79,17 +81,17 @@ const HeaderMobile = ({ student, teacherNote, verifiedActivities }) => {
                     />
                 </div>
                 <div className="flex flex-col gap-0.5">
-                    <p className="text-[11px] text-gray-500 font-semibold tracking-wide">Assalamualaikum 👋</p>
-                    <h2 className="text-lg font-extrabold text-gray-800 leading-none truncate max-w-[180px]">Kakak {student?.name || 'Sarah'}!</h2>
-                    <p className="text-[11px] text-blue-500 font-medium mt-0.5">{subGreeting}</p>
+                    <p className="text-[11px] text-blue-600 font-bold tracking-wide">Assalamualaikum 👋</p>
+                    <h2 className="text-lg font-extrabold text-slate-800 leading-none truncate max-w-[180px]">Kakak {student?.name || 'Sarah'}!</h2>
+                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">{subGreeting}</p>
                 </div>
             </div>
             <div className="relative" ref={notificationRef}>
                 <button
                     onClick={handleBellClick}
-                    className="size-10 rounded-full bg-white shadow-md flex items-center justify-center transition-all active:scale-95 relative border border-gray-100"
+                    className="size-10 rounded-full bg-white shadow-md flex items-center justify-center transition-all active:scale-90 relative border border-gray-100"
                 >
-                    <span className="material-symbols-outlined text-xl text-gray-600">notifications</span>
+                    <FaBell className="text-lg text-gray-600" />
                     {showBadge && (
                         <span className={`absolute top-1 right-1 size-2.5 bg-red-500 rounded-full ring-2 ring-white transition-opacity duration-[2000ms] ${isFading ? 'opacity-0' : 'opacity-100'}`}></span>
                     )}
@@ -103,7 +105,7 @@ const HeaderMobile = ({ student, teacherNote, verifiedActivities }) => {
                                 Notifikasi <span className="text-xs font-normal text-gray-500">({newCount})</span>
                             </h3>
                         </div>
-                        <div className="max-h-[300px] overflow-y-auto">
+                        <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
                             {/* Teacher Note Notification */}
                             {teacherNote && (
                                 <div className="p-4 border-b border-gray-50 hover:bg-blue-50/30 transition-colors">
@@ -184,6 +186,13 @@ const PointsCard = ({ totalPoints }) => {
     const pointsNeeded = nextThreshold - currentThreshold;
     const progressPercent = pointsNeeded > 0 ? Math.min((pointsInLevel / pointsNeeded) * 100, 100) : 100;
 
+    // Calculate Academic Year
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const startYear = currentMonth < 6 ? currentYear - 1 : currentYear;
+    const academicYearLabel = `${startYear}/${startYear + 1}`;
+
     return (
         <div className="bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-3xl p-5 text-white shadow-xl relative overflow-hidden">
             {/* White glow effects */}
@@ -199,9 +208,15 @@ const PointsCard = ({ totalPoints }) => {
                             {totalPoints.toLocaleString()} <span className="text-amber-300 text-3xl">★</span>
                         </h1>
                     </div>
-                    {/* Badge display instead of Tukar */}
-                    <div className="size-14 rounded-2xl bg-white/25 backdrop-blur-sm flex flex-col items-center justify-center shadow-lg">
-                        <span className="text-2xl">{levelBadge}</span>
+                    {/* Academic Year Badge */}
+                    <div className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-sm flex items-center gap-2">
+                        <div className="size-6 rounded-full bg-white/20 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-sm">school</span>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-[8px] text-blue-100 font-medium leading-none mb-0.5">Tahun Ajaran</span>
+                            <span className="text-[10px] font-bold text-white leading-none">{academicYearLabel}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -239,37 +254,44 @@ const TeacherNotes = ({ note }) => {
 
     return (
         <div className="mt-5 mb-4 px-1">
-            <div className="bg-white rounded-[1.5rem] sm:rounded-[2rem] p-5 sm:p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] transition-all duration-300 border border-slate-50 group">
+            {/* Section Title - Outside Card */}
+            <div className="flex items-center gap-2 mb-3">
+                <span className="material-symbols-outlined text-xl text-blue-500">chat</span>
+                <h3 className="text-base font-extrabold text-gray-800 tracking-tight">Catatan Guru</h3>
+            </div>
 
-                {/* Header Row */}
-                <div className="flex justify-between items-start mb-3 sm:mb-4">
-                    <h3 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
-                        Catatan Guru
-                    </h3>
-                    <div className="relative">
-                        <span className="bg-slate-50 text-slate-500 text-[10px] sm:text-[11px] font-bold px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl border border-slate-100">
-                            {note.date}
+            {/* Card Content */}
+            <div className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-slate-100 transition-all duration-300">
+                {/* Message Content */}
+                <div className="flex gap-3">
+                    {/* Teacher Avatar */}
+                    <div className="size-10 rounded-full bg-blue-500 flex items-center justify-center shrink-0 shadow-sm border-2 border-white ring-2 ring-blue-50">
+                        <span className="text-white text-sm font-bold">
+                            {note.teacherName?.split(' ').pop()?.charAt(0) || 'G'}
                         </span>
-                        {/* Notification Dot */}
-                        {note.isNew && (
-                            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 sm:h-3 sm:w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-full w-full bg-rose-500 border-2 border-white"></span>
-                            </span>
-                        )}
+                    </div>
+                    <div className="flex-1 min-w-0 pt-0.5">
+                        {/* Header: Name, Role & Date */}
+                        <div className="flex justify-between items-start mb-1.5">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 pr-2">
+                                <p className="text-[14px] font-extrabold text-slate-800">{note.teacherName}</p>
+                                <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-100/50">Wali Kelas</span>
+                                {note.isNew && (
+                                    <span className="text-[9px] font-bold text-white bg-rose-500 px-1.5 py-0.5 rounded-full animate-pulse">Baru</span>
+                                )}
+                            </div>
+                            {/* Date moved to top right */}
+                            <p className="text-[10px] text-slate-400 font-medium whitespace-nowrap shrink-0 mt-0.5">
+                                {note.date}
+                            </p>
+                        </div>
+
+                        {/* Message */}
+                        <p className="text-[12px] text-slate-600 leading-5 font-medium">
+                            {note.message}
+                        </p>
                     </div>
                 </div>
-
-                {/* Message Content */}
-                <p className="text-xs sm:text-[13px] font-medium text-slate-600 leading-[1.6] mb-3 sm:mb-4">
-                    "{note.message}"
-                </p>
-
-                {/* Footer / Teacher Name */}
-                <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                    {note.teacherName} <span className="text-slate-300">•</span> Wali Kelas
-                </p>
             </div>
         </div>
     );
@@ -288,87 +310,113 @@ const MenuCards = ({ stats, activities }) => {
 
     const cards = [
         {
-            title: "Input Ibadah",
-            subtitle: "Catat amalmu yuk! ✨",
+            pill: "INPUT IBADAH",
+            title: "Catat Ibadah",
+            subtitle: "Yuk isi kegiatanmu! \u00A0✨",
             icon: "📝",
             path: "/student/input",
             bg: "bg-gradient-to-br from-amber-400 to-orange-500",
             shadow: "shadow-orange-200",
+            iconColor: "text-amber-100",
             delay: "0s"
         },
         {
-            title: "Target Harian",
-            subtitle: `${safeStats.todayCount}/${safeStats.targetDaily} Tuntas • ${Math.round(progressPercentage)}%`,
-            icon: `${safeStats.todayCount}/${safeStats.targetDaily}`,
-            isCount: true,
-            path: "/student/history",
-            bg: "bg-gradient-to-br from-blue-400 to-blue-600",
+            pill: "TARGET HARIAN",
+            title: "Target Ibadah",
+            subtitle: `${safeStats.todayCount}/${safeStats.targetDaily} Ibadah Tuntas! \u00A0🚀`,
+            icon: "🎯",
+            path: "/student/input",
+            bg: "bg-gradient-to-br from-blue-500 to-blue-600",
             shadow: "shadow-blue-200",
+            iconColor: "text-blue-100",
             delay: "0.1s",
             hasProgress: true,
             progress: progressPercentage
         },
         {
+            pill: "PAPAN JUARA",
             title: "Leaderboard",
-            subtitle: "Siapa paling rajin? 🏆",
-            icon: "👑",
+            subtitle: "Intip teman rajin! \u00A0🏆",
+            icon: "🏆",
             path: "/student/leaderboard",
-            bg: "bg-gradient-to-br from-purple-400 to-purple-600",
-            shadow: "shadow-purple-200",
+            bg: "bg-gradient-to-br from-violet-500 to-purple-600",
+            shadow: "shadow-violet-200",
+            iconColor: "text-violet-100",
             delay: "0.2s"
         },
         {
+            pill: "KABAR GURU",
             title: "Verifikasi",
-            subtitle: "Menunggu dicek guru 🧐",
-            icon: pendingCount, // Display count as icon
-            isCount: true,
+            subtitle: `${pendingCount} Menunggu dinilai \u00A0🧐`,
+            icon: "verified", // Material symbol name
             path: "/student/history",
-            bg: "bg-gradient-to-br from-emerald-400 to-emerald-600",
+            bg: "bg-gradient-to-br from-emerald-400 to-green-500",
             shadow: "shadow-emerald-200",
+            iconColor: "text-emerald-100",
             delay: "0.3s"
         }
     ];
 
     return (
         <div className="mt-6 mb-4">
-            <div className="flex items-center gap-2 mb-4">
-                <div className="size-8 rounded-full bg-blue-100/50 text-blue-600 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-lg">category</span>
+            <div className="flex items-center gap-2 mb-4 px-1">
+                <div className="size-8 rounded-full bg-blue-100/50 text-blue-600 flex items-center justify-center border border-blue-100">
+                    <span className="material-symbols-outlined text-lg">grid_view</span>
                 </div>
-                <h3 className="text-base font-bold text-slate-800">Menu Utama</h3>
+                <h3 className="text-base font-extrabold text-slate-800 tracking-tight">Menu Utama</h3>
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 gap-3">
                 {cards.map((card, idx) => (
                     <button
                         key={idx}
                         onClick={() => navigate(card.path)}
-                        className={`relative text-left p-4 sm:p-5 rounded-[1.8rem] ${card.bg} overflow-hidden group animate-fade-in-up
-                        transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-[1.02] active:scale-95 shadow-lg ${card.shadow}`}
+                        className={`relative text-left w-full h-[120px] rounded-[1.5rem] ${card.bg} overflow-hidden group animate-fade-in-up
+                        transition-transform duration-200 active:scale-[0.96] shadow-lg ${card.shadow}`}
                         style={{ animationDelay: card.delay }}
                     >
-                        {/* Smooth White Light Overlay - The "Glow" */}
-                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none"></div>
+                        {/* Decorative Large Faded Icon */}
+                        <div className={`absolute -bottom-2 -right-2 text-[4rem] opacity-20 rotate-12 group-hover:rotate-0 transition-transform duration-500 ${card.iconColor}`}>
+                            {card.icon === "verified" ? <span className="material-symbols-outlined text-[4rem]">verified</span> : card.icon}
+                        </div>
 
-                        {/* Soft Radial Highlight in Corner */}
-                        <div className="absolute -top-10 -left-10 w-32 h-32 bg-white/30 rounded-full blur-2xl pointer-events-none mix-blend-overlay"></div>
+                        {/* Glass Shine */}
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 via-transparent to-black/5 pointer-events-none"></div>
 
-                        <div className="relative z-10 w-full">
-                            {/* Bouncy Icon Container */}
-                            <div className={`size-10 sm:size-12 rounded-2xl bg-white/25 backdrop-blur-md flex items-center justify-center mb-4 sm:mb-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] border border-white/20 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300 ${card.isCount ? 'text-white font-black' : ''} ${card.isCount && card.icon.toString().length > 2 ? 'text-lg sm:text-xl' : card.isCount ? 'text-2xl sm:text-3xl' : ''}`}>
-                                <span className={`${!card.isCount ? 'text-xl sm:text-2xl filter drop-shadow-sm' : ''}`}>{card.icon}</span>
-                            </div>
-                            <h4 className="font-extrabold text-base sm:text-lg text-white mb-0.5 leading-tight tracking-wide drop-shadow-md">{card.title}</h4>
-                            <p className="text-[10px] sm:text-xs font-semibold text-white/90">{card.subtitle}</p>
-
-                            {/* Mini Progress Bar for History Card */}
-                            {card.hasProgress && (
-                                <div className="mt-2 w-full h-1.5 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm">
-                                    <div
-                                        className="h-full bg-white/90 rounded-full transition-all duration-1000 ease-out"
-                                        style={{ width: `${card.progress}%` }}
-                                    ></div>
+                        <div className="relative z-10 p-3.5 flex flex-col h-full justify-between">
+                            {/* Top Row */}
+                            <div className="flex justify-between items-start">
+                                <div className="size-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-sm border border-white/20 text-white">
+                                    {card.icon === "verified" ? (
+                                        <span className="material-symbols-outlined text-lg">verified</span>
+                                    ) : (
+                                        <span className="text-lg filter drop-shadow-sm">{card.icon}</span>
+                                    )}
                                 </div>
-                            )}
+                                <div className="px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md border border-white/10 max-w-[60%] truncate">
+                                    <span className="text-[7px] font-black text-white uppercase tracking-wider block truncate">{card.pill}</span>
+                                </div>
+                            </div>
+
+                            {/* Bottom Content */}
+                            {/* Bottom Content */}
+                            <div>
+                                <h4 className="font-extrabold text-[15px] text-white tracking-tight leading-4 mb-1 drop-shadow-sm line-clamp-1">
+                                    {card.title}
+                                </h4>
+                                {card.hasProgress ? (
+                                    <div>
+                                        <p className="text-[10px] font-semibold text-white/90 mb-1.5">{card.subtitle.split(' ')[0]}</p>
+                                        <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm">
+                                            <div
+                                                className="h-full bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                                                style={{ width: `${card.progress}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <p className="text-[10px] font-semibold text-white/90 line-clamp-1">{card.subtitle}</p>
+                                )}
+                            </div>
                         </div>
                     </button>
                 ))}
@@ -381,74 +429,182 @@ const MenuCards = ({ stats, activities }) => {
 const ActivityList = ({ activities }) => {
     // Show only last 8 activities
     const recentActivities = activities?.slice(0, 8) || [];
+    const [expandedCards, setExpandedCards] = React.useState({});
+
+    const toggleCardExpansion = (cardId) => {
+        setExpandedCards(prev => ({
+            ...prev,
+            [cardId]: !prev[cardId]
+        }));
+    };
 
     const getStatusConfig = (status) => {
         if (status === 'Terverifikasi') {
             return {
-                icon: 'check_circle',
+                icon: <FaCheckCircle className="text-sm" />,
                 color: 'text-emerald-500',
                 bg: 'bg-emerald-50',
-                label: 'Terverifikasi'
+                label: 'Terverifikasi',
+                isPending: false
             };
         }
         return {
-            icon: 'hourglass_top',
-            color: 'text-amber-500',
-            bg: 'bg-amber-50',
-            label: 'Menunggu'
+            icon: <FaHourglassHalf className="text-sm" />,
+            color: 'text-yellow-500', // keeping similar to history
+            bg: 'bg-yellow-50',
+            label: 'Menunggu',
+            isPending: true
         };
     };
 
-    return (
-        <div className="space-y-3">
-            {recentActivities.length > 0 ? (
-                recentActivities.map((activity, idx) => {
-                    const statusConfig = getStatusConfig(activity.status);
-                    return (
-                        <div key={idx} className="bg-white rounded-[1.2rem] p-4 flex items-center justify-between shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border border-slate-50 animate-fade-in-up group hover:bg-gray-50/50 transition-colors"
-                            style={{ animationDelay: `${0.1 * idx}s` }}
-                        >
-                            <div className="flex items-center gap-4 overflow-hidden">
-                                {/* Activity Icon */}
-                                <div className="size-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                    <span className="material-symbols-outlined text-[1.4rem]">
-                                        {activity.icon || 'history'}
-                                    </span>
-                                </div>
+    // Helper to determine icon/style matching HistoryMobile.jsx logic
+    const getActivityStyle = (title, category) => {
+        const t = title ? title.toLowerCase() : '';
+        // Exact logic from HistoryMobile.jsx's getActivityConfig and loadActivities
 
-                                {/* Text Content */}
-                                <div className="min-w-0 flex-1">
-                                    <h4 className="text-[13px] font-bold text-gray-800 line-clamp-1 mb-0.5 leading-tight">
-                                        {activity.title}
-                                    </h4>
-                                    <div className="flex items-center gap-1.5 text-[10px] font-medium text-gray-400">
-                                        <span>{activity.time}</span>
-                                        <span className="text-gray-300">•</span>
-                                        <span>Hari ini</span>
+        // Shalat Wajib (HistoryMobile uses: color: 'text-blue-600', bg: 'bg-blue-50', icon: FaMosque)
+        if (t.includes('shalat') && (t.includes('wajib') || t.includes('subuh') || t.includes('dzuhur') || t.includes('ashar') || t.includes('maghrib') || t.includes('isya'))) {
+            return { bg: 'bg-blue-50', color: 'text-blue-600', icon: <FaMosque className="text-xl" /> };
+        }
+
+        // Shalat Sunnah / Dhuha (HistoryMobile uses: color: 'text-purple-600', bg: 'bg-purple-50', icon: FaCloudSun)
+        if (t.includes('dhuha') || (category === 'Shalat Sunnah')) {
+            return { bg: 'bg-purple-50', color: 'text-purple-600', icon: <FaCloudSun className="text-xl" /> };
+        }
+
+        // Tadarus / Quran (HistoryMobile uses: color: 'text-amber-600', bg: 'bg-amber-50', icon: FaBookOpen)
+        if (t.includes('surat') || t.includes('tadarus') || t.includes('iqro') || t.includes('membaca')) {
+            return { bg: 'bg-amber-50', color: 'text-amber-600', icon: <FaBookOpen className="text-xl" /> };
+        }
+
+        // Infaq / Sedekah (HistoryMobile uses: points: 10, icon: BiSolidDonateHeart, color: 'text-pink-600', bg: 'bg-pink-50')
+        // WAIT: HistoryMobile uses pink for infaq in the loadActivities logic!
+        if (t.includes('infaq') || t.includes('sedekah')) {
+            return { bg: 'bg-pink-50', color: 'text-pink-600', icon: <BiSolidDonateHeart className="text-xl" /> };
+        }
+
+        // Bantu Ortu (HistoryMobile uses: points: 25, icon: FaHeart, color: 'text-pink-600', bg: 'bg-pink-50')
+        if (t.includes('bantu') || t.includes('orang tua')) {
+            return { bg: 'bg-pink-50', color: 'text-pink-600', icon: <FaHeart className="text-xl" /> };
+        }
+
+        // Catatan (HistoryMobile uses: color: 'text-blue-600', bg: 'bg-blue-50', icon: FaStickyNote)
+        if (t.includes('catatan') || category === 'Catatan') {
+            return { bg: 'bg-blue-50', color: 'text-blue-600', icon: <FaStickyNote className="text-xl" /> };
+        }
+
+        // Fallback
+        return { bg: 'bg-slate-50', color: 'text-slate-600', icon: <FaStar className="text-xl" /> };
+    };
+
+    return (
+        <>
+            {recentActivities.length > 0 ? (
+                <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+                    <div className="divide-y divide-slate-100">
+                        {recentActivities.map((activity, idx) => {
+                            const statusConfig = getStatusConfig(activity.status);
+                            const cardId = activity.id || `activity-${idx}`;
+                            const isExpanded = expandedCards[cardId];
+
+                            // Get style based on title and category
+                            const style = getActivityStyle(activity.title, activity.category);
+
+                            return (
+                                <div
+                                    key={cardId}
+                                    className="bg-transparent transition-all duration-200"
+                                >
+                                    {/* Main Row - Clickable */}
+                                    <div
+                                        onClick={() => toggleCardExpansion(cardId)}
+                                        className="p-4 flex items-center gap-3 cursor-pointer hover:bg-slate-50 active:bg-slate-100 active:scale-[0.99] transition-all duration-200"
+                                    >
+                                        {/* Activity Icon */}
+                                        <div className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${style.bg}`}>
+                                            <span className={`${style.color}`}>
+                                                {style.icon}
+                                            </span>
+                                        </div>
+
+                                        {/* Text Content */}
+                                        <div className="min-w-0 flex-1">
+                                            <h4 className="text-[13px] font-bold text-slate-800 line-clamp-1 mb-0.5">
+                                                {activity.title}
+                                            </h4>
+                                            <p className="text-[11px] text-slate-400 line-clamp-1">
+                                                {activity.date || 'Hari ini'} • {activity.time}
+                                            </p>
+                                        </div>
+
+                                        {/* Points & Status */}
+                                        <div className="text-right shrink-0">
+                                            <div className="text-sm font-black text-emerald-600">
+                                                +{activity.points}
+                                            </div>
+                                            <div className={`text-[9px] font-semibold ${statusConfig.color}`}>
+                                                {statusConfig.label}
+                                            </div>
+                                        </div>
+
+                                        {/* Expand Arrow */}
+                                        <span className={`material-symbols-outlined text-lg text-slate-300 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
+                                            expand_more
+                                        </span>
+                                    </div>
+
+                                    {/* Expandable Detail Section */}
+                                    <div className={`overflow-hidden transition-all duration-300 ease-out ${isExpanded ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                        <div className="px-4 pb-4 pt-0">
+                                            <div className="p-3 bg-slate-50/50 rounded-xl space-y-2 border border-slate-100/50">
+                                                {/* Category Badge */}
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] font-semibold text-slate-400">Kategori:</span>
+                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${activity.bg || 'bg-blue-50'} ${activity.color || 'text-blue-600'}`}>
+                                                        {activity.category || 'Ibadah'}
+                                                    </span>
+                                                </div>
+                                                {/* Detail / Notes */}
+                                                <div className="flex items-start gap-2">
+                                                    <span className="text-[10px] font-semibold text-slate-400 shrink-0">Detail:</span>
+                                                    <span className="text-[11px] text-slate-600">
+                                                        {activity.subtitle || activity.title}
+                                                    </span>
+                                                </div>
+                                                {/* Status with Icon */}
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] font-semibold text-slate-400">Status:</span>
+                                                    <div className="flex items-center gap-2">
+                                                        {statusConfig.isPending ? (
+                                                            <div className="flex items-center gap-2 animate-pulse">
+                                                                <FaHourglassHalf className="text-yellow-600 text-sm" />
+                                                                <span className="text-[11px] font-semibold text-yellow-600">
+                                                                    {statusConfig.label}
+                                                                </span>
+                                                            </div>
+                                                        ) : (
+                                                            <div className={`flex items-center gap-1 text-[11px] font-semibold ${statusConfig.color}`}>
+                                                                {statusConfig.icon}
+                                                                {statusConfig.label}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            {/* Right Side: Points & Status */}
-                            <div className="flex flex-col items-end gap-1 shrink-0 ml-2">
-                                <div className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full shadow-sm border border-emerald-100/50">
-                                    +{activity.points}
-                                </div>
-                                <div className={`flex items-center gap-0.5 text-[9px] font-medium ${statusConfig.color}`}>
-                                    <span className="material-symbols-outlined text-[10px]">{statusConfig.icon}</span>
-                                    <span>{statusConfig.label}</span>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })
+                            );
+                        })}
+                    </div>
+                </div>
             ) : (
                 <div className="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                     <span className="material-symbols-outlined text-3xl mb-2 opacity-30 text-gray-400">event_note</span>
                     <p className="text-xs text-gray-400 font-medium">Belum ada aktivitas hari ini</p>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 
@@ -459,12 +615,12 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
     const verifiedActivities = activities?.filter(a => a.status === 'Terverifikasi') || [];
 
     return (
-        <div className="min-h-screen bg-[#EEF7FF] font-sans pb-20 overflow-x-hidden">
+        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-y-auto bg-[#EEF7FF] font-sans relative select-none touch-manipulation animate-fade-in pb-32">
             {/* Smooth Background Gradient Decoration */}
-            <div className="fixed top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
+            <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
             {/* Header - Sticky with Staggered Entrance */}
-            <div className="px-6 pt-8 pb-6 sticky top-0 bg-[#EEF7FF]/95 backdrop-blur-xl z-30 transition-all duration-300 animate-fade-in-up border-b border-blue-200 shadow-sm" style={{ animationDuration: '0.6s' }}>
+            <div className="px-6 py-4 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-30 transition-all duration-300 animate-fade-in-up border-b border-slate-200" style={{ animationDuration: '0.6s' }}>
                 <HeaderMobile
                     student={studentInfo}
                     teacherNote={teacherNote}

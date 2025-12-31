@@ -1,36 +1,61 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft, FaMosque, FaBookOpen, FaHeart, FaStar, FaCloudSun } from "react-icons/fa";
+import { BiSolidDonateHeart } from "react-icons/bi";
+import { MdVerified, MdOutlineWbTwilight, MdLightMode, MdSunny, MdNightsStay, MdBedtime } from "react-icons/md";
 import { useStudentContext } from '../../../context/StudentContext';
 import { useToast } from '../../../context/ToastContext';
 
-// Custom Time Picker Component (Reused inside Modal)
+// Custom Time Picker Component (Based on Desktop Implementation)
 const CustomTimePicker = ({ value, onChange }) => {
     const [selectedHour, setSelectedHour] = useState(value ? value.split(':')[0] : '05');
     const [selectedMinute, setSelectedMinute] = useState(value ? value.split(':')[1] : '00');
+    const [isMounted, setIsMounted] = useState(false);
 
     // Refs for scrolling
     const hourRef = useRef(null);
     const minuteRef = useRef(null);
 
+    // Set mounted state
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     // Sync with external value changes
     useEffect(() => {
         if (value) {
             const [h, m] = value.split(':');
-            if (h !== selectedHour) setSelectedHour(h);
-            if (m !== selectedMinute) setSelectedMinute(m);
+            if (h && h !== selectedHour) setSelectedHour(h);
+            if (m && m !== selectedMinute) setSelectedMinute(m);
         }
-    }, [value]);
+    }, [value, selectedHour, selectedMinute]);
 
+    // Scroll to selected items on mount and when selection changes
     useEffect(() => {
-        if (hourRef.current) {
-            const el = document.getElementById(`hour-${selectedHour}`);
-            if (el) el.scrollIntoView({ block: 'center' });
-        }
-        if (minuteRef.current) {
-            const el = document.getElementById(`minute-${selectedMinute}`);
-            if (el) el.scrollIntoView({ block: 'center' });
-        }
-    }, [selectedHour, selectedMinute]);
+        const timer = setTimeout(() => {
+            const scrollToElement = (element, container) => {
+                if (!element || !container) return;
+
+                const elementOffset = element.offsetTop;
+                const containerHeight = container.clientHeight;
+                const elementHeight = element.clientHeight;
+                const scrollPosition = elementOffset - (containerHeight / 2) + (elementHeight / 2);
+
+                container.scrollTo({
+                    top: scrollPosition,
+                    behavior: 'smooth'
+                });
+            };
+
+            const hourEl = document.getElementById(`mobile-hour-${selectedHour}`);
+            const minuteEl = document.getElementById(`mobile-minute-${selectedMinute}`);
+
+            scrollToElement(hourEl, hourRef.current);
+            scrollToElement(minuteEl, minuteRef.current);
+        }, 200);
+        return () => clearTimeout(timer);
+    }, [selectedHour, selectedMinute, isMounted]);
 
     const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
     const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
@@ -46,48 +71,69 @@ const CustomTimePicker = ({ value, onChange }) => {
     };
 
     return (
-        <div className="flex gap-4 h-48 mt-4">
+        <div className="flex gap-3 mt-6 mb-4 px-2">
             {/* Hours Column */}
-            <div className="flex-1 bg-gray-50 rounded-xl overflow-hidden flex flex-col items-center relative border border-gray-100">
-                <div className="absolute top-0 left-0 right-0 bg-gray-50 z-10 p-2 text-center border-b border-gray-100">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Jam</span>
-                </div>
-                <div className="overflow-y-auto no-scrollbar w-full pt-10 pb-20 px-1 scroll-smooth" ref={hourRef}>
-                    {hours.map(h => (
-                        <div
-                            key={h}
-                            id={`hour-${h}`}
-                            onClick={() => handleHourClick(h)}
-                            className={`text-center py-2 mb-1 rounded-lg cursor-pointer text-sm font-bold transition-all ${selectedHour === h
-                                ? 'bg-blue-600 text-white shadow-md shadow-blue-200 scale-100'
-                                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100 scale-95'
-                                }`}
-                        >
-                            {h}
+            <div className="flex-1">
+                <p className="text-center text-[10px] font-black text-slate-400 tracking-widest uppercase mb-2">Jam</p>
+                <div className="bg-white rounded-2xl h-44 overflow-hidden relative border border-slate-100 shadow-sm">
+                    <div
+                        className="overflow-y-auto no-scrollbar w-full h-full touch-manipulation"
+                        ref={hourRef}
+                        style={{
+                            WebkitOverflowScrolling: 'touch',
+                            scrollBehavior: 'smooth'
+                        }}
+                    >
+                        <div className="pt-16 pb-16">
+                            {hours.map(h => (
+                                <div
+                                    key={h}
+                                    id={`mobile-hour-${h}`}
+                                    onClick={() => handleHourClick(h)}
+                                    className={`text-center py-2 my-1 mx-2 rounded-xl cursor-pointer text-base font-bold transition-all select-none ${selectedHour === h
+                                        ? 'bg-emerald-500 text-white scale-105 relative !z-50'
+                                        : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 relative !z-10'
+                                        }`}
+                                >
+                                    {h}
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    </div>
                 </div>
             </div>
 
+            {/* Separator */}
+            <div className="flex items-center justify-center text-slate-300 font-black text-2xl pt-6">:</div>
+
             {/* Minutes Column */}
-            <div className="flex-1 bg-gray-50 rounded-xl overflow-hidden flex flex-col items-center relative border border-gray-100">
-                <div className="absolute top-0 left-0 right-0 bg-gray-50 z-10 p-2 text-center border-b border-gray-100">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Menit</span>
-                </div>
-                <div className="overflow-y-auto no-scrollbar w-full pt-10 pb-20 px-1 scroll-smooth" ref={minuteRef}>
-                    {minutes.map(m => (
-                        <div
-                            key={m}
-                            id={`minute-${m}`}
-                            onClick={() => handleMinuteClick(m)}
-                            className={`text-center py-2 mb-1 rounded-lg cursor-pointer text-sm font-bold transition-all ${selectedMinute === m
-                                ? 'bg-blue-600 text-white shadow-md shadow-blue-200 scale-100'
-                                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100 scale-95'
-                                }`}
-                        >
-                            {m}
+            <div className="flex-1">
+                <p className="text-center text-[10px] font-black text-slate-400 tracking-widest uppercase mb-2">Menit</p>
+                <div className="bg-white rounded-2xl h-44 overflow-hidden relative border border-slate-100 shadow-sm">
+                    <div
+                        className="overflow-y-auto no-scrollbar w-full h-full touch-manipulation"
+                        ref={minuteRef}
+                        style={{
+                            WebkitOverflowScrolling: 'touch',
+                            scrollBehavior: 'smooth'
+                        }}
+                    >
+                        <div className="pt-16 pb-16">
+                            {minutes.map(m => (
+                                <div
+                                    key={m}
+                                    id={`mobile-minute-${m}`}
+                                    onClick={() => handleMinuteClick(m)}
+                                    className={`text-center py-2 my-1 mx-2 rounded-xl cursor-pointer text-base font-bold transition-all select-none ${selectedMinute === m
+                                        ? 'bg-blue-500 text-white scale-105 relative !z-50'
+                                        : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 relative !z-10'
+                                        }`}
+                                >
+                                    {m}
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,12 +145,12 @@ const PrayerCardMobile = ({ id, label, icon, isChecked, onClick, onRemove, data,
     if (isSubmitted) {
         return (
             <div className="relative rounded-2xl border border-gray-100 bg-gray-50 p-3 flex flex-col items-center gap-2 select-none opacity-60">
-                <div className="size-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
-                    <span className="material-symbols-outlined text-xl">{icon}</span>
+                <div className="size-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-xl">
+                    {icon}
                 </div>
                 <span className="text-xs font-bold text-gray-400">{label}</span>
-                <div className="absolute top-1 right-1 text-emerald-500">
-                    <span className="material-symbols-outlined text-sm">check_circle</span>
+                <div className="absolute top-1 right-1 text-emerald-500 text-lg">
+                    <MdVerified />
                 </div>
             </div>
         );
@@ -113,45 +159,48 @@ const PrayerCardMobile = ({ id, label, icon, isChecked, onClick, onRemove, data,
     return (
         <div
             className={`
-                relative rounded-2xl border transition-all duration-300 p-3 flex flex-col items-center gap-2 group select-none active:scale-95
+                relative rounded-2xl border transition-all duration-300 p-3 flex flex-col items-center gap-2 group select-none active:scale-[0.98]
+                animate-fade-in
                 ${isChecked
-                    ? 'border-emerald-500 bg-emerald-50 shadow-sm'
-                    : 'border-gray-100 bg-white shadow-sm'
+                    ? 'bg-gradient-to-br from-blue-50 to-white border-blue-200 shadow-md shadow-blue-100/50'
+                    : 'bg-white border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md hover:border-blue-200'
                 }
             `}
             onClick={() => onClick(id)}
         >
             {isChecked && (
                 <div
-                    className="absolute top-1 right-1 text-emerald-500 cursor-pointer p-1 z-10"
+                    className="absolute top-1 right-1 text-blue-500 cursor-pointer p-1 z-10 hover:bg-blue-100 rounded-full transition-colors"
                     onClick={(e) => { e.stopPropagation(); onRemove(id); }}
                 >
-                    <span className="material-symbols-outlined text-sm">close</span>
+                    <span className="material-symbols-outlined text-sm font-bold">close</span>
                 </div>
             )}
 
             <div className={`
-                size-10 rounded-full flex items-center justify-center transition-colors
-                ${isChecked ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-50 text-gray-400'}
+                size-10 rounded-full flex items-center justify-center transition-colors text-xl
+                ${isChecked ? 'bg-blue-100 text-blue-600' : 'bg-gray-50 text-gray-400'}
             `}>
-                <span className="material-symbols-outlined text-xl">{icon}</span>
+                {icon}
             </div>
 
             <div className="text-center w-full">
-                <span className={`block text-xs font-bold ${isChecked ? 'text-emerald-700' : 'text-gray-600'}`}>
+                <span className={`block text-xs font-bold ${isChecked ? 'text-blue-700' : 'text-gray-600'}`}>
                     {label}
                 </span>
 
                 {isChecked ? (
                     <div className="mt-1 animate-pop-in">
-                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full inline-block ${data?.isCongregation ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600'}`}>
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full inline-block ${data?.isCongregation ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
                             {data?.time}
                         </span>
                     </div>
                 ) : (
-                    <span className="text-[9px] font-bold text-amber-500 block mt-0.5">
-                        +20 Poin
-                    </span>
+                    <div className="mt-1">
+                        <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-md text-[9px] font-bold border border-blue-200 inline-block">
+                            +20 Poin
+                        </span>
+                    </div>
                 )}
             </div>
         </div>
@@ -223,6 +272,16 @@ const InputMobile = () => {
         notes: ''
     });
 
+    // Time State
+    const [currentTime, setCurrentTime] = useState(() => {
+        const now = new Date();
+        return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    });
+
+
+    // Validation Errors State
+    const [errors, setErrors] = useState({});
+
     // Load Data Hook
     useEffect(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -247,18 +306,23 @@ const InputMobile = () => {
         }
     }, []);
 
+    const studentInfo = {
+        name: "Ahmad",
+        // Add other info if available in context, otherwise fallback
+    };
+
     const prayers = [
-        { id: 'Subuh', icon: 'wb_twilight', label: 'Subuh', defaultTime: '04:45' },
-        { id: 'Dzuhur', icon: 'light_mode', label: 'Dzuhur', defaultTime: '12:15' },
-        { id: 'Ashar', icon: 'sunny', label: 'Ashar', defaultTime: '15:30' },
-        { id: 'Maghrib', icon: 'nights_stay', label: 'Maghrib', defaultTime: '18:10' },
-        { id: 'Isya', icon: 'bedtime', label: 'Isya', defaultTime: '19:25' },
+        { id: 'Subuh', icon: <MdOutlineWbTwilight />, label: 'Subuh', defaultTime: '04:45' },
+        { id: 'Dzuhur', icon: <MdLightMode />, label: 'Dzuhur', defaultTime: '12:15' },
+        { id: 'Ashar', icon: <MdSunny />, label: 'Ashar', defaultTime: '15:30' },
+        { id: 'Maghrib', icon: <MdNightsStay />, label: 'Maghrib', defaultTime: '18:10' },
+        { id: 'Isya', icon: <MdBedtime />, label: 'Isya', defaultTime: '19:25' },
     ];
 
     const additionalWorships = [
-        { id: 'dhuha', label: 'Sholat Dhuha', points: 15 },
-        { id: 'infaq', label: 'Infaq / Sedekah', points: 10 },
-        { id: 'help', label: 'Bantu Orang Tua', points: 25 },
+        { id: 'dhuha', label: 'Sholat Dhuha', points: 15, icon: <FaCloudSun />, color: 'purple' },
+        { id: 'infaq', label: 'Infaq / Sedekah', points: 10, icon: <BiSolidDonateHeart />, color: 'emerald' },
+        { id: 'help', label: 'Bantu Orang Tua', points: 25, icon: <FaHeart />, color: 'rose' },
     ];
 
     // Handlers
@@ -308,7 +372,32 @@ const InputMobile = () => {
 
     const handleSendReport = () => {
         if (isSubmitting) return;
-        if (!isDirty) {
+
+        // Validation for Tadarus
+        // If any field is filled, all must be filled
+        const isPartiallyFilled = form.surah || form.ayatStart || form.ayatEnd;
+        const newErrors = {};
+
+        if (isPartiallyFilled) {
+            if (!form.surah) newErrors.surah = "Ups, nama suratnya belum diisi nih! 📝";
+            if (!form.ayatStart) newErrors.ayatStart = "Ayat mulainya dari berapa ya? 🤔";
+            if (!form.ayatEnd) newErrors.ayatEnd = "Sampai ayat berapa bacanya? 📖";
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            toast.error("Lengkapi data tadarus dulu ya! 🙏");
+
+            // Scroll to error
+            const firstError = document.getElementById('tadarus-form');
+            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        // Clear errors if valid
+        setErrors({});
+
+        if (!isDirty && !isPartiallyFilled) {
             toast.error("Isi minimal 1 ibadah dulu ya!");
             return;
         }
@@ -348,191 +437,282 @@ const InputMobile = () => {
 
     // Modal Wrapper (Using same modal logic but verifying styling)
     const PrayerModalMobile = ({ isOpen, onClose, onSave, prayerData }) => {
-        const [time, setTime] = useState(prayerData?.time || '04:30');
-        const [isCongregation, setIsCongregation] = useState(prayerData?.isCongregation !== false);
+        const [time, setTime] = useState('');
+        const [isCongregation, setIsCongregation] = useState(true);
 
         useEffect(() => {
             if (isOpen && prayerData) {
-                setTime(prayerData.time || prayerData.defaultTime || '12:00');
+                // Use existing time if set, otherwise use defaultTime from prayer definition
+                const initialTime = prayerData.time || prayerData.defaultTime || '12:00';
+                setTime(initialTime);
                 setIsCongregation(prayerData.isCongregation !== false);
             }
         }, [isOpen, prayerData]);
 
         if (!isOpen || !prayerData) return null;
 
-        return (
-            <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-                {/* Bottom Sheet for Mobile */}
-                <div className="bg-white w-full sm:max-w-sm rounded-t-[2rem] sm:rounded-[2rem] p-6 shadow-2xl animate-slide-up sm:animate-pop-up pb-10 sm:pb-6">
-                    <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6 sm:hidden"></div>
-
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="size-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
-                            <span className="material-symbols-outlined text-xl">{prayerData.icon}</span>
+        return createPortal(
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+                {/* Centered Card for Mobile - Native Style */}
+                <div className="bg-white w-[88%] max-w-[340px] rounded-[2rem] p-6 shadow-2xl animate-pop-up relative z-10 max-h-[90vh] overflow-y-auto no-scrollbar">
+                    <div className="flex flex-col items-center gap-2 mb-2 text-center">
+                        <div className="size-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 text-3xl mb-1 shadow-sm border border-blue-100">
+                            {prayerData.icon}
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-gray-900">Input {prayerData.label}</h3>
-                            <p className="text-xs text-gray-500">Kapan kamu sholat?</p>
+                            <h3 className="text-xl font-bold text-gray-900 tracking-tight">{prayerData.label}</h3>
+                            <p className="text-sm font-medium text-gray-500">Jam berapa kamu sholat?</p>
                         </div>
                     </div>
 
                     <CustomTimePicker value={time} onChange={setTime} />
 
-                    <div className="mt-6 flex gap-3">
-                        <button
-                            className={`flex-1 py-3 rounded-xl text-sm font-bold border transition-all flex flex-col items-center gap-1 ${isCongregation ? 'bg-emerald-50 border-emerald-500 text-emerald-700' : 'bg-white border-gray-200 text-gray-400'}`}
-                            onClick={() => setIsCongregation(true)}
-                        >
-                            <span className="material-symbols-outlined">groups</span>
-                            Berjamaah
-                        </button>
-                        <button
-                            className={`flex-1 py-3 rounded-xl text-sm font-bold border transition-all flex flex-col items-center gap-1 ${!isCongregation ? 'bg-amber-50 border-amber-500 text-amber-700' : 'bg-white border-gray-200 text-gray-400'}`}
-                            onClick={() => setIsCongregation(false)}
-                        >
-                            <span className="material-symbols-outlined">person</span>
-                            Sendiri
-                        </button>
+                    <div className="mt-2">
+                        <div className="flex bg-gray-100 p-1.5 rounded-2xl gap-1.5">
+                            <button
+                                className={`flex-1 py-3.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 outline-none border-0 ring-0 focus:outline-none focus:ring-0 relative min-h-[52px] ${isCongregation ? 'bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-300/50 hover:shadow-emerald-300/70' : 'bg-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-200/50'}`}
+                                onClick={() => setIsCongregation(true)}
+                            >
+                                <span className="material-symbols-outlined text-lg">groups</span>
+                                <span>Berjamaah!</span>
+                            </button>
+                            <button
+                                className={`flex-1 py-3.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 outline-none border-0 ring-0 focus:outline-none focus:ring-0 relative min-h-[52px] ${!isCongregation ? 'bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-300/50 hover:shadow-blue-300/70' : 'bg-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-200/50'}`}
+                                onClick={() => setIsCongregation(false)}
+                            >
+                                <span className="material-symbols-outlined text-lg">person</span>
+                                <span>Sendiri</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div className="flex gap-3 mt-8">
-                        <button onClick={onClose} className="flex-1 py-3 rounded-xl font-bold text-gray-500 bg-gray-100">Batal</button>
-                        <button onClick={() => onSave(prayerData.id, time, isCongregation)} className="flex-1 py-3 rounded-xl font-bold text-white bg-emerald-500">Simpan</button>
+                        <button onClick={onClose} className="flex-1 py-3.5 rounded-2xl font-bold text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">Batal</button>
+                        <button onClick={() => onSave(prayerData.id, time, isCongregation)} className="flex-1 py-3.5 rounded-2xl font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all">Simpan</button>
                     </div>
                 </div>
-            </div>
+            </div>,
+            document.body
         );
     }
 
 
     return (
-        <div className="min-h-screen pb-32 font-sans bg-gray-50/30">
+        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-y-auto bg-[#EEF7FF] font-sans relative pb-32">
+            {/* Smooth Background Gradient Decoration */}
+            <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
             <ConfirmationModal isOpen={showConfirmModal} onClose={() => setShowConfirmModal(false)} onConfirm={confirmNavigation} />
-            <SuccessModal isOpen={showSuccessModal} />
-            <PrayerModalMobile
-                isOpen={!!activeModal}
-                onClose={() => setActiveModal(null)}
-                onSave={handleSaveModal}
-                prayerData={activeModal ? { ...prayerData[activeModal], ...prayers.find(p => p.id === activeModal) } : null}
-            />
 
-            {/* Sticky Header */}
-            <div className="px-5 pt-8 pb-4 bg-white/90 backdrop-blur-md sticky top-0 z-10 border-b border-gray-100">
-                <h1 className="text-xl font-extrabold text-gray-800">Lapor Ibadah 📝</h1>
-                <p className="text-xs text-gray-500 mt-1">Isi kegiatanmu hari ini yuk!</p>
+            {/* Header - Sticky with Glassmorphism to match Dashboard */}
+            <div className="px-6 py-4 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-30 border-b border-slate-200">
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => navigate('/student/dashboard')}
+                        className="size-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center active:scale-95 transition-transform"
+                    >
+                        <FaArrowLeft className="text-lg" />
+                    </button>
+                    <div>
+                        <h1 className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                            Catat Ibadah 📝
+                        </h1>
+                        <p className="text-xs text-blue-500 font-medium">Catat semua kebaikanmu hari ini! ✨</p>
+                    </div>
+                </div>
             </div>
 
-            <div className="p-5 space-y-6">
+            {/* Content Container */}
+            <div className="space-y-6 relative z-10 px-6 mt-6 mb-24">
+                {/* Main Prayer Grid */}
+                <section className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                    <div className="flex items-center gap-2.5 mb-4">
+                        <div className="size-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                            <FaMosque />
+                        </div>
+                        <h3 className="font-bold text-gray-800">Sholat Wajib</h3>
+                    </div>
 
-                {/* Prayer Grid - 3 cols mobile looks okay or 2? Let's do 3 for icons */}
-                <section>
-                    <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                        <span className="text-lg">🕌</span> Sholat Wajib
-                    </h3>
                     <div className="grid grid-cols-3 gap-3">
-                        {prayers.map((prayer) => (
-                            <PrayerCardMobile
-                                key={prayer.id}
-                                id={prayer.id}
-                                label={prayer.label}
-                                icon={prayer.icon}
-                                isChecked={selectedPrayers.includes(prayer.id)}
-                                isSubmitted={alreadySubmitted.prayers.some(p => p.id === prayer.id)}
-                                onClick={handlePrayerClick}
-                                onRemove={handleRemovePrayer}
-                                data={prayerData[prayer.id]}
-                            />
-                        ))}
+                        {prayers.map((prayer) => {
+                            const isSubmitted = alreadySubmitted.prayers.some(p => p.id === prayer.id);
+                            return (
+                                <PrayerCardMobile
+                                    key={prayer.id}
+                                    {...prayer}
+                                    isChecked={selectedPrayers.includes(prayer.id)}
+                                    isSubmitted={isSubmitted}
+                                    data={prayerData[prayer.id]}
+                                    onClick={handlePrayerClick}
+                                    onRemove={handleRemovePrayer}
+                                />
+                            );
+                        })}
                     </div>
                 </section>
 
-                {/* Tadarus Card */}
-                <section className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <div className="flex items-center gap-2 mb-4">
-                        <span className="text-lg">📖</span>
-                        <h3 className="text-sm font-bold text-gray-800">Tadarus (+50 Poin)</h3>
-                    </div>
-                    <div className="space-y-3">
-                        <div>
-                            <label className="text-[10px] font-bold text-gray-400 uppercase">Nama Surat</label>
-                            <input
-                                type="text"
-                                placeholder="Al-Mulk"
-                                className="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 ring-emerald-100 focus:border-emerald-400 transition-all"
-                                value={form.surah}
-                                onChange={(e) => setForm({ ...form, surah: e.target.value })}
-                            />
+                {/* Tadarus Section - Native Card Style */}
+                <section className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                    <div className="flex items-center gap-2.5 mb-4">
+                        <div className="size-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
+                            <FaBookOpen />
                         </div>
-                        <div className="flex gap-3">
-                            <div className="flex-1">
-                                <label className="text-[10px] font-bold text-gray-400 uppercase">Ayat Mulai</label>
-                                <input
-                                    type="number"
-                                    placeholder="1"
-                                    className="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 ring-emerald-100 focus:border-emerald-400 transition-all"
-                                    value={form.ayatStart}
-                                    onChange={(e) => setForm({ ...form, ayatStart: e.target.value })}
-                                />
+                        <h3 className="font-bold text-gray-800">Tadarus Al-Qur'an</h3>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-slate-200/60 relative overflow-hidden group active:scale-[0.99] transition-all" id="tadarus-form">
+                        {/* Header inside card with Score */}
+                        <div className="flex justify-between items-start mb-4 relative z-10">
+                            <div>
+                                <h4 className="text-sm font-bold text-slate-800">Bacaan Hari Ini</h4>
+                                <p className="text-[10px] text-slate-500 font-medium">Jangan lupa catat suratnya ya!</p>
                             </div>
-                            <div className="flex-1">
-                                <label className="text-[10px] font-bold text-gray-400 uppercase">Ayat Akhir</label>
+                            <div className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm border border-blue-200">
+                                +50 Poin
+                            </div>
+                        </div>
+
+                        {/* Decorative Background Icon */}
+                        <FaBookOpen className="absolute -bottom-6 -right-6 text-amber-500/5 text-[10rem] pointer-events-none rotate-12" />
+
+                        <div className="space-y-5 relative z-10">
+                            <div>
+                                <label className="text-xs font-bold text-slate-600 uppercase tracking-wide ml-1 mb-2 block">Nama Surat</label>
                                 <input
-                                    type="number"
-                                    placeholder="10"
-                                    className="w-full mt-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-bold text-gray-700 outline-none focus:ring-2 ring-emerald-100 focus:border-emerald-400 transition-all"
-                                    value={form.ayatEnd}
-                                    onChange={(e) => setForm({ ...form, ayatEnd: e.target.value })}
+                                    type="text"
+                                    placeholder="Contoh: Al-Mulk"
+                                    className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 ${errors.surah ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)]'}`}
+                                    value={form.surah}
+                                    onChange={(e) => {
+                                        setForm({ ...form, surah: e.target.value });
+                                        if (errors.surah) setErrors({ ...errors, surah: null });
+                                    }}
                                 />
+                                {errors.surah && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse flex items-center gap-1"><span className="text-xs">⚠️</span> {errors.surah}</p>}
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="flex-1">
+                                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wide ml-1 mb-2 block">Ayat Mulai</label>
+                                    <div className="relative">
+                                        <input
+                                            type="number"
+                                            placeholder="1"
+                                            className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 text-center ${errors.ayatStart ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)]'}`}
+                                            value={form.ayatStart}
+                                            onChange={(e) => {
+                                                setForm({ ...form, ayatStart: e.target.value });
+                                                if (errors.ayatStart) setErrors({ ...errors, ayatStart: null });
+                                            }}
+                                        />
+                                    </div>
+                                    {errors.ayatStart && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse text-center">{errors.ayatStart}</p>}
+                                </div>
+                                <div className="flex items-center pt-8 text-slate-300">
+                                    <span className="material-symbols-outlined">arrow_right_alt</span>
+                                </div>
+                                <div className="flex-1">
+                                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wide ml-1 mb-2 block">Ayat Akhir</label>
+                                    <div className="relative">
+                                        <input
+                                            type="number"
+                                            placeholder="10"
+                                            className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 text-center ${errors.ayatEnd ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)]'}`}
+                                            value={form.ayatEnd}
+                                            onChange={(e) => {
+                                                setForm({ ...form, ayatEnd: e.target.value });
+                                                if (errors.ayatEnd) setErrors({ ...errors, ayatEnd: null });
+                                            }}
+                                        />
+                                    </div>
+                                    {errors.ayatEnd && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse text-center">{errors.ayatEnd}</p>}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 {/* Additional */}
-                <section>
-                    <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                        <span className="text-lg">💝</span> Ibadah Lainnya
-                    </h3>
-                    <div className="space-y-2">
-                        {additionalWorships.map((item) => (
-                            <div key={item.id} className={`bg-white rounded-xl border p-3 transition-all ${selectedAdditionalWorships[item.id] ? 'border-emerald-300 bg-emerald-50/20' : 'border-gray-100'}`}>
-                                <div className="flex items-center justify-between" onClick={() => toggleAdditionalWorship(item.id)}>
-                                    <div className="flex items-center gap-3">
-                                        <div className={`size-5 rounded border flex items-center justify-center ${selectedAdditionalWorships[item.id] ? 'bg-emerald-500 border-emerald-500' : 'border-gray-300'}`}>
-                                            {selectedAdditionalWorships[item.id] && <span className="material-symbols-outlined text-white text-sm">check</span>}
+                <section className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                    <div className="flex items-center gap-2.5 mb-4">
+                        <div className="size-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center">
+                            <FaHeart />
+                        </div>
+                        <h3 className="font-bold text-gray-800">Ibadah Lainnya</h3>
+                    </div>
+
+                    <div className="space-y-3">
+                        {additionalWorships.map((item) => {
+                            // Color mapping
+                            const colorClasses = {
+                                purple: { border: 'border-purple-300', bg: 'bg-purple-50/50', checkBg: 'bg-purple-500 border-purple-500', iconColor: 'text-purple-600', ring: 'focus:ring-purple-200 focus:border-purple-400' },
+                                emerald: { border: 'border-emerald-300', bg: 'bg-emerald-50/50', checkBg: 'bg-emerald-500 border-emerald-500', iconColor: 'text-emerald-600', ring: 'focus:ring-emerald-200 focus:border-emerald-400' },
+                                rose: { border: 'border-rose-300', bg: 'bg-rose-50/50', checkBg: 'bg-rose-500 border-rose-500', iconColor: 'text-rose-600', ring: 'focus:ring-rose-200 focus:border-rose-400' },
+                            }[item.color || 'emerald'];
+
+                            return (
+                                <div key={item.id} className={`bg-white rounded-2xl border p-4 transition-all duration-300 ${selectedAdditionalWorships[item.id] ? `${colorClasses.border} ${colorClasses.bg} shadow-md` : 'border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md'}`}>
+                                    <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleAdditionalWorship(item.id)}>
+                                        <div className="flex items-center gap-3.5">
+                                            <div className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedAdditionalWorships[item.id] ? colorClasses.checkBg : 'border-gray-200 bg-gray-50'}`}>
+                                                {selectedAdditionalWorships[item.id] && <span className="text-white text-xs font-bold">✓</span>}
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className={`text-lg ${selectedAdditionalWorships[item.id] ? colorClasses.iconColor : 'text-gray-400'}`}>{item.icon}</span>
+                                                <span className={`text-sm font-bold ${selectedAdditionalWorships[item.id] ? 'text-gray-800' : 'text-gray-600'}`}>{item.label}</span>
+                                            </div>
                                         </div>
-                                        <span className="text-sm font-bold text-gray-700">{item.label}</span>
+                                        <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${selectedAdditionalWorships[item.id] ? 'bg-white shadow-sm text-gray-800' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>+{item.points} Poin</span>
                                     </div>
-                                    <span className="text-[10px] font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full">+{item.points}</span>
+                                    {selectedAdditionalWorships[item.id] && (
+                                        <div className="mt-4 pl-10 animate-fade-in">
+                                            <input
+                                                type="text"
+                                                placeholder="Tambahkan catatan..."
+                                                className={`w-full bg-white border border-transparent rounded-xl px-4 py-2.5 text-xs font-medium outline-none focus:ring-2 transition-all shadow-sm ${colorClasses.ring}`}
+                                                value={additionalNotes[item.id] || ''}
+                                                onChange={(e) => setAdditionalNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
-                                {selectedAdditionalWorships[item.id] && (
-                                    <div className="mt-3 pl-8 animate-fade-in">
-                                        <input
-                                            type="text"
-                                            placeholder="Catatan..."
-                                            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs font-medium focus:outline-none focus:border-emerald-400 transition-all"
-                                            value={additionalNotes[item.id] || ''}
-                                            onChange={(e) => setAdditionalNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </section>
 
-                {/* Submit Action Fixed Bottom or Inline? Fixed is better for mobile */}
-                <div className="fixed bottom-20 left-0 right-0 p-5 bg-gradient-to-t from-white via-white to-transparent pointer-events-none">
+                {/* Submit Action - Large Native Gradient */}
+                <div className="mt-8 pointer-events-auto flex justify-center animate-fade-in-up opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                     <button
                         onClick={handleSendReport}
                         disabled={isSubmitting}
-                        className={`pointer-events-auto w-full py-3.5 rounded-2xl font-bold text-white shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 transition-all active:scale-95 ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-600'}`}
+                        className={`w-full py-4 rounded-2xl font-bold text-white shadow-xl flex items-center justify-center gap-3 transition-all duration-300 active:scale-[0.98] active:shadow-md text-base tracking-wide relative overflow-hidden group ${isSubmitting ? 'bg-slate-300 cursor-not-allowed shadow-none text-slate-500' : 'bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 shadow-blue-500/30 hover:shadow-blue-500/50'}`}
                     >
-                        {isSubmitting ? 'Mengirim...' : '🚀 Kirim Laporan'}
+                        {/* Shine Effect */}
+                        {!isSubmitting && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer" style={{ animation: 'shimmer 2.5s infinite' }}></div>}
+
+                        {isSubmitting ? (
+                            <>
+                                <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <span>Mengirim Laporan...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span className="text-xl filter drop-shadow-md">🚀</span>
+                                <span className="drop-shadow-sm">Kirim Laporan</span>
+                            </>
+                        )}
                     </button>
                 </div>
-
             </div>
+
+            <SuccessModal isOpen={showSuccessModal} />
+
+            {/* Prayer Modal */}
+            <PrayerModalMobile
+                isOpen={!!activeModal}
+                onClose={() => setActiveModal(null)}
+                onSave={handleSaveModal}
+                prayerData={activeModal ? { ...prayerData[activeModal], ...prayers.find(p => p.id === activeModal) } : null}
+            />
         </div>
     );
 };

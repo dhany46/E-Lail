@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import logo from '../assets/logo.jpg';
 import Background from '../components/ui/Background';
 import MobileBottomNav from '../components/student/MobileBottomNav';
@@ -58,14 +59,22 @@ const StudentLayoutContent = () => {
         avatar: "https://ui-avatars.com/api/?name=Ananda+Ahmad&background=dcfce7&color=16a34a"
     };
 
-    // Check if we're on mobile dashboard
-    const isMobileDashboard = location.pathname === '/student/dashboard';
+    // Scroll to top when location changes
+    React.useEffect(() => {
+        const scrollContainer = document.querySelector('.scroll-smooth');
+        if (scrollContainer) {
+            scrollContainer.scrollTo(0, 0);
+        }
+    }, [location.pathname]);
+
+    // Check if we're on mobile dashboard or history (full-container pages)
+    const isFullContainerPage = ['/student/dashboard', '/student/history', '/student/input', '/student/leaderboard', '/student/profile'].includes(location.pathname);
 
     return (
-        <div className={`text-text-primary-light font-display antialiased overflow-hidden h-screen flex relative ${isMobileDashboard ? 'bg-gradient-to-b from-blue-100 via-blue-50 to-white md:bg-transparent' : 'bg-transparent'}`}>
+        <div className={`text-text-primary-light font-display antialiased overflow-hidden h-screen flex relative ${isFullContainerPage ? 'bg-[#EEF7FF] md:bg-transparent' : 'bg-transparent'}`}>
             {/* Hide background on mobile dashboard */}
-            {!isMobileDashboard && <Background />}
-            <div className="md:contents">{isMobileDashboard && <Background />}</div>
+            {!isFullContainerPage && <Background />}
+            <div className="md:contents">{isFullContainerPage && <Background />}</div>
 
             {/* Mobile Overlay */}
             {isSidebarOpen && (
@@ -167,9 +176,9 @@ const StudentLayoutContent = () => {
             <MobileBottomNav />
 
             {/* Main Content Area */}
-            <main className={`flex-1 flex flex-col min-w-0 overflow-hidden z-10 relative ${isMobileDashboard ? 'bg-gradient-to-b from-blue-100 via-blue-50 to-white md:bg-transparent' : 'bg-transparent'}`}>
+            <main className={`flex-1 flex flex-col min-w-0 overflow-hidden z-10 relative ${isFullContainerPage ? 'bg-gradient-to-b from-blue-100 via-blue-50 to-white md:bg-transparent' : 'bg-transparent'}`}>
                 {/* Header for Mobile (Optional, or just keep content) */}
-                {!['/student/dashboard', '/student/menu'].includes(location.pathname) && (
+                {!['/student/dashboard', '/student/menu', '/student/history', '/student/input', '/student/leaderboard', '/student/profile'].includes(location.pathname) && (
                     <div className="md:hidden p-4 pb-0 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <div className="size-8 rounded-full bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center text-white font-bold text-xs shadow-md">
@@ -181,9 +190,19 @@ const StudentLayoutContent = () => {
                 )}
 
                 {/* Content Outlet */}
-                <div className={`flex-1 overflow-y-auto scroll-smooth pb-24 md:pb-6 ${location.pathname === '/student/dashboard' ? 'p-0 md:p-6 lg:p-8' : 'p-4 md:p-6 lg:p-8'}`}>
+                <div className={`flex-1 overflow-y-auto scroll-smooth pb-24 md:pb-6 ${isFullContainerPage ? 'p-0 md:p-6 lg:p-8' : 'p-4 md:p-6 lg:p-8'}`}>
                     <div className="w-full max-w-full md:max-w-screen-xl mx-auto">
-                        <Outlet />
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={location.pathname}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.15 }}
+                            >
+                                <Outlet />
+                            </motion.div>
+                        </AnimatePresence>
                     </div>
                 </div>
             </main>

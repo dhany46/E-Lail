@@ -24,10 +24,10 @@ const PointsCard = ({ totalPoints, todayPoints }) => (
 
 // Dynamic Pending Card
 const PendingCard = ({ pendingCount }) => (
-    <div className="bg-gradient-to-br from-white to-amber-50/50 p-6 rounded-3xl shadow-sm border border-amber-100 relative overflow-hidden h-full">
-        <div className="absolute bottom-0 left-0 -ml-8 -mb-8 size-32 bg-amber-100/30 rounded-full blur-3xl"></div>
+    <div className="bg-gradient-to-br from-white to-yellow-50/50 p-6 rounded-3xl shadow-sm border border-yellow-100 relative overflow-hidden h-full">
+        <div className="absolute bottom-0 left-0 -ml-8 -mb-8 size-32 bg-yellow-100/30 rounded-full blur-3xl"></div>
         <div className="flex justify-between items-start mb-6 relative">
-            <div className="size-12 rounded-2xl flex items-center justify-center bg-amber-500 text-white shadow-lg shadow-amber-200">
+            <div className="size-12 rounded-2xl flex items-center justify-center bg-yellow-500 text-white shadow-lg shadow-yellow-200">
                 <span className="material-symbols-outlined text-2xl">hourglass_top</span>
             </div>
             {pendingCount > 0 && (
@@ -40,7 +40,7 @@ const PendingCard = ({ pendingCount }) => (
                 <h3 className="text-4xl font-extrabold text-gray-800 tracking-tight">{pendingCount}</h3>
                 <span className="text-sm font-medium text-gray-400">Laporan</span>
             </div>
-            <p className="text-xs text-amber-600 font-medium mt-2">
+            <p className="text-xs text-yellow-600 font-medium mt-2">
                 {pendingCount > 0 ? "Harap bersabar ya..." : "Semua aman!"}
             </p>
         </div>
@@ -235,7 +235,7 @@ const DashboardDesktop = ({ activities, stats, studentInfo, teacherNote }) => {
                                                         <span className="material-symbols-outlined text-lg">check</span>
                                                     </div>
                                                 ) : (
-                                                    <div className="inline-flex items-center justify-center size-8 rounded-full bg-amber-50 text-amber-500">
+                                                    <div className="inline-flex items-center justify-center size-8 rounded-full bg-yellow-50 text-yellow-500">
                                                         <span className="material-symbols-outlined text-lg">hourglass_top</span>
                                                     </div>
                                                 )}
