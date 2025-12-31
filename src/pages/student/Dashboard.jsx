@@ -13,8 +13,10 @@ const loadAllActivities = () => {
             const dateStr = key.replace('daily_report_', '');
             const data = JSON.parse(localStorage.getItem(key));
 
-            const dateObj = new Date(dateStr);
-            const isToday = dateStr === new Date().toISOString().split('T')[0];
+            const dateObj = new Date(`${dateStr}T00:00:00`); // Force Local Time
+            const todayNow = new Date();
+            const todayStr = `${todayNow.getFullYear()}-${String(todayNow.getMonth() + 1).padStart(2, '0')}-${String(todayNow.getDate()).padStart(2, '0')}`;
+            const isToday = dateStr === todayStr;
             const formattedDate = isToday ? 'Hari ini' : dateObj.toLocaleDateString('id-ID', {
                 day: 'numeric',
                 month: 'short'
@@ -28,15 +30,19 @@ const loadAllActivities = () => {
                     const prayerTime = isObject && prayer.time ? prayer.time : null;
                     const isCongregation = isObject ? prayer.isCongregation : false;
                     const submittedAt = isObject && prayer.submittedAt ? prayer.submittedAt : null;
-                    const displayTime = submittedAt ? submittedAt.substring(0, 5) : (prayerTime || '-');
+                    // Header Time = Input Time (submittedAt)
+                    const headerTime = submittedAt ? submittedAt.substring(0, 5) : (prayerTime || '-');
+                    // Description Time = Actual Prayer Time
+                    const descTime = prayerTime ? prayerTime.replace(' WIB', '').replace('WIB', '') : (submittedAt ? submittedAt.substring(0, 5) : '-');
 
                     allActivities.push({
                         id: `${dateStr}-prayer-${idx}`,
                         rawDate: dateStr,
                         rawTime: submittedAt || prayerTime || '00:00',
                         title: `Shalat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
+                        subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'} • ${descTime} WIB`,
                         date: formattedDate,
-                        time: `${displayTime} WIB`,
+                        time: `${formattedDate} • ${headerTime} WIB`,
                         points: isCongregation ? 25 : 10,
                         status: "Menunggu",
                         icon: "mosque",
@@ -53,8 +59,9 @@ const loadAllActivities = () => {
                     rawDate: dateStr,
                     rawTime: data.tadarus.submittedAt || '23:59:59',
                     title: `Membaca Surat ${data.tadarus.surah}`,
+                    subtitle: `Ayat ${data.tadarus.ayatStart} - ${data.tadarus.ayatEnd}`,
                     date: formattedDate,
-                    time: data.tadarus.submittedAt ? `${data.tadarus.submittedAt.substring(0, 5)} WIB` : '-',
+                    time: data.tadarus.submittedAt ? `${formattedDate} • ${data.tadarus.submittedAt.substring(0, 5)} WIB` : '-',
                     points: 50,
                     status: "Menunggu",
                     icon: "menu_book",
@@ -81,8 +88,9 @@ const loadAllActivities = () => {
                         rawDate: dateStr,
                         rawTime: itemTime || '23:59:59',
                         title: info.label,
+                        subtitle: (isObject && item.note) ? item.note : 'Ibadah tambahan hari ini',
                         date: formattedDate,
-                        time: itemTime ? `${itemTime.substring(0, 5)} WIB` : '-',
+                        time: itemTime ? `${formattedDate} • ${itemTime.substring(0, 5)} WIB` : '-',
                         points: info.points,
                         status: "Menunggu",
                         icon: info.icon,
@@ -139,7 +147,8 @@ const Dashboard = () => {
 
     // Calculate stats
     useEffect(() => {
-        const today = new Date().toISOString().split('T')[0];
+        const todayNow = new Date();
+        const today = `${todayNow.getFullYear()}-${String(todayNow.getMonth() + 1).padStart(2, '0')}-${String(todayNow.getDate()).padStart(2, '0')}`;
         const totalPoints = activities.reduce((sum, a) => sum + a.points, 0);
         const todayActivities = activities.filter(a => a.rawDate === today);
         const todayPoints = todayActivities.reduce((sum, a) => sum + a.points, 0);
@@ -163,12 +172,13 @@ const Dashboard = () => {
     // State for note display logic
     const [noteStatus, setNoteStatus] = useState({
         isNew: false,
-        displayDate: new Date(noteSentDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+        displayDate: new Date(`${noteSentDate}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
     });
 
     // Effect to handle "First Seen" logic
     useEffect(() => {
-        const today = new Date().toISOString().split('T')[0];
+        const todayNow = new Date();
+        const today = `${todayNow.getFullYear()}-${String(todayNow.getMonth() + 1).padStart(2, '0')}-${String(todayNow.getDate()).padStart(2, '0')}`;
         const storageKey = `teacher_note_seen_${noteId}`;
         const firstSeenDate = localStorage.getItem(storageKey);
 
@@ -186,7 +196,7 @@ const Dashboard = () => {
             if (today !== firstSeenDate) {
                 setNoteStatus({
                     isNew: false,
-                    displayDate: new Date(noteSentDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+                    displayDate: new Date(`${noteSentDate}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
                 });
             } else {
                 // Still same day as first seen

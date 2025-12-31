@@ -23,8 +23,12 @@ const HeaderMobile = ({ student, teacherNote, verifiedActivities }) => {
 
     // Count new notifications
     const newCount = (teacherNote?.isNew ? 1 : 0) + (verifiedActivities?.length > 0 ? verifiedActivities.length : 0);
-    // Track read notifications to manage badge visibility
-    const [lastReadCount, setLastReadCount] = React.useState(0);
+
+    // Track read notifications using localStorage to persist across navigation
+    const [lastReadCount, setLastReadCount] = React.useState(() => {
+        return parseInt(localStorage.getItem('notification_last_read_count') || '0', 10);
+    });
+
     const [isFading, setIsFading] = React.useState(false); // State for fade animation
     const showBadge = newCount > lastReadCount;
 
@@ -40,7 +44,10 @@ const HeaderMobile = ({ student, teacherNote, verifiedActivities }) => {
                 setIsFading(true);
             }, 500); // 0.5s delay before fading starts so user sees it
 
-            // Finish "read" process after fade completes
+            // Mark as read in storage IMMEDIATELY to prevent state loss on navigation
+            localStorage.setItem('notification_last_read_count', newCount.toString());
+
+            // Finish "read" process (Visual only) after fade completes
             const markReadTimer = setTimeout(() => {
                 setLastReadCount(newCount);
                 setIsFading(false);
@@ -89,7 +96,7 @@ const HeaderMobile = ({ student, teacherNote, verifiedActivities }) => {
             <div className="relative" ref={notificationRef}>
                 <button
                     onClick={handleBellClick}
-                    className="size-10 rounded-full bg-white shadow-md flex items-center justify-center transition-all active:scale-90 relative border border-gray-100"
+                    className="size-10 rounded-full bg-white shadow items-center justify-center transition-all active:scale-90 relative border-none outline-none ring-0 flex"
                 >
                     <FaBell className="text-lg text-gray-600" />
                     {showBadge && (
@@ -347,7 +354,8 @@ const MenuCards = ({ stats, activities }) => {
         {
             pill: "KABAR GURU",
             title: "Verifikasi",
-            subtitle: `${pendingCount} Menunggu dinilai \u00A0🧐`,
+            count: pendingCount,
+            subtitle: "Menunggu dinilai \u00A0🧐",
             icon: "verified", // Material symbol name
             path: "/student/history",
             bg: "bg-gradient-to-br from-emerald-400 to-green-500",
@@ -399,22 +407,30 @@ const MenuCards = ({ stats, activities }) => {
 
                             {/* Bottom Content */}
                             {/* Bottom Content */}
-                            <div>
-                                <h4 className="font-extrabold text-[15px] text-white tracking-tight leading-4 mb-1 drop-shadow-sm line-clamp-1">
-                                    {card.title}
-                                </h4>
-                                {card.hasProgress ? (
-                                    <div>
-                                        <p className="text-[10px] font-semibold text-white/90 mb-1.5">{card.subtitle.split(' ')[0]}</p>
-                                        <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm">
-                                            <div
-                                                className="h-full bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.6)]"
-                                                style={{ width: `${card.progress}%` }}
-                                            ></div>
+                            {/* Bottom Content */}
+                            <div className="flex items-end justify-between gap-1">
+                                <div className="min-w-0 flex-1">
+                                    <h4 className="font-extrabold text-[15px] text-white tracking-tight leading-4 mb-1 drop-shadow-sm line-clamp-1">
+                                        {card.title}
+                                    </h4>
+                                    {card.hasProgress ? (
+                                        <div>
+                                            <p className="text-[10px] font-semibold text-white/90 mb-1.5">{card.subtitle.split(' ')[0]}</p>
+                                            <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm">
+                                                <div
+                                                    className="h-full bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                                                    style={{ width: `${card.progress}%` }}
+                                                ></div>
+                                            </div>
                                         </div>
-                                    </div>
-                                ) : (
-                                    <p className="text-[10px] font-semibold text-white/90 line-clamp-1">{card.subtitle}</p>
+                                    ) : (
+                                        <p className="text-[10px] font-semibold text-white/90 line-clamp-1">{card.subtitle}</p>
+                                    )}
+                                </div>
+
+                                {/* Right Side Big Count */}
+                                {card.count !== undefined && (
+                                    <span className="text-4xl font-black text-white leading-none tracking-tight drop-shadow-sm -mb-1 mr-3">{card.count}</span>
                                 )}
                             </div>
                         </div>
@@ -427,8 +443,8 @@ const MenuCards = ({ stats, activities }) => {
 
 // Activity List Component
 const ActivityList = ({ activities }) => {
-    // Show only last 8 activities
-    const recentActivities = activities?.slice(0, 8) || [];
+    // Show only last 10 activities
+    const recentActivities = activities?.slice(0, 10) || [];
     const [expandedCards, setExpandedCards] = React.useState({});
 
     const toggleCardExpansion = (cardId) => {
@@ -439,12 +455,12 @@ const ActivityList = ({ activities }) => {
     };
 
     const getStatusConfig = (status) => {
-        if (status === 'Terverifikasi') {
+        if (status === 'Terverifikasi' || status === 'Disetujui') {
             return {
                 icon: <FaCheckCircle className="text-sm" />,
                 color: 'text-emerald-500',
                 bg: 'bg-emerald-50',
-                label: 'Terverifikasi',
+                label: status === 'Disetujui' ? 'Disetujui' : 'Terverifikasi',
                 isPending: false
             };
         }
@@ -497,95 +513,163 @@ const ActivityList = ({ activities }) => {
         return { bg: 'bg-slate-50', color: 'text-slate-600', icon: <FaStar className="text-xl" /> };
     };
 
+    // Group activities by date
+    const groupedActivities = recentActivities.reduce((groups, activity) => {
+        const date = activity.date || 'Hari ini';
+        if (!groups[date]) {
+            groups[date] = [];
+        }
+        groups[date].push(activity);
+        return groups;
+    }, {});
+
+    const hasActivities = Object.keys(groupedActivities).length > 0;
+
     return (
-        <>
-            {recentActivities.length > 0 ? (
-                <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
-                    <div className="divide-y divide-slate-100">
-                        {recentActivities.map((activity, idx) => {
-                            const statusConfig = getStatusConfig(activity.status);
-                            const cardId = activity.id || `activity-${idx}`;
-                            const isExpanded = expandedCards[cardId];
+        <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+            {hasActivities ? (
+                Object.entries(groupedActivities).map(([date, dateActivities], groupIdx) => (
+                    <div key={date}>
+                        {/* Date Header - Only show separator if not first item */}
+                        {(groupIdx > 0 || Object.keys(groupedActivities).length === 1) && (
+                            <div className={`px-5 py-3 bg-slate-50/80 flex items-center justify-between backdrop-blur-sm ${groupIdx > 0 ? 'border-t border-dashed border-slate-100' : 'border-b border-slate-50'}`}>
+                                <div className="flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-base text-slate-400">calendar_month</span>
+                                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wide">{date}</h4>
+                                </div>
+                                <span className="text-[10px] font-bold px-2 py-0.5 bg-white border border-slate-200 text-slate-500 rounded-full shadow-sm">
+                                    {dateActivities.length} Aktivitas
+                                </span>
+                            </div>
+                        )}
 
-                            // Get style based on title and category
-                            const style = getActivityStyle(activity.title, activity.category);
+                        {/* Activities Grid */}
+                        <div className="p-4 space-y-4">
+                            {dateActivities.map((activity, idx) => {
+                                const statusConfig = getStatusConfig(activity.status);
+                                const cardId = activity.id || `activity-${date}-${idx}`;
+                                const isExpanded = expandedCards[cardId];
+                                const style = getActivityStyle(activity.title, activity.category);
 
-                            return (
-                                <div
-                                    key={cardId}
-                                    className="bg-transparent transition-all duration-200"
-                                >
-                                    {/* Main Row - Clickable */}
+                                return (
                                     <div
-                                        onClick={() => toggleCardExpansion(cardId)}
-                                        className="p-4 flex items-center gap-3 cursor-pointer hover:bg-slate-50 active:bg-slate-100 active:scale-[0.99] transition-all duration-200"
+                                        key={cardId}
+                                        className="bg-white rounded-[1.5rem] shadow-sm border border-slate-100 overflow-hidden transition-all duration-300 ring-1 ring-slate-100/50"
                                     >
-                                        {/* Activity Icon */}
-                                        <div className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${style.bg}`}>
-                                            <span className={`${style.color}`}>
-                                                {style.icon}
-                                            </span>
-                                        </div>
-
-                                        {/* Text Content */}
-                                        <div className="min-w-0 flex-1">
-                                            <h4 className="text-[13px] font-bold text-slate-800 line-clamp-1 mb-0.5">
-                                                {activity.title}
-                                            </h4>
-                                            <p className="text-[11px] text-slate-400 line-clamp-1">
-                                                {activity.date || 'Hari ini'} • {activity.time}
-                                            </p>
-                                        </div>
-
-                                        {/* Points & Status */}
-                                        <div className="text-right shrink-0">
-                                            <div className="text-sm font-black text-emerald-600">
-                                                +{activity.points}
-                                            </div>
-                                            <div className={`text-[9px] font-semibold ${statusConfig.color}`}>
-                                                {statusConfig.label}
-                                            </div>
-                                        </div>
-
-                                        {/* Expand Arrow */}
-                                        <span className={`material-symbols-outlined text-lg text-slate-300 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
-                                            expand_more
-                                        </span>
-                                    </div>
-
-                                    {/* Expandable Detail Section */}
-                                    <div className={`overflow-hidden transition-all duration-300 ease-out ${isExpanded ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-                                        <div className="px-4 pb-4 pt-0">
-                                            <div className="p-3 bg-slate-50/50 rounded-xl space-y-2 border border-slate-100/50">
-                                                {/* Category Badge */}
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] font-semibold text-slate-400">Kategori:</span>
-                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${activity.bg || 'bg-blue-50'} ${activity.color || 'text-blue-600'}`}>
-                                                        {activity.category || 'Ibadah'}
+                                        {/* Ticket Stub (Main Header) */}
+                                        <div
+                                            onClick={() => toggleCardExpansion(cardId)}
+                                            className="p-4 relative cursor-pointer active:bg-slate-50 transition-colors"
+                                        >
+                                            <div className="flex items-start gap-4">
+                                                {/* Icon */}
+                                                <div className={`size-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${style.bg}`}>
+                                                    <span className={`${style.color} text-xl`}>
+                                                        {style.icon}
                                                     </span>
                                                 </div>
-                                                {/* Detail / Notes */}
-                                                <div className="flex items-start gap-2">
-                                                    <span className="text-[10px] font-semibold text-slate-400 shrink-0">Detail:</span>
-                                                    <span className="text-[11px] text-slate-600">
-                                                        {activity.subtitle || activity.title}
-                                                    </span>
+
+                                                {/* Content */}
+                                                <div className="flex-1 min-w-0 pt-0.5">
+                                                    <h4 className="text-[13px] font-semibold text-slate-800 line-clamp-2 leading-snug mb-1">
+                                                        {activity.title}
+                                                    </h4>
+                                                    {/* Date Badge */}
+                                                    <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-50 text-[10px] font-medium text-slate-500 border border-slate-100">
+                                                        {activity.time}
+                                                    </div>
                                                 </div>
-                                                {/* Status with Icon */}
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-[10px] font-semibold text-slate-400">Status:</span>
+
+                                                {/* Right Side Info & Chevron Wrapper */}
+                                                <div className="flex items-start gap-2 shrink-0 pl-1">
+                                                    <div className="text-right">
+                                                        <div className="text-xs font-bold text-emerald-500 mb-0.5">
+                                                            +{activity.points}
+                                                        </div>
+                                                        <div className={`text-[9px] font-semibold ${statusConfig.isPending ? 'text-yellow-600' : 'text-slate-400'}`}>
+                                                            {statusConfig.isPending ? 'Menunggu' : statusConfig.label}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Chevron (Flex Item) */}
+                                                    <div className={`text-slate-300 transition-transform duration-300 mt-1 ${isExpanded ? 'rotate-180' : ''}`}>
+                                                        <span className="material-symbols-outlined text-lg">expand_more</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Expanded Ticket Body */}
+                                        <div className={`transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+
+                                            {/* Dashed Separator with Cutouts */}
+                                            <div className="relative flex items-center h-4 overflow-hidden">
+                                                <div className="w-full border-t border-dashed border-slate-100"></div>
+                                                {/* Left Cutout */}
+                                                <div className="absolute -left-2 size-4 bg-[#F8FAFC] rounded-full shadow-[inset_-1px_0_2px_rgba(0,0,0,0.02)]"></div>
+                                                {/* Right Cutout */}
+                                                <div className="absolute -right-2 size-4 bg-[#F8FAFC] rounded-full shadow-[inset_1px_0_2px_rgba(0,0,0,0.02)]"></div>
+                                            </div>
+
+                                            {/* Detail Content */}
+                                            <div className="px-4 pb-4 pt-1 space-y-3">
+                                                {/* Category */}
+                                                <div className="grid grid-cols-[90px_1fr] items-center">
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Kategori</span>
+                                                    <div>
+                                                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-block ${activity.bg || 'bg-blue-50'} ${activity.color || 'text-blue-600'}`}>
+                                                            {activity.category || 'Ibadah'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Description */}
+                                                <div className="grid grid-cols-[90px_1fr] items-baseline">
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Keterangan</span>
+                                                    <p className="text-[11px] font-medium text-slate-600 italic leading-relaxed">
+                                                        {(() => {
+                                                            const title = activity.title || '';
+                                                            const time = activity.time || '';
+                                                            const lowerTitle = title.toLowerCase();
+
+                                                            // NEW: Prefer subtitle if available (carries custom formatted info)
+                                                            if (activity.subtitle) return activity.subtitle;
+
+                                                            // Check if it's a prayer activity
+                                                            if (lowerTitle.includes('shalat') || lowerTitle.includes('sholat')) {
+                                                                // Extract prayer name (remove common words)
+                                                                const prayerName = title.replace(/Shalat|Sholat|Berjamaah|Sendiri|Munfarid|Wajib|Sunnah/gi, '').trim();
+
+                                                                // Determine status
+                                                                let status = '';
+                                                                if (lowerTitle.includes('berjamaah')) status = 'Berjamaah';
+                                                                else if (lowerTitle.includes('sendiri') || lowerTitle.includes('munfarid')) status = 'Sendiri';
+
+                                                                // Format: "Shalat [Name] [Status] - [Time] WIB"
+                                                                const cleanedTime = time.replace(/\s*WIB\s*/gi, '').trim();
+                                                                return `Shalat ${prayerName} ${status} - ${cleanedTime} WIB`.replace(/\s+/g, ' ');
+                                                            }
+
+                                                            // Default fallback
+                                                            const cleanTime = time.replace(/\s*WIB\s*$/i, '');
+                                                            return `"${activity.subtitle || title} • ${cleanTime} WIB"`;
+                                                        })()}
+                                                    </p>
+                                                </div>
+
+                                                {/* Status */}
+                                                <div className="grid grid-cols-[90px_1fr] items-center">
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Status</span>
                                                     <div className="flex items-center gap-2">
                                                         {statusConfig.isPending ? (
-                                                            <div className="flex items-center gap-2 animate-pulse">
-                                                                <FaHourglassHalf className="text-yellow-600 text-sm" />
-                                                                <span className="text-[11px] font-semibold text-yellow-600">
-                                                                    {statusConfig.label}
-                                                                </span>
+                                                            <div className="flex items-center gap-2">
+                                                                <FaHourglassHalf className="text-yellow-500 text-xs animate-pulse" />
+                                                                <span className="text-[11px] font-semibold text-yellow-600">Menunggu</span>
                                                             </div>
                                                         ) : (
-                                                            <div className={`flex items-center gap-1 text-[11px] font-semibold ${statusConfig.color}`}>
+                                                            <div className={`flex items-center gap-2 ${statusConfig.color}`}>
                                                                 {statusConfig.icon}
-                                                                {statusConfig.label}
+                                                                <span className="text-[11px] font-semibold">{statusConfig.label}</span>
                                                             </div>
                                                         )}
                                                     </div>
@@ -593,18 +677,18 @@ const ActivityList = ({ activities }) => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
+                ))
             ) : (
-                <div className="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                <div className="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200 border-none m-4">
                     <span className="material-symbols-outlined text-3xl mb-2 opacity-30 text-gray-400">event_note</span>
                     <p className="text-xs text-gray-400 font-medium">Belum ada aktivitas hari ini</p>
                 </div>
             )}
-        </>
+        </div>
     );
 };
 
@@ -615,12 +699,12 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
     const verifiedActivities = activities?.filter(a => a.status === 'Terverifikasi') || [];
 
     return (
-        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-y-auto bg-[#EEF7FF] font-sans relative select-none touch-manipulation animate-fade-in pb-32">
+        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative select-none touch-manipulation animate-fade-in pb-32">
             {/* Smooth Background Gradient Decoration */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
             {/* Header - Sticky with Staggered Entrance */}
-            <div className="px-6 py-4 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-30 transition-all duration-300 animate-fade-in-up border-b border-slate-200" style={{ animationDuration: '0.6s' }}>
+            <div className="px-6 py-4 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] transition-all duration-300 animate-fade-in-up border-b border-slate-200" style={{ animationDuration: '0.6s' }}>
                 <HeaderMobile
                     student={studentInfo}
                     teacherNote={teacherNote}

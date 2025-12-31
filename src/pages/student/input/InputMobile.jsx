@@ -284,7 +284,11 @@ const InputMobile = () => {
 
     // Load Data Hook
     useEffect(() => {
-        const today = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const today = `${year}-${month}-${day}`;
         const savedData = localStorage.getItem(`daily_report_${today}`);
 
         if (savedData) {
@@ -415,7 +419,11 @@ const InputMobile = () => {
             const newTadarus = (form.surah && form.ayatStart && form.ayatEnd)
                 ? { surah: form.surah, ayatStart: form.ayatStart, ayatEnd: form.ayatEnd, submittedAt: currentTime } : null;
 
-            const today = new Date().toISOString().split('T')[0];
+            // Use local date (not UTC from toISOString) to match HistoryMobile
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const today = `${year}-${month}-${day}`;
             const existingPrayers = alreadySubmitted.prayers.map(prayer => (typeof prayer === 'string' ? { id: prayer, time: '12:00', isCongregation: false } : prayer));
             const newAdditional = Object.keys(selectedAdditionalWorships).filter(k => selectedAdditionalWorships[k]).map(id => ({ id, submittedAt: currentTime, note: additionalNotes[id] || '' }));
 
@@ -498,13 +506,13 @@ const InputMobile = () => {
 
 
     return (
-        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-y-auto bg-[#EEF7FF] font-sans relative pb-32">
+        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative pb-32">
             {/* Smooth Background Gradient Decoration */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
             <ConfirmationModal isOpen={showConfirmModal} onClose={() => setShowConfirmModal(false)} onConfirm={confirmNavigation} />
 
             {/* Header - Sticky with Glassmorphism to match Dashboard */}
-            <div className="px-6 py-4 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-30 border-b border-slate-200">
+            <div className="px-6 py-4 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => navigate('/student/dashboard')}

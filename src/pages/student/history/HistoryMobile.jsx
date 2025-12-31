@@ -412,7 +412,7 @@ const HistoryMobile = () => {
                             rawTime: submittedAt || prayerTime || '00:00',
                             time: `${displayTime} WIB`,
                             title: `Shalat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
-                            subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'} ${prayerTime ? `• ${prayerTime} WIB` : ''}`,
+                            subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'}${prayerTime ? ` • ${prayerTime.replace(' WIB', '').replace('WIB', '')} WIB` : ''}`,
                             category: "Shalat Wajib",
                             status: "Menunggu",
                             points: isCongregation ? 25 : 10,
@@ -524,7 +524,8 @@ const HistoryMobile = () => {
     ];
 
     // Calculate today's progress - count ALL activities for today (matching desktop logic)
-    const today = new Date().toISOString().split('T')[0];
+    const todayDate = new Date();
+    const today = `${todayDate.getFullYear()}-${String(todayDate.getMonth() + 1).padStart(2, '0')}-${String(todayDate.getDate()).padStart(2, '0')}`;
     const todayActivitiesCount = activities.filter(a => a.rawDate === today).length;
     const dailyTarget = 8;
     const progressPercent = Math.min((todayActivitiesCount / dailyTarget) * 100, 100);
@@ -567,16 +568,19 @@ const HistoryMobile = () => {
                             const isCongregation = isObject ? prayer.isCongregation : false;
 
                             const submittedAt = isObject && prayer.submittedAt ? prayer.submittedAt : null;
-                            const displayTime = submittedAt ? submittedAt.substring(0, 5) : (prayerTime || '-');
+                            // Header Time = Input Time (submittedAt)
+                            const headerTime = submittedAt ? submittedAt.substring(0, 5) : (prayerTime || '-');
+                            // Description Time = Actual Prayer Time
+                            const descTime = prayerTime ? prayerTime.replace(' WIB', '').replace('WIB', '') : (submittedAt ? submittedAt.substring(0, 5) : '-');
 
                             allActivities.push({
                                 id: `${dateStr}-prayer-${idx}`,
                                 date: formattedDate,
                                 rawDate: dateStr,
-                                rawTime: submittedAt || prayerTime || '00:00',
-                                time: `${displayTime} WIB`,
+                                rawTime: submittedAt || prayerTime || '00:00', // Sort by input time usually
+                                time: `${headerTime} WIB`,
                                 title: `Shalat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
-                                subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'} ${prayerTime ? `• ${prayerTime} WIB` : ''}`,
+                                subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'} • ${descTime} WIB`,
                                 category: "Shalat Wajib",
                                 status: "Menunggu",
                                 points: isCongregation ? 25 : 10,
@@ -677,7 +681,11 @@ const HistoryMobile = () => {
 
         // Calculate monthly activity count
         const now = new Date();
-        const currentMonthPrefix = now.toISOString().slice(0, 7); // YYYY-MM
+        // Use local time instead of UTC (toISOString) to ensure correct month match
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const currentMonthPrefix = `${year}-${month}`; // YYYY-MM
+
         const monthCount = activities.filter(a => a.rawDate.startsWith(currentMonthPrefix)).length;
 
         setStats({ totalPoints, monthCount });
@@ -700,12 +708,14 @@ const HistoryMobile = () => {
         const achievementKey = `daily_achievement_${today}`;
         const hasShownAchievement = localStorage.getItem(achievementKey);
 
-        // Debug log (remove in prod)
-        // console.log("Achievement Check:", { today, todayCount, hasShownAchievement });
+        // Debug log - temporarily enabled for testing
+        // console.log("🎯 Achievement Check:", { today, todayCount, hasShownAchievement, activitiesLength: activities.length });
 
+        // Show popup when daily target (8 activities) is reached
         if (todayCount >= 8 && !hasShownAchievement) {
             // Small delay to ensure UI is ready
             const timer = setTimeout(() => {
+                // console.log("🎉 Showing achievement popup!");
                 setShowPopup(true);
                 localStorage.setItem(achievementKey, 'true');
             }, 1000);
@@ -800,12 +810,15 @@ const HistoryMobile = () => {
     const verifiedActivities = activities.filter(a => a.status === 'Terverifikasi' || a.status === 'Disetujui');
 
     return (
-        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-y-auto bg-[#EEF7FF] font-sans relative pb-28">
+        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative pb-28">
+            {/* Achievement Popup */}
+            {showPopup && <AchievementPopup onClose={() => setShowPopup(false)} />}
+
             {/* Smooth Background Gradient Decoration */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
             {/* Header - Only title */}
-            <div className="px-6 py-4 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-30 border-b border-slate-200">
+            <div className="px-6 py-4 sticky top-0 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
                 <HistoryHeader verifiedActivities={verifiedActivities} />
             </div>
 

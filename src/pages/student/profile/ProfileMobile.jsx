@@ -192,6 +192,7 @@ const ProfileMobile = () => {
     });
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showAboutModal, setShowAboutModal] = useState(false);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     const studentInfo = {
         name: "Ahmad",
@@ -263,7 +264,7 @@ const ProfileMobile = () => {
         const keysToRemove = [];
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
-            if (key && (key.startsWith('daily_report_') || key.startsWith('daily_achievement_'))) {
+            if (key && (key.startsWith('daily_report_') || key.startsWith('daily_achievement_') || key.startsWith('teacher_note_seen_') || key === 'notification_last_read_count')) {
                 keysToRemove.push(key);
             }
         }
@@ -277,12 +278,12 @@ const ProfileMobile = () => {
     };
 
     return (
-        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-y-auto bg-[#EEF7FF] font-sans relative animate-fade-in pb-32">
+        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative animate-fade-in pb-32">
             {/* Smooth Background Gradient Decoration */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
             {/* Header - Native Style */}
-            <div className="sticky top-0 z-40 bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl border-b border-slate-200 px-6 py-4 flex items-center justify-between transition-all duration-300">
+            <div className="sticky top-0 z-[60] bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl border-b border-slate-200 px-6 py-4 flex items-center justify-between transition-all duration-300">
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => navigate('/student/dashboard')}
@@ -311,8 +312,8 @@ const ProfileMobile = () => {
                 {/* Profile Card - Large & Clean */}
                 <div className="flex flex-col items-center animate-fade-in-up">
                     <div className="relative mb-3 group">
-                        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-emerald-400 flex items-center justify-center text-white text-4xl font-bold shadow-xl shadow-primary/20 ring-4 ring-white relative z-10">
-                            {studentInfo.fullName.split(' ').map(n => n[0]).join('')}
+                        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-emerald-400 shadow-xl shadow-primary/20 ring-4 ring-white relative z-10 overflow-hidden">
+                            <img src="/avatars/dani.png" alt={studentInfo.fullName} className="w-full h-full object-cover" style={{ objectPosition: 'center 35%' }} />
                         </div>
                         {/* Status Indicator */}
                         <div className="absolute 0 -bottom-1 -right-1 bg-white p-1.5 rounded-full z-20 shadow-sm">
@@ -516,12 +517,8 @@ const ProfileMobile = () => {
                 {/* Logout Button */}
                 <div className="px-6 pb-8 mt-4">
                     <button
-                        onClick={() => {
-                            if (window.confirm('Yakin ingin keluar?')) {
-                                navigate('/');
-                            }
-                        }}
-                        className="group w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 to-red-500 text-white font-bold active:scale-[0.96] transition-all duration-300 flex items-center justify-center gap-2.5 shadow-lg shadow-rose-300/40 hover:shadow-xl hover:shadow-rose-300/50 border-2 border-rose-400"
+                        onClick={() => setShowLogoutModal(true)}
+                        className="group w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 to-red-500 text-white font-bold active:scale-[0.96] transition-all duration-300 flex items-center justify-center gap-2.5 shadow-lg shadow-rose-300/40 hover:shadow-xl hover:shadow-rose-300/50 outline-none ring-0 border-none"
                     >
                         <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center transition-colors group-hover:bg-white/30">
                             <span className="material-symbols-outlined text-base group-hover:-translate-x-0.5 transition-transform text-white">logout</span>
@@ -539,6 +536,18 @@ const ProfileMobile = () => {
                 </div>
 
             </div>
+
+            {/* Confirm Logout Modal */}
+            <ConfirmModal
+                isOpen={showLogoutModal}
+                onClose={() => setShowLogoutModal(false)}
+                onConfirm={() => navigate('/')}
+                title="Keluar Akun?"
+                message="Kamu akan kembali ke halaman login. Lanjutkan?"
+                confirmText="Ya, Keluar"
+                cancelText="Batal"
+                type="danger"
+            />
 
             {/* Confirm Reset Modal */}
             <ConfirmModal
@@ -566,7 +575,7 @@ const ProfileMobile = () => {
                             {/* Decorative circles */}
                             <div className="absolute top-0 left-0 w-40 h-40 bg-white/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
                             <div className="absolute bottom-0 right-0 w-40 h-40 bg-teal-300/30 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
-                            
+
                             {/* Close Button - Glass style */}
                             <button
                                 onClick={() => setShowAboutModal(false)}
@@ -584,8 +593,8 @@ const ProfileMobile = () => {
                                 </h3>
                                 <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-900/30 backdrop-blur-md rounded-full border border-white/20 shadow-inner">
                                     <span className="relative flex h-2 w-2">
-                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
-                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
                                     </span>
                                     <span className="text-emerald-50 text-[10px] font-bold tracking-widest uppercase">Versi 1.0</span>
                                 </div>
@@ -594,7 +603,7 @@ const ProfileMobile = () => {
 
                         {/* Content Area */}
                         <div className="p-5 space-y-5 overflow-y-auto no-scrollbar bg-slate-50/50">
-                            
+
                             {/* Tech Stack - Floating Cards */}
                             <div>
                                 <h4 className="text-slate-400 font-extrabold text-[10px] uppercase tracking-widest mb-2.5 flex items-center gap-2">
@@ -626,7 +635,7 @@ const ProfileMobile = () => {
                                 </h4>
                                 <div className="bg-white rounded-3xl p-4 shadow-lg shadow-slate-200/50 border border-slate-100 relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 to-transparent rounded-full -mr-10 -mt-10"></div>
-                                    
+
                                     <div className="flex items-center gap-3.5 mb-4 relative z-10">
                                         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
                                             <User size={24} />

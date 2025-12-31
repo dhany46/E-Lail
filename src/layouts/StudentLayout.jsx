@@ -190,7 +190,7 @@ const StudentLayoutContent = () => {
                 )}
 
                 {/* Content Outlet */}
-                <div className={`flex-1 overflow-y-auto scroll-smooth pb-24 md:pb-6 ${isFullContainerPage ? 'p-0 md:p-6 lg:p-8' : 'p-4 md:p-6 lg:p-8'}`}>
+                <div className={`flex-1 overflow-y-auto scrollbar-hide scroll-smooth overscroll-y-auto pb-24 md:pb-6 ${isFullContainerPage ? 'p-0 md:p-6 lg:p-8' : 'p-4 md:p-6 lg:p-8'}`}>
                     <div className="w-full max-w-full md:max-w-screen-xl mx-auto">
                         <AnimatePresence mode="wait">
                             <motion.div
