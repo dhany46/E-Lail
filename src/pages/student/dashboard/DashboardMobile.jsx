@@ -700,7 +700,7 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
     const verifiedActivities = activities?.filter(a => a.status === 'Terverifikasi') || [];
 
     return (
-        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative select-none touch-manipulation animate-fade-in">
+        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative select-none touch-manipulation animate-fade-in pb-0">
             {/* Smooth Background Gradient Decoration */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
@@ -732,7 +732,7 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
                         </div>
 
                         {/* 4. Recent Activity (Delay 0.4s) */}
-                        <div className="animate-fade-in-up opacity-0 pb-16" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.9s' }}>
+                        <div className="animate-fade-in-up opacity-0 pb-48" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.9s' }}>
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-2">
                                     <div className="size-8 rounded-full bg-emerald-100/50 text-emerald-600 flex items-center justify-center">

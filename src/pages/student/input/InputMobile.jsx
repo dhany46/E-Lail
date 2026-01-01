@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaMosque, FaBookOpen, FaHeart, FaStar, FaCloudSun } from "react-icons/fa";
+import { FaArrowLeft, FaMosque, FaBookOpen, FaHeart, FaStar, FaCloudSun, FaSmileWink, FaMagic, FaHandHoldingHeart, FaCommentSlash, FaBook, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { BiSolidDonateHeart } from "react-icons/bi";
-import { MdVerified, MdOutlineWbTwilight, MdLightMode, MdSunny, MdNightsStay, MdBedtime } from "react-icons/md";
+import { MdVerified, MdOutlineWbTwilight, MdLightMode, MdSunny, MdNightsStay, MdBedtime, MdNoFood } from "react-icons/md";
 import { useStudentContext } from '../../../context/StudentContext';
 import { useToast } from '../../../context/ToastContext';
 
@@ -163,7 +163,7 @@ const PrayerCardMobile = ({ id, label, icon, isChecked, onClick, onRemove, data,
                 animate-fade-in
                 ${isChecked
                     ? 'bg-gradient-to-br from-blue-50 to-white border-blue-200 shadow-md shadow-blue-100/50'
-                    : 'bg-white border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md hover:border-blue-200'
+                    : 'bg-white border-slate-100/80 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md hover:border-blue-200'
                 }
             `}
             onClick={() => onClick(id)}
@@ -236,7 +236,7 @@ const SuccessModal = ({ isOpen }) => {
                 <div className="size-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="material-symbols-outlined text-5xl animate-bounce notranslate">check</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Terikirim! 🚀</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Terkirim! 🚀</h3>
                 <p className="text-sm text-gray-500">Laporanmu sudah masuk. Barakallah!</p>
             </div>
         </div>
@@ -269,8 +269,31 @@ const InputMobile = () => {
         surah: '',
         ayatStart: '',
         ayatEnd: '',
+        surah: '',
+        ayatStart: '',
+        ayatEnd: '',
+        page: '',
+        jilid: '',
+        literacyTitle: '',
+        literacyPage: '',
         notes: ''
     });
+
+    // Collapsible Sections State
+    const [expandedSections, setExpandedSections] = useState({
+        prayers: true,
+        tadarus: false,
+        sunnah: true,
+        literacy: false,
+        additional: false
+    });
+
+    const toggleSection = (section) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [section]: !prev[section]
+        }));
+    };
 
     // Time State
     const [currentTime, setCurrentTime] = useState(() => {
@@ -307,6 +330,25 @@ const InputMobile = () => {
                 notes: parsed.notes || ''
             });
             if (parsed.notes) setForm(prev => ({ ...prev, notes: parsed.notes }));
+            // Load Hijrati fields if available
+            if (parsed.tadarus) {
+                setForm(prev => ({
+                    ...prev,
+                    surah: parsed.tadarus.surah || '',
+                    ayatStart: parsed.tadarus.ayatStart || '',
+                    ayatEnd: parsed.tadarus.ayatEnd || '',
+                    page: parsed.tadarus.page || '',
+                    jilid: parsed.tadarus.jilid || ''
+                }));
+            }
+            // Load Literasi fields if available
+            if (parsed.literacy) {
+                setForm(prev => ({
+                    ...prev,
+                    literacyTitle: parsed.literacy.title || '',
+                    literacyPage: parsed.literacy.page || ''
+                }));
+            }
         }
     }, []);
 
@@ -317,16 +359,27 @@ const InputMobile = () => {
 
     const prayers = [
         { id: 'Subuh', icon: <MdOutlineWbTwilight />, label: 'Subuh', defaultTime: '04:45' },
-        { id: 'Dzuhur', icon: <MdLightMode />, label: 'Dzuhur', defaultTime: '12:15' },
-        { id: 'Ashar', icon: <MdSunny />, label: 'Ashar', defaultTime: '15:30' },
-        { id: 'Maghrib', icon: <MdNightsStay />, label: 'Maghrib', defaultTime: '18:10' },
+        { id: 'Zuhur', icon: <MdLightMode />, label: 'Zuhur', defaultTime: '12:15' },
+        { id: 'Asar', icon: <MdSunny />, label: 'Asar', defaultTime: '15:30' },
+        { id: 'Magrib', icon: <MdNightsStay />, label: 'Magrib', defaultTime: '18:10' },
         { id: 'Isya', icon: <MdBedtime />, label: 'Isya', defaultTime: '19:25' },
     ];
 
+    const sunnahWorships = [
+        { id: 'dhuha', label: 'Salat Duha', points: 15, icon: <FaCloudSun />, color: 'amber', placeholder: 'Berapa rakaat?' },
+        { id: 'tahajud', label: 'Salat Tahajud', points: 20, icon: <MdNightsStay />, color: 'indigo', placeholder: 'Berapa rakaat?' },
+        { id: 'rawatib', label: 'Salat Rawatib', points: 10, icon: <FaMosque />, color: 'cyan', placeholder: 'Qabliah atau Ba\'diah?' },
+        { id: 'senin_kamis', label: 'Puasa Senin / Kamis', points: 30, icon: <MdNoFood />, color: 'rose', placeholder: 'Senin atau Kamis?' },
+        { id: 'daud', label: 'Puasa Daud', points: 40, icon: <MdNoFood />, color: 'purple', placeholder: 'Hari ke berapa?' },
+    ];
+
     const additionalWorships = [
-        { id: 'dhuha', label: 'Sholat Dhuha', points: 15, icon: <FaCloudSun />, color: 'purple' },
-        { id: 'infaq', label: 'Infaq / Sedekah', points: 10, icon: <BiSolidDonateHeart />, color: 'emerald' },
-        { id: 'help', label: 'Bantu Orang Tua', points: 25, icon: <FaHeart />, color: 'rose' },
+        { id: 'infaq', label: 'Infak / Sedekah', points: 10, icon: <BiSolidDonateHeart />, color: 'emerald', placeholder: 'Berapa nominalnya?' },
+        { id: 'help', label: 'Bantu Orang Tua', points: 25, icon: <FaHeart />, color: 'rose', placeholder: 'Bantu ngapain?' },
+        { id: 'five_s', label: 'Melakukan 5S', points: 10, icon: <FaSmileWink />, color: 'amber', placeholder: 'Sapa siapa aja?' },
+        { id: 'magic_words', label: '5 Kata Ajaib', points: 10, icon: <FaMagic />, color: 'purple', placeholder: 'Kata apa yang diucap?' },
+        { id: 'help_others', label: 'Bantu Sesama', points: 20, icon: <FaHandHoldingHeart />, color: 'blue', placeholder: 'Bantu siapa?' },
+        { id: 'no_bad_words', label: 'Tidak Berkata Kasar', points: 15, icon: <FaCommentSlash />, color: 'teal', placeholder: 'Alhamdulillah!' },
     ];
 
     // Handlers
@@ -352,8 +405,9 @@ const InputMobile = () => {
     // Dirty Logic
     const hasNewPrayers = selectedPrayers.length > 0;
     const hasNewTadarus = !!(form.surah && form.ayatStart && form.ayatEnd);
+    const hasNewLiteracy = !!(form.literacyTitle && form.literacyPage);
     const hasNewAdditional = Object.keys(selectedAdditionalWorships).filter(k => selectedAdditionalWorships[k]).length > 0;
-    const isDirty = hasNewPrayers || hasNewTadarus || hasNewAdditional || form.notes.length > 0;
+    const isDirty = hasNewPrayers || hasNewTadarus || hasNewLiteracy || hasNewAdditional || form.notes.length > 0;
 
     useEffect(() => {
         if (isDirty) {
@@ -417,7 +471,21 @@ const InputMobile = () => {
                 submittedAt: currentTime
             }));
             const newTadarus = (form.surah && form.ayatStart && form.ayatEnd)
-                ? { surah: form.surah, ayatStart: form.ayatStart, ayatEnd: form.ayatEnd, submittedAt: currentTime } : null;
+                ? {
+                    surah: form.surah,
+                    ayatStart: form.ayatStart,
+                    ayatEnd: form.ayatEnd,
+                    page: form.page,
+                    jilid: form.jilid,
+                    submittedAt: currentTime
+                } : null;
+
+            const newLiteracy = (form.literacyTitle && form.literacyPage)
+                ? {
+                    title: form.literacyTitle,
+                    page: form.literacyPage,
+                    submittedAt: currentTime
+                } : null;
 
             // Use local date (not UTC from toISOString) to match HistoryMobile
             const year = now.getFullYear();
@@ -430,6 +498,7 @@ const InputMobile = () => {
             const newData = {
                 prayers: [...existingPrayers, ...newPrayers],
                 tadarus: alreadySubmitted.tadarus || newTadarus,
+                literacy: alreadySubmitted.literacy || newLiteracy,
                 additional: [...alreadySubmitted.additional, ...newAdditional],
                 notes: form.notes || alreadySubmitted.notes,
                 submittedAt: currentTime
@@ -469,7 +538,7 @@ const InputMobile = () => {
                         </div>
                         <div>
                             <h3 className="text-xl font-bold text-gray-900 tracking-tight">{prayerData.label}</h3>
-                            <p className="text-sm font-medium text-gray-500 px-4">Jam berapa kamu sholat?</p>
+                            <p className="text-sm font-medium text-gray-500 px-4">Jam berapa kamu salat?</p>
                         </div>
                     </div>
 
@@ -530,160 +599,360 @@ const InputMobile = () => {
             </div>
 
             {/* Content Container */}
-            <div className="space-y-6 relative z-10 px-6 mt-6 mb-24">
+            <div className="space-y-3 relative z-10 px-6 mt-6 mb-24">
                 {/* Main Prayer Grid */}
-                <section className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <div className="flex items-center gap-2.5 mb-4">
-                        <div className="size-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                            <FaMosque />
+                {/* Main Prayer Grid */}
+                <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                    <div
+                        className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.prayers ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
+                        onClick={() => toggleSection('prayers')}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="size-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm">
+                                <FaMosque className="text-lg" />
+                            </div>
+                            <h3 className="font-bold text-slate-800 text-[15px]">Salat Wajib</h3>
                         </div>
-                        <h3 className="font-bold text-gray-800">Sholat Wajib</h3>
+                        <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.prayers ? 'bg-blue-100 text-blue-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                            <FaChevronDown className="text-xs" />
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3">
-                        {prayers.map((prayer) => {
-                            const isSubmitted = alreadySubmitted.prayers.some(p => p.id === prayer.id);
-                            return (
-                                <PrayerCardMobile
-                                    key={prayer.id}
-                                    {...prayer}
-                                    isChecked={selectedPrayers.includes(prayer.id)}
-                                    isSubmitted={isSubmitted}
-                                    data={prayerData[prayer.id]}
-                                    onClick={handlePrayerClick}
-                                    onRemove={handleRemovePrayer}
-                                />
-                            );
-                        })}
+                    <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.prayers ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                        <div className="overflow-hidden">
+                            <div className="grid grid-cols-3 gap-3 animate-fade-in p-5 pt-2">
+                                {prayers.map((prayer) => {
+                                    const isSubmitted = alreadySubmitted.prayers.some(p => p.id === prayer.id);
+                                    return (
+                                        <PrayerCardMobile
+                                            key={prayer.id}
+                                            {...prayer}
+                                            isChecked={selectedPrayers.includes(prayer.id)}
+                                            isSubmitted={isSubmitted}
+                                            data={prayerData[prayer.id]}
+                                            onClick={handlePrayerClick}
+                                            onRemove={handleRemovePrayer}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Sunnah Worships */}
+                <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.15s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                    <div
+                        className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.sunnah ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
+                        onClick={() => toggleSection('sunnah')}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="size-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center shadow-sm">
+                                <FaStar className="text-lg" />
+                            </div>
+                            <h3 className="font-bold text-slate-800 text-[15px]">Ibadah Sunah</h3>
+                        </div>
+                        <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.sunnah ? 'bg-amber-100 text-amber-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                            <FaChevronDown className="text-xs" />
+                        </div>
+                    </div>
+
+                    <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.sunnah ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                        <div className="overflow-hidden">
+                            <div className="space-y-2 animate-fade-in p-5 pt-2">
+                                {sunnahWorships.map((item) => {
+                                    // Manual color mapping for new items
+                                    const colorClasses = {
+                                        amber: { border: 'border-amber-300', bg: 'bg-amber-50/50', checkBg: 'bg-amber-500 border-amber-500', iconColor: 'text-amber-500', ring: 'focus:ring-amber-200 focus:border-amber-400' },
+                                        indigo: { border: 'border-indigo-300', bg: 'bg-indigo-50/50', checkBg: 'bg-indigo-500 border-indigo-500', iconColor: 'text-indigo-600', ring: 'focus:ring-indigo-200 focus:border-indigo-400' },
+                                        cyan: { border: 'border-cyan-300', bg: 'bg-cyan-50/50', checkBg: 'bg-cyan-500 border-cyan-500', iconColor: 'text-cyan-600', ring: 'focus:ring-cyan-200 focus:border-cyan-400' },
+                                        rose: { border: 'border-rose-300', bg: 'bg-rose-50/50', checkBg: 'bg-rose-500 border-rose-500', iconColor: 'text-rose-600', ring: 'focus:ring-rose-200 focus:border-rose-400' },
+                                        purple: { border: 'border-purple-300', bg: 'bg-purple-50/50', checkBg: 'bg-purple-500 border-purple-500', iconColor: 'text-purple-600', ring: 'focus:ring-purple-200 focus:border-purple-400' },
+                                    }[item.color || 'amber'];
+
+                                    return (
+                                        <div key={item.id} className={`bg-white rounded-2xl border p-4 transition-all duration-300 ${selectedAdditionalWorships[item.id] ? `${colorClasses.border} ${colorClasses.bg} shadow-md` : 'border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md'}`}>
+                                            <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleAdditionalWorship(item.id)}>
+                                                <div className="flex items-center gap-3.5">
+                                                    <div className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedAdditionalWorships[item.id] ? colorClasses.checkBg : 'border-gray-200 bg-gray-50'}`}>
+                                                        {selectedAdditionalWorships[item.id] && <span className="text-white text-xs font-bold">✓</span>}
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-lg ${selectedAdditionalWorships[item.id] ? colorClasses.iconColor : 'text-gray-400'}`}>{item.icon}</span>
+                                                        <span className={`text-sm font-bold ${selectedAdditionalWorships[item.id] ? 'text-gray-800' : 'text-gray-600'}`}>{item.label}</span>
+                                                    </div>
+                                                </div>
+                                                <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${selectedAdditionalWorships[item.id] ? 'bg-white shadow-sm text-gray-800' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>+{item.points} Poin</span>
+                                            </div>
+                                            {selectedAdditionalWorships[item.id] && (
+                                                <div className="mt-4 pl-10 animate-fade-in">
+                                                    <input
+                                                        type="text"
+                                                        placeholder={item.placeholder || "Tambahkan catatan..."}
+                                                        className={`w-full bg-white border border-transparent rounded-xl px-4 py-2.5 text-xs font-medium outline-none focus:ring-2 transition-all shadow-sm ${colorClasses.ring}`}
+                                                        value={additionalNotes[item.id] || ''}
+                                                        onChange={(e) => setAdditionalNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     </div>
                 </section>
 
                 {/* Tadarus Section - Native Card Style */}
-                <section className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <div className="flex items-center gap-2.5 mb-4">
-                        <div className="size-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
-                            <FaBookOpen />
+                {/* Tadarus Section - Native Card Style */}
+                <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                    <div
+                        className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.tadarus ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
+                        onClick={() => toggleSection('tadarus')}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="size-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center shadow-sm">
+                                <FaBookOpen className="text-lg" />
+                            </div>
+                            <h3 className="font-bold text-slate-800 text-[15px]">Tadarus Al-Qur'an / Hijrati</h3>
                         </div>
-                        <h3 className="font-bold text-gray-800">Tadarus Al-Qur'an</h3>
+                        <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.tadarus ? 'bg-amber-100 text-amber-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                            <FaChevronDown className="text-xs" />
+                        </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] border border-slate-200/60 relative overflow-hidden group active:scale-[0.99] transition-all" id="tadarus-form">
-                        {/* Header inside card with Score */}
-                        <div className="flex justify-between items-start mb-4 relative z-10">
-                            <div>
-                                <h4 className="text-sm font-bold text-slate-800">Bacaan Hari Ini</h4>
-                                <p className="text-[10px] text-slate-500 font-medium">Jangan lupa catat suratnya ya!</p>
-                            </div>
-                            <div className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm border border-blue-200">
-                                +50 Poin
-                            </div>
-                        </div>
-
-                        {/* Decorative Background Icon */}
-                        <FaBookOpen className="absolute -bottom-6 -right-6 text-amber-500/5 text-[10rem] pointer-events-none rotate-12" />
-
-                        <div className="space-y-5 relative z-10">
-                            <div>
-                                <label className="text-xs font-bold text-slate-600 uppercase tracking-wide ml-1 mb-2 block">Nama Surat</label>
-                                <input
-                                    type="text"
-                                    placeholder="Contoh: Al-Mulk"
-                                    className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 ${errors.surah ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)]'}`}
-                                    value={form.surah}
-                                    onChange={(e) => {
-                                        setForm({ ...form, surah: e.target.value });
-                                        if (errors.surah) setErrors({ ...errors, surah: null });
-                                    }}
-                                />
-                                {errors.surah && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse flex items-center gap-1"><span className="text-xs">⚠️</span> {errors.surah}</p>}
-                            </div>
-                            <div className="flex gap-4">
-                                <div className="flex-1">
-                                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wide ml-1 mb-2 block">Ayat Mulai</label>
-                                    <div className="relative">
-                                        <input
-                                            type="number"
-                                            placeholder="1"
-                                            className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 text-center ${errors.ayatStart ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)]'}`}
-                                            value={form.ayatStart}
-                                            onChange={(e) => {
-                                                setForm({ ...form, ayatStart: e.target.value });
-                                                if (errors.ayatStart) setErrors({ ...errors, ayatStart: null });
-                                            }}
-                                        />
+                    <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.tadarus ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                        <div className="overflow-hidden">
+                            <div className="relative overflow-hidden group active:scale-[0.99] transition-all animate-fade-in p-5 pt-2 pb-7" id="tadarus-form">
+                                {/* Header inside card with Score - REDUCED MARGIN */}
+                                <div className="flex justify-between items-start mb-4 relative z-10">
+                                    <div>
+                                        <h4 className="text-sm font-bold text-slate-800">Bacaan Hari Ini</h4>
+                                        <p className="text-[10px] text-slate-500 font-medium">Jangan lupa catat suratnya ya!</p>
                                     </div>
-                                    {errors.ayatStart && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse text-center">{errors.ayatStart}</p>}
-                                </div>
-                                <div className="flex items-center pt-8 text-slate-300">
-                                    <span className="material-symbols-outlined notranslate">arrow_right_alt</span>
-                                </div>
-                                <div className="flex-1">
-                                    <label className="text-xs font-bold text-slate-600 uppercase tracking-wide ml-1 mb-2 block">Ayat Akhir</label>
-                                    <div className="relative">
-                                        <input
-                                            type="number"
-                                            placeholder="10"
-                                            className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 text-center ${errors.ayatEnd ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)]'}`}
-                                            value={form.ayatEnd}
-                                            onChange={(e) => {
-                                                setForm({ ...form, ayatEnd: e.target.value });
-                                                if (errors.ayatEnd) setErrors({ ...errors, ayatEnd: null });
-                                            }}
-                                        />
+                                    <div className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm border border-blue-200">
+                                        +50 Poin
                                     </div>
-                                    {errors.ayatEnd && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse text-center">{errors.ayatEnd}</p>}
+                                </div>
+
+                                {/* Decorative Background Icon */}
+                                <FaBookOpen className="absolute -bottom-6 -right-6 text-amber-500/5 text-[10rem] pointer-events-none rotate-12" />
+
+                                <div className="space-y-5 relative z-10">
+                                    {/* Al-Qur'an Section */}
+                                    <div>
+                                        <h5 className="text-xs font-bold text-blue-500 tracking-wide mb-3 border-b border-blue-100 pb-1 w-fit">Al-Qur'an</h5>
+                                        <div>
+                                            <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Nama Surat</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Contoh: Al-Mulk"
+                                                className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 ${errors.surah ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)]'}`}
+                                                value={form.surah}
+                                                onChange={(e) => {
+                                                    setForm({ ...form, surah: e.target.value });
+                                                    if (errors.surah) setErrors({ ...errors, surah: null });
+                                                }}
+                                            />
+                                            {errors.surah && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse flex items-center gap-1"><span className="text-xs">⚠️</span> {errors.surah}</p>}
+                                        </div>
+                                        <div className="flex gap-4 mt-3">
+                                            <div className="flex-1">
+                                                <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Ayat Mulai</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="number"
+                                                        placeholder="1"
+                                                        className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 text-center ${errors.ayatStart ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)]'}`}
+                                                        value={form.ayatStart}
+                                                        onChange={(e) => {
+                                                            setForm({ ...form, ayatStart: e.target.value });
+                                                            if (errors.ayatStart) setErrors({ ...errors, ayatStart: null });
+                                                        }}
+                                                    />
+                                                </div>
+                                                {errors.ayatStart && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse text-center">{errors.ayatStart}</p>}
+                                            </div>
+                                            <div className="flex items-center pt-8 text-slate-300">
+                                                <span className="material-symbols-outlined notranslate">arrow_right_alt</span>
+                                            </div>
+                                            <div className="flex-1">
+                                                <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Ayat Akhir</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="number"
+                                                        placeholder="10"
+                                                        className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 text-center ${errors.ayatEnd ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)]'}`}
+                                                        value={form.ayatEnd}
+                                                        onChange={(e) => {
+                                                            setForm({ ...form, ayatEnd: e.target.value });
+                                                            if (errors.ayatEnd) setErrors({ ...errors, ayatEnd: null });
+                                                        }}
+                                                    />
+                                                </div>
+                                                {errors.ayatEnd && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse text-center">{errors.ayatEnd}</p>}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Hijrati Fields - Page & Jilid */}
+                                    <div>
+                                        <h5 className="text-xs font-bold text-amber-500 tracking-wide mt-6 mb-3 border-b border-amber-100 pb-1 w-fit">Hijrati</h5>
+                                        <div className="flex gap-4">
+                                            <div className="flex-1">
+                                                <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Halaman</label>
+                                                <input
+                                                    type="number"
+                                                    placeholder="1"
+                                                    className="w-full border bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:bg-white focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)] transition-all placeholder:font-medium placeholder:text-slate-300 text-center"
+                                                    value={form.page || ''}
+                                                    onChange={(e) => setForm({ ...form, page: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Jilid</label>
+                                                <input
+                                                    type="number"
+                                                    placeholder="1"
+                                                    className="w-full border bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:bg-white focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)] transition-all placeholder:font-medium placeholder:text-slate-300 text-center"
+                                                    value={form.jilid || ''}
+                                                    onChange={(e) => setForm({ ...form, jilid: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* Additional */}
-                <section className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <div className="flex items-center gap-2.5 mb-4">
-                        <div className="size-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center">
-                            <FaHeart />
+                {/* Literasi Section */}
+                <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.25s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                    <div
+                        className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.literacy ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
+                        onClick={() => toggleSection('literacy')}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="size-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-sm">
+                                <FaBook className="text-lg" />
+                            </div>
+                            <h3 className="font-bold text-slate-800 text-[15px]">Literasi</h3>
                         </div>
-                        <h3 className="font-bold text-gray-800">Ibadah Lainnya</h3>
+                        <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.literacy ? 'bg-indigo-100 text-indigo-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                            <FaChevronDown className="text-xs" />
+                        </div>
                     </div>
 
-                    <div className="space-y-3">
-                        {additionalWorships.map((item) => {
-                            // Color mapping
-                            const colorClasses = {
-                                purple: { border: 'border-purple-300', bg: 'bg-purple-50/50', checkBg: 'bg-purple-500 border-purple-500', iconColor: 'text-purple-600', ring: 'focus:ring-purple-200 focus:border-purple-400' },
-                                emerald: { border: 'border-emerald-300', bg: 'bg-emerald-50/50', checkBg: 'bg-emerald-500 border-emerald-500', iconColor: 'text-emerald-600', ring: 'focus:ring-emerald-200 focus:border-emerald-400' },
-                                rose: { border: 'border-rose-300', bg: 'bg-rose-50/50', checkBg: 'bg-rose-500 border-rose-500', iconColor: 'text-rose-600', ring: 'focus:ring-rose-200 focus:border-rose-400' },
-                            }[item.color || 'emerald'];
-
-                            return (
-                                <div key={item.id} className={`bg-white rounded-2xl border p-4 transition-all duration-300 ${selectedAdditionalWorships[item.id] ? `${colorClasses.border} ${colorClasses.bg} shadow-md` : 'border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md'}`}>
-                                    <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleAdditionalWorship(item.id)}>
-                                        <div className="flex items-center gap-3.5">
-                                            <div className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedAdditionalWorships[item.id] ? colorClasses.checkBg : 'border-gray-200 bg-gray-50'}`}>
-                                                {selectedAdditionalWorships[item.id] && <span className="text-white text-xs font-bold">✓</span>}
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className={`text-lg ${selectedAdditionalWorships[item.id] ? colorClasses.iconColor : 'text-gray-400'}`}>{item.icon}</span>
-                                                <span className={`text-sm font-bold ${selectedAdditionalWorships[item.id] ? 'text-gray-800' : 'text-gray-600'}`}>{item.label}</span>
-                                            </div>
-                                        </div>
-                                        <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${selectedAdditionalWorships[item.id] ? 'bg-white shadow-sm text-gray-800' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>+{item.points} Poin</span>
+                    <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.literacy ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                        <div className="overflow-hidden">
+                            <div className="relative overflow-hidden group active:scale-[0.99] transition-all animate-fade-in p-5 pt-2 pb-7">
+                                {/* Header inside card with Score - REDUCED MARGIN */}
+                                <div className="flex justify-between items-start mb-4 relative z-10 w-full">
+                                    <div>
+                                        <h4 className="text-sm font-bold text-slate-800">Baca Buku Hari Ini</h4>
+                                        <p className="text-[10px] text-slate-500 font-medium">Buku apa yang kamu baca?</p>
                                     </div>
-                                    {selectedAdditionalWorships[item.id] && (
-                                        <div className="mt-4 pl-10 animate-fade-in">
-                                            <input
-                                                type="text"
-                                                placeholder="Tambahkan catatan..."
-                                                className={`w-full bg-white border border-transparent rounded-xl px-4 py-2.5 text-xs font-medium outline-none focus:ring-2 transition-all shadow-sm ${colorClasses.ring}`}
-                                                value={additionalNotes[item.id] || ''}
-                                                onChange={(e) => setAdditionalNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
-                                            />
-                                        </div>
-                                    )}
+                                    <div className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm border border-blue-200">
+                                        +15 Poin
+                                    </div>
                                 </div>
-                            );
-                        })}
+
+                                {/* Decorative Background Icon */}
+                                <FaBook className="absolute -bottom-6 -right-6 text-indigo-500/5 text-[10rem] pointer-events-none rotate-12" />
+
+                                <div className="space-y-4 relative z-10">
+                                    <div>
+                                        <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Judul Buku</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Contoh: Kisah Nabi Muhammad"
+                                            className="w-full border bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:bg-white focus:border-indigo-400 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.1)] transition-all placeholder:font-medium placeholder:text-slate-300"
+                                            value={form.literacyTitle}
+                                            onChange={(e) => setForm({ ...form, literacyTitle: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Halaman</label>
+                                        <input
+                                            type="number"
+                                            placeholder="Contoh: 15"
+                                            className="w-full border bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:bg-white focus:border-indigo-400 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.1)] transition-all placeholder:font-medium placeholder:text-slate-300"
+                                            value={form.literacyPage}
+                                            onChange={(e) => setForm({ ...form, literacyPage: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+
+
+
+                {/* Additional */}
+                <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0 relative z-0" style={{ animationDelay: '0.35s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                    <div
+                        className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.additional ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
+                        onClick={() => toggleSection('additional')}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="size-10 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center shadow-sm">
+                                <FaHeart className="text-lg" />
+                            </div>
+                            <h3 className="font-bold text-slate-800 text-[15px]">Ibadah Lainnya</h3>
+                        </div>
+                        <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.additional ? 'bg-pink-100 text-pink-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                            <FaChevronDown className="text-xs" />
+                        </div>
+                    </div>
+
+                    <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.additional ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                        <div className="overflow-hidden">
+                            <div className="space-y-2 animate-fade-in p-5 pt-2">
+                                {additionalWorships.map((item) => {
+                                    // Manual color mapping for new items
+                                    const colorClasses = {
+                                        amber: { border: 'border-amber-300', bg: 'bg-amber-50/50', checkBg: 'bg-amber-500 border-amber-500', iconColor: 'text-amber-500', ring: 'focus:ring-amber-200 focus:border-amber-400' },
+                                        purple: { border: 'border-purple-300', bg: 'bg-purple-50/50', checkBg: 'bg-purple-500 border-purple-500', iconColor: 'text-purple-600', ring: 'focus:ring-purple-200 focus:border-purple-400' },
+                                        emerald: { border: 'border-emerald-300', bg: 'bg-emerald-50/50', checkBg: 'bg-emerald-500 border-emerald-500', iconColor: 'text-emerald-600', ring: 'focus:ring-emerald-200 focus:border-emerald-400' },
+                                        rose: { border: 'border-rose-300', bg: 'bg-rose-50/50', checkBg: 'bg-rose-500 border-rose-500', iconColor: 'text-rose-600', ring: 'focus:ring-rose-200 focus:border-rose-400' },
+                                        blue: { border: 'border-blue-300', bg: 'bg-blue-50/50', checkBg: 'bg-blue-500 border-blue-500', iconColor: 'text-blue-600', ring: 'focus:ring-blue-200 focus:border-blue-400' },
+                                        teal: { border: 'border-teal-300', bg: 'bg-teal-50/50', checkBg: 'bg-teal-500 border-teal-500', iconColor: 'text-teal-600', ring: 'focus:ring-teal-200 focus:border-teal-400' },
+                                    }[item.color || 'emerald'];
+
+                                    return (
+                                        <div key={item.id} className={`bg-white rounded-2xl border p-4 transition-all duration-300 ${selectedAdditionalWorships[item.id] ? `${colorClasses.border} ${colorClasses.bg} shadow-md` : 'border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md'}`}>
+                                            <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleAdditionalWorship(item.id)}>
+                                                <div className="flex items-center gap-3.5">
+                                                    <div className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedAdditionalWorships[item.id] ? colorClasses.checkBg : 'border-gray-200 bg-gray-50'}`}>
+                                                        {selectedAdditionalWorships[item.id] && <span className="text-white text-xs font-bold">✓</span>}
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-lg ${selectedAdditionalWorships[item.id] ? colorClasses.iconColor : 'text-gray-400'}`}>{item.icon}</span>
+                                                        <span className={`text-sm font-bold ${selectedAdditionalWorships[item.id] ? 'text-gray-800' : 'text-gray-600'}`}>{item.label}</span>
+                                                    </div>
+                                                </div>
+                                                <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${selectedAdditionalWorships[item.id] ? 'bg-white shadow-sm text-gray-800' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>+{item.points} Poin</span>
+                                            </div>
+                                            {selectedAdditionalWorships[item.id] && (
+                                                <div className="mt-4 pl-10 animate-fade-in">
+                                                    <input
+                                                        type="text"
+                                                        placeholder={item.placeholder || "Tambahkan catatan..."}
+                                                        className={`w-full bg-white border border-transparent rounded-xl px-4 py-2.5 text-xs font-medium outline-none focus:ring-2 transition-all shadow-sm ${colorClasses.ring}`}
+                                                        value={additionalNotes[item.id] || ''}
+                                                        onChange={(e) => setAdditionalNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -692,19 +961,19 @@ const InputMobile = () => {
                     <button
                         onClick={handleSendReport}
                         disabled={isSubmitting}
-                        className={`w-full py-4 rounded-2xl font-bold text-white shadow-xl flex items-center justify-center gap-3 transition-all duration-300 active:scale-[0.98] active:shadow-md text-base tracking-wide relative overflow-hidden group ${isSubmitting ? 'bg-slate-300 cursor-not-allowed shadow-none text-slate-500' : 'bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 shadow-blue-500/30 hover:shadow-blue-500/50'}`}
+                        className={`w-[240px] px-8 py-3 rounded-xl font-bold text-white shadow-lg flex items-center justify-center gap-2.5 transition-all duration-300 active:scale-[0.95] active:shadow-md text-sm tracking-wide relative overflow-hidden group ${isSubmitting ? 'bg-slate-300 cursor-not-allowed shadow-none text-slate-500' : 'bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600 shadow-blue-500/30 hover:shadow-blue-500/50'}`}
                     >
                         {/* Shine Effect */}
                         {!isSubmitting && <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer" style={{ animation: 'shimmer 2.5s infinite' }}></div>}
 
                         {isSubmitting ? (
                             <>
-                                <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                <span>Mengirim Laporan...</span>
+                                <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <span>Mengirim...</span>
                             </>
                         ) : (
                             <>
-                                <span className="text-xl filter drop-shadow-md">🚀</span>
+                                <span className="text-lg filter drop-shadow-md">🚀</span>
                                 <span className="drop-shadow-sm">Kirim Laporan</span>
                             </>
                         )}

@@ -150,20 +150,15 @@ const CalendarPicker = ({ isOpen, onClose, selectedDate, onDateSelect }) => {
 
     return (
         <div
-            className={`fixed inset-0 z-[100] transition-all duration-300 ${isVisible ? 'bg-black/50' : 'bg-black/0'}`}
+            className={`fixed inset-0 z-[200] flex items-center justify-center p-4 transition-all duration-300 ${isVisible ? 'bg-black/50' : 'bg-black/0 pointer-events-none'}`}
             onClick={onClose}
         >
             <div
-                className={`absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl transition-transform duration-300 ${isVisible ? 'translate-y-0' : 'translate-y-full'}`}
+                className={`w-full max-w-sm bg-white rounded-3xl transition-all duration-300 shadow-2xl ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Handle Bar */}
-                <div className="flex justify-center pt-2 pb-1">
-                    <div className="w-8 h-1 bg-slate-300 rounded-full"></div>
-                </div>
-
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100">
+                <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-slate-100">
                     <button onClick={onClose} className="text-sm font-medium text-slate-500">Batal</button>
                     <h3 className="text-sm font-bold text-slate-800">Pilih Tanggal</h3>
                     <button
@@ -232,7 +227,7 @@ const CalendarPicker = ({ isOpen, onClose, selectedDate, onDateSelect }) => {
                 </div>
 
                 {/* Quick Actions - Compact */}
-                <div className="px-4 pb-24 pt-1 flex gap-2">
+                <div className="px-4 pb-4 pt-1 flex gap-2">
                     <button
                         onClick={() => {
                             const todayStr = today.toISOString().split('T')[0];
@@ -412,14 +407,14 @@ const HistoryMobile = () => {
                             rawDate: dateStr,
                             rawTime: submittedAt || prayerTime || '00:00',
                             time: `${displayTime} WIB`,
-                            title: `Shalat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
+                            title: `Salat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
                             subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'}${prayerTime ? ` • ${prayerTime.replace(' WIB', '').replace('WIB', '')} WIB` : ''}`,
-                            category: "Shalat Wajib",
+                            category: "Salat Wajib",
                             status: "Menunggu",
                             points: isCongregation ? 25 : 10,
                             icon: <FaMosque className="text-xl" />,
-                            color: 'text-teal-600',
-                            bg: 'bg-teal-50'
+                            color: 'text-blue-600',
+                            bg: 'bg-blue-50'
                         });
                     });
                 }
@@ -446,9 +441,19 @@ const HistoryMobile = () => {
                 // Process additional worships - handle both old (string) and new (object)
                 if (data.additional && Array.isArray(data.additional)) {
                     const additionalLabels = {
-                        'dhuha': { label: 'Sholat Dhuha', points: 15, category: 'Shalat Sunnah', icon: <FaCloudSun className="text-xl" /> },
-                        'infaq': { label: 'Infaq / Sedekah', points: 10, category: 'Ibadah Lainnya', icon: <BiSolidDonateHeart className="text-xl" /> },
-                        'help': { label: 'Bantu Orang Tua', points: 25, category: 'Ibadah Lainnya', icon: <FaHeart className="text-xl" /> }
+                        // Ibadah Sunah
+                        'dhuha': { label: 'Salat Duha', points: 15, category: 'Ibadah Sunah', icon: <FaCloudSun className="text-xl" />, color: 'text-amber-600', bg: 'bg-amber-50' },
+                        'tahajud': { label: 'Salat Tahajud', points: 20, category: 'Ibadah Sunah', icon: <FaCloudMoon className="text-xl" />, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+                        'rawatib': { label: 'Salat Rawatib', points: 10, category: 'Ibadah Sunah', icon: <FaMosque className="text-xl" />, color: 'text-cyan-600', bg: 'bg-cyan-50' },
+                        'senin_kamis': { label: 'Puasa Senin / Kamis', points: 30, category: 'Ibadah Sunah', icon: <FaStar className="text-xl" />, color: 'text-rose-600', bg: 'bg-rose-50' },
+                        'daud': { label: 'Puasa Daud', points: 40, category: 'Ibadah Sunah', icon: <FaStar className="text-xl" />, color: 'text-purple-600', bg: 'bg-purple-50' },
+                        // Ibadah Lainnya
+                        'infaq': { label: 'Infak / Sedekah', points: 10, category: 'Ibadah Lainnya', icon: <BiSolidDonateHeart className="text-xl" />, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+                        'help': { label: 'Bantu Orang Tua', points: 25, category: 'Ibadah Lainnya', icon: <FaHeart className="text-xl" />, color: 'text-rose-600', bg: 'bg-rose-50' },
+                        'five_s': { label: 'Melakukan 5S', points: 10, category: 'Ibadah Lainnya', icon: <FaStar className="text-xl" />, color: 'text-amber-600', bg: 'bg-amber-50' },
+                        'magic_words': { label: '5 Kata Ajaib', points: 10, category: 'Ibadah Lainnya', icon: <FaStar className="text-xl" />, color: 'text-purple-600', bg: 'bg-purple-50' },
+                        'help_others': { label: 'Bantu Sesama', points: 20, category: 'Ibadah Lainnya', icon: <FaHandHoldingHeart className="text-xl" />, color: 'text-blue-600', bg: 'bg-blue-50' },
+                        'no_bad_words': { label: 'Tidak Berkata Kasar', points: 15, category: 'Ibadah Lainnya', icon: <FaStar className="text-xl" />, color: 'text-teal-600', bg: 'bg-teal-50' }
                     };
                     data.additional.forEach((item, idx) => {
                         // Handle both string ID and object format
@@ -456,7 +461,7 @@ const HistoryMobile = () => {
                         const itemId = isObject ? item.id : item;
                         const itemTime = isObject && item.submittedAt ? item.submittedAt : null;
 
-                        const info = additionalLabels[itemId] || { label: itemId, points: 10, category: 'Lainnya', icon: <FaStar className="text-xl" /> };
+                        const info = additionalLabels[itemId] || { label: itemId, points: 10, category: 'Ibadah Lainnya', icon: <FaStar className="text-xl" />, color: 'text-pink-600', bg: 'bg-pink-50' };
                         allActivities.push({
                             id: `${dateStr}-additional-${idx}`,
                             date: formattedDate,
@@ -469,9 +474,28 @@ const HistoryMobile = () => {
                             status: "Menunggu",
                             points: info.points,
                             icon: info.icon,
-                            color: itemId === 'dhuha' ? 'text-purple-600' : 'text-pink-600',
-                            bg: itemId === 'dhuha' ? 'bg-purple-50' : 'bg-pink-50'
+                            color: info.color || 'text-pink-600',
+                            bg: info.bg || 'bg-pink-50'
                         });
+                    });
+                }
+
+                // Process Literacy
+                if (data.literacy && typeof data.literacy === 'object') {
+                    allActivities.push({
+                        id: `${dateStr}-literacy`,
+                        date: formattedDate,
+                        rawDate: dateStr,
+                        rawTime: data.literacy.submittedAt || '23:59:59',
+                        time: data.literacy.submittedAt ? `${data.literacy.submittedAt.substring(0, 5)} WIB` : '-',
+                        title: `Membaca Buku: ${data.literacy.title}`,
+                        subtitle: `Halaman ${data.literacy.page}`,
+                        category: "Literasi",
+                        status: "Menunggu",
+                        points: 15,
+                        icon: <FaBookOpen className="text-xl" />,
+                        color: 'text-indigo-600',
+                        bg: 'bg-indigo-50'
                     });
                 }
 
@@ -517,11 +541,12 @@ const HistoryMobile = () => {
 
     const filterOptions = [
         { id: "Semua", label: "Semua", icon: "✨", color: "text-blue-600", bg: "bg-blue-50" },
-        { id: "Shalat Wajib", label: "Wajib", icon: "🕌", color: "text-emerald-600", bg: "bg-emerald-50" },
-        { id: "Shalat Sunnah", label: "Sunnah", icon: "🌙", color: "text-purple-600", bg: "bg-purple-50" },
-        { id: "Tadarus", label: "Al-Qur'an", icon: "📖", color: "text-amber-600", bg: "bg-amber-50" },
-        { id: "Poin Guru", label: "Dari Guru", icon: "👨‍🏫", color: "text-indigo-600", bg: "bg-indigo-50" },
-        { id: "Catatan", label: "Lainnya", icon: "📝", color: "text-rose-600", bg: "bg-rose-50" }
+        { id: "Salat Wajib", label: "Salat Wajib", icon: "🕌", color: "text-blue-600", bg: "bg-blue-50" },
+        { id: "Ibadah Sunah", label: "Ibadah Sunah", icon: "⭐", color: "text-amber-600", bg: "bg-amber-50" },
+        { id: "Tadarus", label: "Tadarus", icon: "📖", color: "text-amber-600", bg: "bg-amber-50" },
+        { id: "Literasi", label: "Literasi", icon: "📚", color: "text-indigo-600", bg: "bg-indigo-50" },
+        { id: "Ibadah Lainnya", label: "Ibadah Lainnya", icon: "❤️", color: "text-pink-600", bg: "bg-pink-50" },
+        { id: "Poin Guru", label: "Prestasi / Pelanggaran", icon: "🏆", color: "text-emerald-600", bg: "bg-emerald-50" }
     ];
 
     // Calculate today's progress - count ALL activities for today (matching desktop logic)
@@ -580,14 +605,14 @@ const HistoryMobile = () => {
                                 rawDate: dateStr,
                                 rawTime: submittedAt || prayerTime || '00:00', // Sort by input time usually
                                 time: `${headerTime} WIB`,
-                                title: `Shalat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
+                                title: `Salat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
                                 subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'} • ${descTime} WIB`,
-                                category: "Shalat Wajib",
+                                category: "Salat Wajib",
                                 status: "Menunggu",
                                 points: isCongregation ? 25 : 10,
                                 icon: <FaMosque className="text-xl" />,
-                                color: 'text-teal-600',
-                                bg: 'bg-teal-50'
+                                color: 'text-blue-600',
+                                bg: 'bg-blue-50'
                             });
                         });
                     }
@@ -614,9 +639,19 @@ const HistoryMobile = () => {
                     // Process additional worships - handle both old (string) and new (object)
                     if (data.additional && Array.isArray(data.additional)) {
                         const additionalLabels = {
-                            'dhuha': { label: 'Sholat Dhuha', points: 15, category: 'Shalat Sunnah', icon: <FaCloudSun className="text-xl" /> },
-                            'infaq': { label: 'Infaq', points: 10, category: 'Ibadah Lainnya', icon: <BiSolidDonateHeart className="text-xl" /> },
-                            'help': { label: 'Bantu Ortu', points: 25, category: 'Ibadah Lainnya', icon: <FaHeart className="text-xl" /> }
+                            // Ibadah Sunah
+                            'dhuha': { label: 'Salat Duha', points: 15, category: 'Ibadah Sunah', icon: <FaCloudSun className="text-xl" />, color: 'text-amber-600', bg: 'bg-amber-50' },
+                            'tahajud': { label: 'Salat Tahajud', points: 20, category: 'Ibadah Sunah', icon: <FaCloudMoon className="text-xl" />, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+                            'rawatib': { label: 'Salat Rawatib', points: 10, category: 'Ibadah Sunah', icon: <FaMosque className="text-xl" />, color: 'text-cyan-600', bg: 'bg-cyan-50' },
+                            'senin_kamis': { label: 'Puasa Senin / Kamis', points: 30, category: 'Ibadah Sunah', icon: <FaStar className="text-xl" />, color: 'text-rose-600', bg: 'bg-rose-50' },
+                            'daud': { label: 'Puasa Daud', points: 40, category: 'Ibadah Sunah', icon: <FaStar className="text-xl" />, color: 'text-purple-600', bg: 'bg-purple-50' },
+                            // Ibadah Lainnya
+                            'infaq': { label: 'Infak / Sedekah', points: 10, category: 'Ibadah Lainnya', icon: <BiSolidDonateHeart className="text-xl" />, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+                            'help': { label: 'Bantu Orang Tua', points: 25, category: 'Ibadah Lainnya', icon: <FaHeart className="text-xl" />, color: 'text-rose-600', bg: 'bg-rose-50' },
+                            'five_s': { label: 'Melakukan 5S', points: 10, category: 'Ibadah Lainnya', icon: <FaStar className="text-xl" />, color: 'text-amber-600', bg: 'bg-amber-50' },
+                            'magic_words': { label: '5 Kata Ajaib', points: 10, category: 'Ibadah Lainnya', icon: <FaStar className="text-xl" />, color: 'text-purple-600', bg: 'bg-purple-50' },
+                            'help_others': { label: 'Bantu Sesama', points: 20, category: 'Ibadah Lainnya', icon: <FaHandHoldingHeart className="text-xl" />, color: 'text-blue-600', bg: 'bg-blue-50' },
+                            'no_bad_words': { label: 'Tidak Berkata Kasar', points: 15, category: 'Ibadah Lainnya', icon: <FaStar className="text-xl" />, color: 'text-teal-600', bg: 'bg-teal-50' }
                         };
                         data.additional.forEach((item, idx) => {
                             // Handle both string ID and object format
@@ -624,7 +659,7 @@ const HistoryMobile = () => {
                             const itemId = isObject ? item.id : item;
                             const itemTime = isObject && item.submittedAt ? item.submittedAt : null;
 
-                            const info = additionalLabels[itemId] || { label: itemId, points: 10, category: 'Lainnya', icon: <FaStar className="text-xl" /> };
+                            const info = additionalLabels[itemId] || { label: itemId, points: 10, category: 'Ibadah Lainnya', icon: <FaStar className="text-xl" />, color: 'text-pink-600', bg: 'bg-pink-50' };
                             allActivities.push({
                                 id: `${dateStr}-additional-${idx}`,
                                 date: formattedDate,
@@ -637,9 +672,28 @@ const HistoryMobile = () => {
                                 status: "Menunggu",
                                 points: info.points,
                                 icon: info.icon,
-                                color: itemId === 'dhuha' ? 'text-purple-600' : 'text-pink-600',
-                                bg: itemId === 'dhuha' ? 'bg-purple-50' : 'bg-pink-50'
+                                color: info.color || 'text-pink-600',
+                                bg: info.bg || 'bg-pink-50'
                             });
+                        });
+                    }
+
+                    // Process Literacy
+                    if (data.literacy && typeof data.literacy === 'object') {
+                        allActivities.push({
+                            id: `${dateStr}-literacy`,
+                            date: formattedDate,
+                            rawDate: dateStr,
+                            rawTime: data.literacy.submittedAt || '23:59:59',
+                            time: data.literacy.submittedAt ? `${data.literacy.submittedAt.substring(0, 5)} WIB` : '-',
+                            title: `Membaca Buku: ${data.literacy.title}`,
+                            subtitle: `Halaman ${data.literacy.page}`,
+                            category: "Literasi",
+                            status: "Menunggu",
+                            points: 15,
+                            icon: <FaBookOpen className="text-xl" />,
+                            color: 'text-indigo-600',
+                            bg: 'bg-indigo-50'
                         });
                     }
 
@@ -885,7 +939,7 @@ const HistoryMobile = () => {
                         </div>
 
                         {/* Riwayat Container */}
-                        <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 mb-8 overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                        <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] mb-8 overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                             {/* Filter Header */}
                             <div className="relative border-b border-slate-100 bg-slate-50/50">
                                 <div className="flex">
