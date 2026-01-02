@@ -137,7 +137,7 @@ const LeaderboardMobile = () => {
 
     return (
         <div className="h-screen bg-[#EEF7FF] font-sans relative overflow-hidden notranslate" translate="no">
-            <div className="h-full overflow-y-auto scrollbar-hide scroll-smooth overscroll-none pb-44 animate-fade-in">
+            <div className="h-full overflow-y-auto scrollbar-hide scroll-smooth overscroll-none pb-48 animate-fade-in">
                 {/* Smooth Background Gradient Decoration */}
                 <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
                 {/* Header */}
@@ -286,7 +286,7 @@ const LeaderboardMobile = () => {
             {/* End of Inner Scrollable Container */}
 
             {/* Sticky Footer - Outside animated container */}
-            <div className="fixed bottom-28 left-0 right-0 px-4 z-50 flex justify-center animate-fade-in-up opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards', animationDuration: '0.6s' }}>
+            <div className="fixed bottom-32 left-0 right-0 px-4 z-50 flex justify-center animate-fade-in-up opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards', animationDuration: '0.6s' }}>
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl py-2.5 px-3 flex items-center shadow-lg shadow-blue-400/30 text-white relative overflow-hidden border-2 border-white ring-1 ring-slate-100 w-full max-w-[400px]">
 
                     {/* Background Decoration */}
