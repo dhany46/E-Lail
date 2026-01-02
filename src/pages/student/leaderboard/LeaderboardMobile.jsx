@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaStar, FaTrophy, FaCrown, FaMedal } from "react-icons/fa";
 
@@ -137,7 +138,7 @@ const LeaderboardMobile = () => {
 
     return (
         <div className="h-screen bg-[#EEF7FF] font-sans relative overflow-hidden notranslate" translate="no">
-            <div className="h-full overflow-y-auto scrollbar-hide scroll-smooth pb-40 animate-fade-in">
+            <div className="h-full overflow-y-auto scrollbar-hide scroll-smooth pb-48 animate-fade-in">
                 {/* Smooth Background Gradient Decoration */}
                 <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
                 {/* Header */}
@@ -282,39 +283,40 @@ const LeaderboardMobile = () => {
             </div>
             {/* End of Inner Scrollable Container */}
 
-            {/* Sticky Footer - Outside animated container */}
-            <div className="fixed bottom-[110px] left-0 right-0 px-4 z-50 flex justify-center animate-fade-in-up opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards', animationDuration: '0.6s' }}>
-                <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl py-2.5 px-3 flex items-center shadow-lg shadow-blue-400/30 text-white relative overflow-hidden border-2 border-white ring-1 ring-slate-100 w-full max-w-[400px]">
+            {/* Sticky Footer - Outside animated container - Uses Portal to escape Transforms */}
+            {createPortal(
+                <div className="fixed bottom-[110px] left-0 right-0 px-4 z-[9999] flex justify-center animate-fade-in-up" style={{ animationDelay: '0.5s', animationFillMode: 'forwards', animationDuration: '0.6s' }}>
+                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl py-2.5 px-3 flex items-center shadow-lg shadow-blue-400/30 text-white relative overflow-hidden border-2 border-white ring-1 ring-slate-100 w-full max-w-[400px]">
 
-                    {/* Background Decoration */}
-                    <FaStar className="absolute -right-4 -bottom-2 text-white/10 text-[3rem] rotate-12 pointer-events-none" />
+                        {/* Background Decoration */}
+                        <FaStar className="absolute -right-4 -bottom-2 text-white/10 text-[3rem] rotate-12 pointer-events-none" />
 
-                    {/* Left: Position */}
-                    <div className="flex flex-col items-center justify-center pr-4 border-r border-white/60 mr-3 py-1">
-                        <span className="text-[9px] font-bold leading-tight">Posisi</span>
-                        <span className="text-xl font-black leading-none mt-0.5">{currentUser.rank}</span>
+                        {/* Left: Position */}
+                        <div className="flex flex-col items-center justify-center pr-4 border-r border-white/60 mr-3 py-1">
+                            <span className="text-[9px] font-bold leading-tight">Posisi</span>
+                            <span className="text-xl font-black leading-none mt-0.5">{currentUser?.rank || '-'}</span>
+                        </div>
+
+                        {/* Avatar */}
+                        <div className="size-9 rounded-full border-2 border-white overflow-hidden flex-shrink-0 mr-3 bg-blue-300">
+                            <img src={currentUser?.avatar || '/avatars/dani.png'} alt="Me" className="w-full h-full object-cover" style={{ objectPosition: 'center 35%', imageRendering: '-webkit-optimize-contrast' }} />
+                        </div>
+
+                        {/* Middle: Info */}
+                        <div className="flex-1 min-w-0 z-10">
+                            <h4 className="font-bold text-sm leading-tight truncate">Kamu ({currentUser?.name?.split(' ')[0] || 'Siswa'})</h4>
+                            <p className="text-[10px] font-medium opacity-90 truncate mt-0.5">Kamu hebat! ⭐</p>
+                        </div>
+
+                        {/* Right: Points */}
+                        <div className="flex flex-col items-end z-10 pl-2">
+                            <span className="text-xl font-black leading-none">{currentUser?.points || 0}</span>
+                            <span className="text-[9px] font-medium">Poin</span>
+                        </div>
                     </div>
-
-                    {/* Avatar */}
-                    <div className="size-9 rounded-full border-2 border-white overflow-hidden flex-shrink-0 mr-3 bg-blue-300">
-                        <img src={currentUser.avatar} alt="Me" className="w-full h-full object-cover" style={{ objectPosition: 'center 35%', imageRendering: '-webkit-optimize-contrast' }} />
-                    </div>
-
-                    {/* Middle: Info */}
-                    <div className="flex-1 min-w-0 z-10">
-                        <h4 className="font-bold text-sm leading-tight truncate">Kamu ({currentUser.name.split(' ')[0]})</h4>
-                        <p className="text-[10px] font-medium opacity-90 truncate mt-0.5">Kamu hebat! ⭐</p>
-                    </div>
-
-                    {/* Right: Points */}
-                    <div className="flex flex-col items-end z-10 pl-2">
-                        <span className="text-xl font-black leading-none">{currentUser.points}</span>
-                        <span className="text-[9px] font-medium">Poin</span>
-                    </div>
-                </div>
-            </div>
-
-
+                </div>,
+                document.body
+            )}
         </div>
     );
 };
