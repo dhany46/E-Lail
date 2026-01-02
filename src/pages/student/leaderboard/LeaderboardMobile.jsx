@@ -137,7 +137,7 @@ const LeaderboardMobile = () => {
 
     return (
         <div className="h-screen bg-[#EEF7FF] font-sans relative overflow-hidden notranslate" translate="no">
-            <div className="h-full overflow-y-auto scrollbar-hide scroll-smooth overscroll-none pb-40 animate-fade-in">
+            <div className="h-full overflow-y-auto scrollbar-hide scroll-smooth pb-40 animate-fade-in">
                 {/* Smooth Background Gradient Decoration */}
                 <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
                 {/* Header */}

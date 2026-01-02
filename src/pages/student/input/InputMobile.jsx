@@ -668,7 +668,7 @@ const InputMobile = () => {
 
 
     return (
-        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative pb-32 notranslate" translate="no">
+        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth bg-[#EEF7FF] font-sans relative pb-32 notranslate" translate="no">
             {/* Dekorasi Latar Belakang Gradien Halus */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
             <ConfirmationModal isOpen={showConfirmModal} onClose={() => setShowConfirmModal(false)} onConfirm={confirmNavigation} />

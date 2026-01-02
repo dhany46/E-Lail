@@ -71,7 +71,7 @@ const PullToRefresh = ({ onRefresh, children }) => {
         >
             {/* Refresh Indicator */}
             <div
-                className="absolute top-0 left-0 w-full flex items-center justify-center pointer-events-none z-50 transition-transform duration-300"
+                className="absolute top-0 left-0 w-full flex items-center justify-center pointer-events-none z-[80] transition-transform duration-300"
                 style={{
                     height: '0px',
                     transform: `translateY(${pullChange > 0 ? pullChange - 40 : -40}px)`
