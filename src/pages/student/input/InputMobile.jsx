@@ -230,17 +230,75 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
 }
 
 const SuccessModal = ({ isOpen }) => {
-    if (!isOpen) return null;
-    return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm animate-fade-in">
-            <div className="bg-white rounded-[2rem] w-full max-w-sm p-8 shadow-xl animate-pop-up text-center">
-                <div className="size-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="material-symbols-outlined text-5xl animate-bounce notranslate">check</span>
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        if (isOpen) {
+            requestAnimationFrame(() => setIsVisible(true));
+        } else {
+            setIsVisible(false);
+        }
+    }, [isOpen]);
+
+    if (!isOpen && !isVisible) return null;
+
+    // Confetti pieces
+    const confettiColors = ['bg-amber-400', 'bg-rose-400', 'bg-emerald-400', 'bg-blue-400', 'bg-purple-400'];
+    const confettiPieces = Array.from({ length: 30 }).map((_, i) => ({
+        id: i,
+        color: confettiColors[i % confettiColors.length],
+        left: `${Math.random() * 100}%`,
+        animationDelay: `${Math.random() * 0.5}s`,
+        animationDuration: `${1.5 + Math.random() * 1.5}s`
+    }));
+
+    return createPortal(
+        <div className={`fixed inset-0 z-[1000] flex items-center justify-center p-4 transition-all duration-500 ${isOpen ? 'bg-black/40 backdrop-blur-md' : 'bg-black/0 backdrop-blur-none'}`}>
+            <div className={`bg-white rounded-[2.5rem] w-full max-w-sm p-8 shadow-2xl relative text-center overflow-hidden transform transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) ${isVisible ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-20'}`}>
+
+                {/* Background Decorations */}
+                <div className="absolute top-0 right-0 -mr-10 -mt-10 size-32 bg-emerald-100/50 rounded-full blur-2xl animate-pulse"></div>
+                <div className="absolute bottom-0 left-0 -ml-10 -mb-10 size-24 bg-blue-100/50 rounded-full blur-2xl animate-pulse delay-700"></div>
+
+                {/* Confetti */}
+                {confettiPieces.map((piece) => (
+                    <div
+                        key={piece.id}
+                        className={`absolute top-0 size-1.5 rounded-full ${piece.color} animate-confetti`}
+                        style={{
+                            left: piece.left,
+                            animationDelay: piece.animationDelay,
+                            animationDuration: piece.animationDuration
+                        }}
+                    ></div>
+                ))}
+
+                {/* Icon Container */}
+                <div className="relative z-10 mb-6">
+                    <div className="size-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto ring-8 ring-emerald-50/50 shadow-inner">
+                        <span className="material-symbols-outlined text-5xl animate-bounce drop-shadow-sm notranslate">check_circle</span>
+                    </div>
+                    {/* Floating elements */}
+                    <div className="absolute top-0 right-1/3 text-2xl animate-bounce" style={{ animationDelay: '0.1s' }}>🚀</div>
+                    <div className="absolute bottom-0 left-1/3 text-xl animate-bounce" style={{ animationDelay: '0.2s' }}>✨</div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Terkirim! 🚀</h3>
-                <p className="text-sm text-gray-500">Laporanmu sudah masuk. Barakallah!</p>
+
+                {/* Text */}
+                <div className="relative z-10">
+                    <h3 className="text-2xl font-black text-slate-800 mb-2 tracking-tight">Terkirim! 🎉</h3>
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed px-4">
+                        Laporan ibadahmu sudah berhasil disimpan. <br />
+                        <span className="text-emerald-600 font-bold">Barakallah fiikum!</span> 🤲
+                    </p>
+                </div>
+
+                {/* Button-like visual at bottom */}
+                <div className="mt-8">
+                    <div className="h-1.5 w-20 bg-slate-100 rounded-full mx-auto"></div>
+                </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 
@@ -602,7 +660,7 @@ const InputMobile = () => {
             setIsSubmitting(false);
             setShowSuccessModal(true);
             setNavigationBlocker(null);
-            setTimeout(() => navigate('/student/history'), 1500);
+            setTimeout(() => navigate('/student/history'), 3000);
         }, 1500);
     };
 
@@ -617,18 +675,13 @@ const InputMobile = () => {
 
             {/* Header - Sticky dengan Glassmorphism agar cocok dengan Dashboard */}
             <div className="px-6 py-4 relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => navigate('/student/dashboard')}
-                        className="size-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center active:scale-95 transition-transform"
-                    >
-                        <FaArrowLeft className="text-lg" />
-                    </button>
+                <div className="flex items-center gap-4">
+                    <div className="size-12 rounded-full ring-2 ring-teal-400/70 ring-offset-2 ring-offset-blue-50 shrink-0">
+                        <img src="/avatars/dani.png" alt="Avatar" className="size-full rounded-full object-cover" style={{ objectPosition: 'center 35%' }} />
+                    </div>
                     <div>
-                        <h1 className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-                            Catat Ibadah 📝
-                        </h1>
-                        <p className="text-xs text-blue-500 font-medium">Catat semua kebaikanmu hari ini! ✨</p>
+                        <h1 className="text-lg font-extrabold text-slate-800 leading-tight">Catat Ibadah 📝</h1>
+                        <p className="text-[11px] text-slate-500 font-medium mt-0.5">Catat semua kebaikanmu hari ini! ✨</p>
                     </div>
                 </div>
             </div>

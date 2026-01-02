@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
     FaMosque,
@@ -58,8 +59,8 @@ const AchievementPopup = ({ onClose }) => {
         animationDuration: `${2.5 + Math.random() * 2.5}s` // Slower, floaty fall (2.5s - 5s)
     }));
 
-    return (
-        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-500 ${isVisible ? 'bg-black/40 backdrop-blur-md' : 'bg-black/0 backdrop-blur-none'}`}>
+    return createPortal(
+        <div className={`fixed inset-0 z-[1000] flex items-center justify-center p-4 transition-all duration-500 ${isVisible ? 'bg-black/40 backdrop-blur-md' : 'bg-black/0 backdrop-blur-none'}`}>
             <div
                 className={`bg-gradient-to-br from-white to-blue-50 rounded-[2.5rem] p-8 shadow-2xl max-w-sm w-full relative text-center overflow-hidden border border-white/60 transform transition-all duration-700 cubic-bezier(0.34, 1.56, 0.64, 1) ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-20 opacity-0 scale-90'}`}
             >
@@ -105,7 +106,8 @@ const AchievementPopup = ({ onClose }) => {
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 
@@ -274,16 +276,13 @@ const HistoryHeader = ({ verifiedActivities, teacherNote }) => {
 
     return (
         <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-                <button
-                    onClick={() => navigate('/student/dashboard')}
-                    className="size-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center active:scale-95 transition-transform"
-                >
-                    <FaArrowLeft className="text-lg" />
-                </button>
+            <div className="flex items-center gap-4">
+                <div className="size-12 rounded-full ring-2 ring-teal-400/70 ring-offset-2 ring-offset-blue-50 shrink-0">
+                    <img src="/avatars/dani.png" alt="Avatar" className="size-full rounded-full object-cover" style={{ objectPosition: 'center 35%' }} />
+                </div>
                 <div>
-                    <h1 className="text-xl font-extrabold text-slate-800">Riwayat Ibadahku ✨</h1>
-                    <p className="text-xs text-blue-500 font-medium">Lihat semua kebaikan yang sudah kamu lakukan! 🤲</p>
+                    <h1 className="text-lg font-extrabold text-slate-800 leading-tight">Riwayat Ibadahku ✨</h1>
+                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">Lihat semua kebaikanmu! 🤲</p>
                 </div>
             </div>
         </div>

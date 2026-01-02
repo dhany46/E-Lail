@@ -142,19 +142,16 @@ const LeaderboardMobile = () => {
                 <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
                 {/* Header */}
                 <div className="px-6 py-3 relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200 animate-fade-in">
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => navigate('/student/dashboard')}
-                            className="size-9 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center active:scale-95 transition-transform"
-                        >
-                            <FaArrowLeft className="text-lg" />
-                        </button>
+                    <div className="flex items-center gap-4">
+                        <div className="size-12 rounded-full ring-2 ring-teal-400/70 ring-offset-2 ring-offset-blue-50 shrink-0">
+                            <img src="/avatars/dani.png" alt="Avatar" className="size-full rounded-full object-cover" style={{ objectPosition: 'center 35%' }} />
+                        </div>
                         <div>
-                            <h1 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
-                                Panggung Juara <FaTrophy className="text-yellow-500 text-xl drop-shadow-sm" />
+                            <h1 className="text-lg font-extrabold text-slate-800 leading-tight flex items-center gap-2">
+                                Panggung Juara <FaTrophy className="text-yellow-500 text-lg drop-shadow-sm" />
                             </h1>
                             <div className="flex flex-col">
-                                <p className="text-[10px] text-blue-500 font-bold">
+                                <p className="text-[11px] text-blue-600 font-bold mt-0.5">
                                     Update otomatis pukul 15:00 WIB 🕒
                                 </p>
                                 {lastUpdate && <p className="text-[9px] text-slate-400 font-medium mt-0.5">Data per: {lastUpdate}</p>}

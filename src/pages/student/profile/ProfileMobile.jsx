@@ -309,18 +309,15 @@ const ProfileMobile = () => {
                 {/* Header - Native Style */}
                 <div className="relative z-[60] bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl border-b border-slate-200 px-6 py-4 flex items-center justify-between transition-all duration-300">
                     <div className="flex items-center gap-4">
-                        <button
-                            onClick={() => navigate('/student/dashboard')}
-                            className="w-10 h-10 rounded-full bg-white/50 active:bg-white text-slate-700 flex items-center justify-center transition-colors shadow-sm"
-                        >
-                            <FaArrowLeft className="text-sm" />
-                        </button>
+                        <div className="size-12 rounded-full ring-2 ring-teal-400/70 ring-offset-2 ring-offset-blue-50 shrink-0">
+                            <img src="/avatars/dani.png" alt="Avatar" className="size-full rounded-full object-cover" style={{ objectPosition: 'center 35%' }} />
+                        </div>
                         <div>
-                            <h1 className="text-lg font-bold text-slate-900 leading-tight flex items-center gap-1">
+                            <h1 className="text-lg font-extrabold text-slate-900 leading-tight flex items-center gap-1">
                                 <span className="text-xl">👋</span>
                                 Hai {studentInfo.name}!
                             </h1>
-                            <p className="text-xs text-blue-600 font-medium">Ini profil dan pencapaianmu. ✨</p>
+                            <p className="text-[11px] text-slate-500 font-medium mt-0.5">Ini profil dan pencapaianmu. ✨</p>
                         </div>
                     </div>
                 </div>
