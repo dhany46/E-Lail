@@ -468,8 +468,9 @@ const MenuCards = ({ stats, activities }) => {
 
 // Activity List Component
 const ActivityList = ({ activities }) => {
-    // Show only last 10 activities
-    const recentActivities = activities?.slice(0, 10) || [];
+    const navigate = useNavigate();
+    // Show only last 6 activities
+    const recentActivities = activities?.slice(0, 6) || [];
     const [expandedCards, setExpandedCards] = React.useState({});
 
     const toggleCardExpansion = (cardId) => {
@@ -477,6 +478,26 @@ const ActivityList = ({ activities }) => {
             ...prev,
             [cardId]: !prev[cardId]
         }));
+    };
+
+    const formatDateIndonesian = (dateStr) => {
+        if (!dateStr) return { dayName: '', fullDate: '' };
+        let date;
+        if (dateStr === 'Hari ini') {
+            date = new Date();
+        } else {
+            date = new Date(dateStr);
+            if (isNaN(date.getTime())) return { dayName: dateStr, fullDate: '' };
+        }
+
+        const dayName = new Intl.DateTimeFormat('id-ID', { weekday: 'long' }).format(date);
+        const fullDate = new Intl.DateTimeFormat('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        }).format(date);
+
+        return { dayName, fullDate };
     };
 
     const getStatusConfig = (status) => {
@@ -593,14 +614,25 @@ const ActivityList = ({ activities }) => {
         return { bg: 'bg-slate-50', color: 'text-slate-600', icon: <FaStar className="text-xl" /> };
     };
 
-    // Group activities by date
+    // Group activities by date using a unique key but keeping formatting info
     const groupedActivities = recentActivities.reduce((groups, activity) => {
-        const date = activity.date || 'Hari ini';
-        if (!groups[date]) {
-            groups[date] = [];
+        const rawDate = activity.date || 'Hari ini';
+        const { dayName, fullDate } = formatDateIndonesian(rawDate);
+        const key = `${dayName}, ${fullDate}`;
+        if (!groups[key]) {
+            groups[key] = { activities: [], dayName, fullDate };
         }
-        groups[date].push(activity);
+        groups[key].activities.push(activity);
         return groups;
+    }, {});
+
+    // NEW: Calculate total counts per date from the full activities list (using the same key)
+    const fullDateCounts = (activities || []).reduce((acc, curr) => {
+        const rawDate = curr.date || 'Hari ini';
+        const { dayName, fullDate } = formatDateIndonesian(rawDate);
+        const key = `${dayName}, ${fullDate}`;
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
     }, {});
 
     const hasActivities = Object.keys(groupedActivities).length > 0;
@@ -608,26 +640,30 @@ const ActivityList = ({ activities }) => {
     return (
         <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
             {hasActivities ? (
-                Object.entries(groupedActivities).map(([date, dateActivities], groupIdx) => (
-                    <div key={date}>
-                        {/* Date Header - Only show separator if not first item */}
+                Object.entries(groupedActivities).map(([key, group], groupIdx) => (
+                    <div key={key}>
+                        {/* Date Header - Redesigned to match Mockup */}
                         {(groupIdx > 0 || Object.keys(groupedActivities).length === 1) && (
-                            <div className={`px-5 py-3 bg-slate-50/80 flex items-center justify-between backdrop-blur-sm ${groupIdx > 0 ? 'border-t border-dashed border-slate-100' : 'border-b border-slate-50'}`}>
-                                <div className="flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-base text-slate-400">calendar_month</span>
-                                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wide">{date}</h4>
+                            <div className={`pl-6 pr-6 py-3.5 flex items-center justify-between bg-slate-50/60 border-b border-slate-100 ${groupIdx > 0 ? 'border-t border-dashed border-slate-200' : ''}`}>
+                                <div className="space-y-0.5">
+                                    <h4 className="text-sm font-bold text-slate-800 tracking-tight leading-none">
+                                        {group.dayName}
+                                    </h4>
+                                    <div className="flex items-center gap-1 text-slate-400">
+                                        <span className="material-symbols-outlined text-[10px]">calendar_month</span>
+                                        <span className="text-[11px] font-medium">{group.fullDate}</span>
+                                    </div>
                                 </div>
-                                <span className="text-[10px] font-bold px-2.5 py-0.5 bg-blue-50 border border-blue-100 text-blue-600 rounded-full shadow-sm">
-                                    {dateActivities.length} Aktivitas
+                                <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-bold border border-blue-100/50 shadow-sm flex items-center gap-1.5">
+                                    {fullDateCounts[key] || 0} Aktivitas
                                 </span>
                             </div>
                         )}
-
                         {/* Activities Grid */}
-                        <div className="p-4 space-y-4">
-                            {dateActivities.map((activity, idx) => {
+                        <div className="px-4 pt-3 pb-4 space-y-3">
+                            {group.activities.map((activity, idx) => {
                                 const statusConfig = getStatusConfig(activity.status);
-                                const cardId = activity.id || `activity-${date}-${idx}`;
+                                const cardId = activity.id || `activity-${key}-${idx}`;
                                 const isExpanded = expandedCards[cardId];
                                 // Use activity's own styling if available, otherwise use getActivityStyle
                                 const fallbackStyle = getActivityStyle(activity.title, activity.category);
@@ -774,6 +810,18 @@ const ActivityList = ({ activities }) => {
                     <p className="text-xs text-gray-400 font-medium">Belum ada aktivitas hari ini</p>
                 </div>
             )}
+
+            {hasActivities && (
+                <div className="border-t border-slate-50 bg-slate-50/30">
+                    <button
+                        onClick={() => navigate('/student/history')}
+                        className="w-full py-3.5 flex items-center justify-center gap-1.5 text-[13px] font-semibold text-blue-600 active:bg-blue-50/50 transition-all duration-200"
+                    >
+                        Lihat Semua Aktivitas
+                        <span className="material-symbols-outlined notranslate text-[18px] opacity-70">chevron_right</span>
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
@@ -822,20 +870,11 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
 
                         {/* 4. Recent Activity (Delay 0.4s) */}
                         <div className="animate-fade-in-up opacity-0 pb-1" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.9s' }}>
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-2.5">
-                                    <div className="size-8 rounded-xl bg-blue-100/50 text-blue-600 flex items-center justify-center">
-                                        <span className="material-symbols-outlined notranslate text-lg">history</span>
-                                    </div>
-                                    <h3 className="text-[15px] font-bold text-slate-800">Aktivitas Terakhir</h3>
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <div className="size-8 rounded-xl bg-blue-100/50 text-blue-600 flex items-center justify-center">
+                                    <span className="material-symbols-outlined notranslate text-lg">history</span>
                                 </div>
-                                <button
-                                    onClick={() => navigate('/student/history')}
-                                    className="text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 px-4 py-1.5 rounded-full transition-all shadow-md shadow-blue-200/50 flex items-center gap-1"
-                                >
-                                    Lihat Semua
-                                    <span className="material-symbols-outlined notranslate text-sm">arrow_forward</span>
-                                </button>
+                                <h3 className="text-[15px] font-bold text-slate-800">Aktivitas Terakhir</h3>
                             </div>
                             <ActivityList activities={activities} />
                         </div>
