@@ -961,6 +961,13 @@ const HistoryMobile = () => {
     // Derived state for notifications
     const verifiedActivities = activities.filter(a => a.status === 'Terverifikasi' || a.status === 'Disetujui');
 
+    // Calculate total counts per date from the FULL filtered list (not paginated)
+    const dateCounts = filteredActivities.reduce((acc, curr) => {
+        const date = curr.rawDate;
+        acc[date] = (acc[date] || 0) + 1;
+        return acc;
+    }, {});
+
     return (
         <div className="h-screen bg-[#F8FAFC] font-sans relative touch-manipulation overflow-hidden notranslate" translate="no">
             {/* Main Scrollable Content */}
@@ -969,7 +976,7 @@ const HistoryMobile = () => {
 
                 <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
-                <div className="h-full relative overflow-hidden">
+                <div className="h-full relative overflow-y-auto scrollbar-hide">
                     <div className="min-h-full pb-32">
                         {/* Header - Only title */}
                         <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
@@ -1133,6 +1140,7 @@ const HistoryMobile = () => {
                                             {Object.entries(groupedActivities).map(([date, dateActivities], index) => {
                                                 // Calculate total points for this day
                                                 const dayPointTotal = dateActivities.reduce((sum, item) => sum + item.points, 0);
+                                                const totalCountForDate = dateCounts[date] || 0;
 
                                                 return (
                                                     <div key={date}>
@@ -1149,7 +1157,7 @@ const HistoryMobile = () => {
                                                             </div>
                                                             <div className="flex items-center gap-2">
                                                                 <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-bold border border-blue-100/50 shadow-sm flex items-center gap-1.5">
-                                                                    {dateActivities.length} Aktivitas
+                                                                    {totalCountForDate} Aktivitas
                                                                 </span>
                                                             </div>
                                                         </div>

@@ -789,7 +789,7 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
             {/* Smooth Background Gradient Decoration */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
-            <div className="h-full relative overflow-hidden">
+            <div className="h-full relative overflow-y-auto scrollbar-hide">
                 <div className="min-h-full pb-24">
                     {/* Header - Sticky with Staggered Entrance */}
                     <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] transition-all duration-300 animate-fade-in-up opacity-0 border-b border-slate-200" style={{ animationDuration: '0.6s' }}>
