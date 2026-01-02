@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBell, FaMosque, FaCloudSun, FaBookOpen, FaHeart, FaStar, FaStickyNote, FaHourglassHalf, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaBell, FaMosque, FaCloudSun, FaBookOpen, FaHeart, FaStar, FaStickyNote, FaHourglassHalf, FaCheckCircle, FaTimesCircle, FaHandHoldingHeart, FaSmileWink, FaMagic, FaCommentSlash } from "react-icons/fa";
+import { MdNightsStay, MdNoFood } from "react-icons/md";
 import { BiSolidDonateHeart } from "react-icons/bi";
-import PullToRefresh from '../../../components/ui/PullToRefresh';
+
+
 
 // --- Sub-Components ---
 
@@ -170,10 +172,18 @@ const HeaderMobile = ({ student, teacherNote, verifiedActivities }) => {
 };
 
 // Total Poin Card - Blue gradient with badge and level progress
-const PointsCard = ({ totalPoints }) => {
+const PointsCard = ({ totalPoints, semesterLabel, academicYearLabel }) => {
     const levelThresholds = [0, 100, 300, 600, 1000, 1500];
     const levelNames = ['Pemula', 'Rajin', 'Bintang Ibadah', 'Mujahid', 'Hafidz Cilik', 'Master'];
     const levelBadges = ['🌱', '⭐', '🌟', '🏅', '🏆', '👑'];
+    const [isAnimating, setIsAnimating] = useState(true);
+
+    useEffect(() => {
+        // 5500ms allows the bounce to finish at the "bottom" (landed) state
+        // Cycle is approx 1s, landing is at ~0.5s, 1.5s, ... 5.5s
+        const timer = setTimeout(() => setIsAnimating(false), 5500);
+        return () => clearTimeout(timer);
+    }, []);
 
     // Calculate current level
     let currentLevel = 0;
@@ -194,19 +204,23 @@ const PointsCard = ({ totalPoints }) => {
     const pointsNeeded = nextThreshold - currentThreshold;
     const progressPercent = pointsNeeded > 0 ? Math.min((pointsInLevel / pointsNeeded) * 100, 100) : 100;
 
-    // Calculate Academic Year
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    const startYear = currentMonth < 6 ? currentYear - 1 : currentYear;
-    const academicYearLabel = `${startYear}/${startYear + 1}`;
-
     return (
         <div className="bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-3xl p-5 text-white shadow-xl relative overflow-hidden">
             {/* White glow effects */}
             <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-white/30 to-transparent rounded-full -mr-20 -mt-20"></div>
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-white/20 to-transparent rounded-full -ml-16 -mb-16"></div>
             <div className="absolute top-1/2 right-1/4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+
+            {/* Decorative Stars with floating animation */}
+            <div className="absolute -bottom-4 right-8 text-[5rem] opacity-10 rotate-12 text-yellow-200 pointer-events-none animate-bounce" style={{ animationDuration: '4s' }}>
+                ★
+            </div>
+            <div className="absolute bottom-8 right-16 text-[2rem] opacity-15 -rotate-6 text-yellow-200 pointer-events-none animate-bounce" style={{ animationDuration: '3s', animationDelay: '0.5s' }}>
+                ★
+            </div>
+            <div className="absolute bottom-2 right-24 text-[1.5rem] opacity-10 rotate-3 text-yellow-200 pointer-events-none animate-bounce" style={{ animationDuration: '3.5s', animationDelay: '1s' }}>
+                ★
+            </div>
 
             <div className="relative z-10">
                 <div className="flex justify-between items-start">
@@ -219,11 +233,11 @@ const PointsCard = ({ totalPoints }) => {
                     {/* Academic Year Badge */}
                     <div className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-sm flex items-center gap-2">
                         <div className="size-6 rounded-full bg-white/20 flex items-center justify-center">
-                            <span className="material-symbols-outlined notranslate text-sm">school</span>
+                            <span className={`material-symbols-outlined notranslate text-sm ${isAnimating ? 'animate-bounce' : ''}`}>school</span>
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[8px] text-blue-100 font-medium leading-none mb-0.5">Tahun Ajaran</span>
-                            <span className="text-[10px] font-bold text-white leading-none">{academicYearLabel}</span>
+                            <span className="text-[10px] text-blue-50 font-bold leading-tight mb-0.5">{semesterLabel || 'Semester'}</span>
+                            <span className="text-[10px] font-bold text-white leading-none">{academicYearLabel || '-'}</span>
                         </div>
                     </div>
                 </div>
@@ -237,13 +251,17 @@ const PointsCard = ({ totalPoints }) => {
                 </div>
 
                 {/* Progress bar to next level */}
-                <div className="bg-white/15 rounded-full p-0.5">
-                    <div className="bg-white/20 rounded-full h-2 overflow-hidden">
+                <div className="relative">
+                    <div className="bg-blue-900/30 rounded-full h-3.5 overflow-hidden border border-white/10">
                         <div
-                            className="bg-gradient-to-r from-amber-300 to-yellow-400 h-full rounded-full transition-all duration-500"
+                            className="bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 h-full rounded-full transition-all duration-700 ease-out"
                             style={{ width: `${progressPercent}%` }}
                         ></div>
                     </div>
+                    {/* Star indicator at end */}
+                    {progressPercent === 100 && (
+                        <div className="absolute -right-1 -top-1.5 text-base animate-bounce">⭐</div>
+                    )}
                 </div>
                 <div className="flex justify-between items-center mt-1.5">
                     <span className="text-[10px] text-blue-100">{pointsInLevel} / {pointsNeeded} ke level berikutnya</span>
@@ -262,10 +280,12 @@ const TeacherNotes = ({ note }) => {
 
     return (
         <div className="mt-5 mb-4 px-1">
-            {/* Section Title - Outside Card */}
-            <div className="flex items-center gap-2 mb-3">
-                <span className="material-symbols-outlined notranslate text-xl text-blue-500">chat</span>
-                <h3 className="text-base font-extrabold text-gray-800 tracking-tight">Catatan Guru</h3>
+            {/* Section Title */}
+            <div className="flex items-center gap-2.5 mb-3">
+                <div className="size-8 rounded-xl bg-blue-100/50 text-blue-600 flex items-center justify-center">
+                    <span className="material-symbols-outlined notranslate text-lg">chat</span>
+                </div>
+                <h3 className="text-[15px] font-bold text-slate-800">Catatan Guru</h3>
             </div>
 
             {/* Card Content */}
@@ -331,10 +351,10 @@ const MenuCards = ({ stats, activities }) => {
         {
             pill: "TARGET HARIAN",
             title: "Target Ibadah",
-            subtitle: `${safeStats.todayCount}/${safeStats.targetDaily} Ibadah Tuntas! \u00A0🚀`,
+            subtitle: `${safeStats.todayCount}/${safeStats.targetDaily}`,
             icon: "🎯",
             path: "/student/input",
-            bg: "bg-gradient-to-br from-blue-500 to-blue-600",
+            bg: "bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600",
             shadow: "shadow-blue-200",
             iconColor: "text-blue-100",
             delay: "0.1s",
@@ -368,11 +388,12 @@ const MenuCards = ({ stats, activities }) => {
 
     return (
         <div className="mt-6 mb-4">
-            <div className="flex items-center gap-2 mb-4 px-1">
-                <div className="size-8 rounded-full bg-blue-100/50 text-blue-600 flex items-center justify-center border border-blue-100">
+            {/* Section Title */}
+            <div className="flex items-center gap-2.5 mb-4">
+                <div className="size-8 rounded-xl bg-blue-100/50 text-blue-600 flex items-center justify-center">
                     <span className="material-symbols-outlined notranslate text-lg">grid_view</span>
                 </div>
-                <h3 className="text-base font-extrabold text-slate-800 tracking-tight">Menu Utama</h3>
+                <h3 className="text-[15px] font-bold text-slate-800">Menu Utama</h3>
             </div>
             <div className="grid grid-cols-2 gap-3">
                 {cards.map((card, idx) => (
@@ -407,25 +428,28 @@ const MenuCards = ({ stats, activities }) => {
                             </div>
 
                             {/* Bottom Content */}
-                            {/* Bottom Content */}
-                            {/* Bottom Content */}
                             <div className="flex items-end justify-between gap-1">
                                 <div className="min-w-0 flex-1">
-                                    <h4 className="font-extrabold text-[15px] text-white tracking-tight leading-4 mb-1 drop-shadow-sm line-clamp-1">
-                                        {card.title}
-                                    </h4>
                                     {card.hasProgress ? (
-                                        <div>
-                                            <p className="text-[10px] font-semibold text-white/90 mb-1.5">{card.subtitle.split(' ')[0]}</p>
-                                            <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm">
+                                        <>
+                                            <h4 className="font-extrabold text-[15px] text-white tracking-tight leading-4 mb-1 drop-shadow-sm line-clamp-1">
+                                                {card.title}
+                                            </h4>
+                                            <p className="text-[10px] font-semibold text-white/90 mb-1">{card.subtitle}</p>
+                                            <div className="bg-blue-900/30 rounded-full h-2 overflow-hidden border border-white/10">
                                                 <div
-                                                    className="h-full bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                                                    className="bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 h-full rounded-full transition-all duration-700 ease-out"
                                                     style={{ width: `${card.progress}%` }}
                                                 ></div>
                                             </div>
-                                        </div>
+                                        </>
                                     ) : (
-                                        <p className="text-[10px] font-semibold text-white/90 line-clamp-1">{card.subtitle}</p>
+                                        <>
+                                            <h4 className="font-extrabold text-[15px] text-white tracking-tight leading-4 mb-1 drop-shadow-sm line-clamp-1">
+                                                {card.title}
+                                            </h4>
+                                            <p className="text-[10px] font-semibold text-white/90 line-clamp-1">{card.subtitle}</p>
+                                        </>
                                     )}
                                 </div>
 
@@ -477,37 +501,92 @@ const ActivityList = ({ activities }) => {
     // Helper to determine icon/style matching HistoryMobile.jsx logic
     const getActivityStyle = (title, category) => {
         const t = title ? title.toLowerCase() : '';
-        // Exact logic from HistoryMobile.jsx's getActivityConfig and loadActivities
+        const c = category ? category.toLowerCase() : '';
 
-        // Shalat Wajib (HistoryMobile uses: color: 'text-blue-600', bg: 'bg-blue-50', icon: FaMosque)
-        if (t.includes('shalat') && (t.includes('wajib') || t.includes('subuh') || t.includes('dzuhur') || t.includes('ashar') || t.includes('maghrib') || t.includes('isya'))) {
+        // Salat Wajib
+        if (c.includes('salat wajib') || (t.includes('salat') && (t.includes('subuh') || t.includes('dzuhur') || t.includes('ashar') || t.includes('maghrib') || t.includes('isya')))) {
             return { bg: 'bg-blue-50', color: 'text-blue-600', icon: <FaMosque className="text-xl" /> };
         }
 
-        // Shalat Sunnah / Dhuha (HistoryMobile uses: color: 'text-purple-600', bg: 'bg-purple-50', icon: FaCloudSun)
-        if (t.includes('dhuha') || (category === 'Shalat Sunnah')) {
-            return { bg: 'bg-purple-50', color: 'text-purple-600', icon: <FaCloudSun className="text-xl" /> };
+        // Tadarus Al-Qur'an
+        if (c.includes('tadarus') || c.includes('al-qur')) {
+            return { bg: 'bg-blue-50', color: 'text-blue-600', icon: <FaBookOpen className="text-xl" /> };
         }
 
-        // Tadarus / Quran (HistoryMobile uses: color: 'text-amber-600', bg: 'bg-amber-50', icon: FaBookOpen)
-        if (t.includes('surat') || t.includes('tadarus') || t.includes('iqro') || t.includes('membaca')) {
+        // Hijrati
+        if (c.includes('hijrati')) {
             return { bg: 'bg-amber-50', color: 'text-amber-600', icon: <FaBookOpen className="text-xl" /> };
         }
 
-        // Infaq / Sedekah (HistoryMobile uses: points: 10, icon: BiSolidDonateHeart, color: 'text-pink-600', bg: 'bg-pink-50')
-        // WAIT: HistoryMobile uses pink for infaq in the loadActivities logic!
-        if (t.includes('infaq') || t.includes('sedekah')) {
-            return { bg: 'bg-pink-50', color: 'text-pink-600', icon: <BiSolidDonateHeart className="text-xl" /> };
+        // Salat Duha
+        if (t.includes('duha') || t.includes('dhuha')) {
+            return { bg: 'bg-amber-50', color: 'text-amber-600', icon: <FaCloudSun className="text-xl" /> };
         }
 
-        // Bantu Ortu (HistoryMobile uses: points: 25, icon: FaHeart, color: 'text-pink-600', bg: 'bg-pink-50')
-        if (t.includes('bantu') || t.includes('orang tua')) {
-            return { bg: 'bg-pink-50', color: 'text-pink-600', icon: <FaHeart className="text-xl" /> };
+        // Salat Tahajud
+        if (t.includes('tahajud')) {
+            return { bg: 'bg-indigo-50', color: 'text-indigo-600', icon: <MdNightsStay className="text-xl" /> };
         }
 
-        // Catatan (HistoryMobile uses: color: 'text-blue-600', bg: 'bg-blue-50', icon: FaStickyNote)
+        // Salat Rawatib
+        if (t.includes('rawatib')) {
+            return { bg: 'bg-cyan-50', color: 'text-cyan-600', icon: <FaMosque className="text-xl" /> };
+        }
+
+        // Puasa
+        if (t.includes('puasa')) {
+            if (t.includes('daud')) return { bg: 'bg-purple-50', color: 'text-purple-600', icon: <MdNoFood className="text-xl" /> };
+            return { bg: 'bg-rose-50', color: 'text-rose-600', icon: <MdNoFood className="text-xl" /> };
+        }
+
+        // Infaq / Sedekah
+        if (t.includes('infaq') || t.includes('infak') || t.includes('sedekah')) {
+            return { bg: 'bg-emerald-50', color: 'text-emerald-600', icon: <BiSolidDonateHeart className="text-xl" /> };
+        }
+
+        // Bantu Orang Tua
+        if (t.includes('bantu orang tua') || t.includes('ortu')) {
+            return { bg: 'bg-rose-50', color: 'text-rose-600', icon: <FaHeart className="text-xl" /> };
+        }
+
+        // Bantu Sesama
+        if (t.includes('bantu sesama')) {
+            return { bg: 'bg-blue-50', color: 'text-blue-600', icon: <FaHandHoldingHeart className="text-xl" /> };
+        }
+
+        // Melakukan 5S
+        if (t.includes('5s') || t.includes('melakukan 5s')) {
+            return { bg: 'bg-amber-50', color: 'text-amber-600', icon: <FaSmileWink className="text-xl" /> };
+        }
+
+        // 5 Kata Ajaib
+        if (t.includes('kata ajaib') || t.includes('5 kata')) {
+            return { bg: 'bg-purple-50', color: 'text-purple-600', icon: <FaMagic className="text-xl" /> };
+        }
+
+        // Tidak Berkata Kasar
+        if (t.includes('tidak berkata') || t.includes('kasar')) {
+            return { bg: 'bg-teal-50', color: 'text-teal-600', icon: <FaCommentSlash className="text-xl" /> };
+        }
+
+        // Catatan
         if (t.includes('catatan') || category === 'Catatan') {
             return { bg: 'bg-blue-50', color: 'text-blue-600', icon: <FaStickyNote className="text-xl" /> };
+        }
+
+        // Ibadah Sunah (general)
+        if (c.includes('ibadah sunah')) {
+            return { bg: 'bg-amber-50', color: 'text-amber-600', icon: <FaStar className="text-xl" /> };
+        }
+
+        // Literasi
+        if (c.includes('literasi') || t.includes('literasi')) {
+            return { bg: 'bg-indigo-50', color: 'text-indigo-600', icon: <FaBookOpen className="text-xl" /> };
+        }
+
+        // Ibadah Lainnya (general)
+        if (c.includes('ibadah lainnya')) {
+            return { bg: 'bg-pink-50', color: 'text-pink-600', icon: <FaHeart className="text-xl" /> };
         }
 
         // Fallback
@@ -538,7 +617,7 @@ const ActivityList = ({ activities }) => {
                                     <span className="material-symbols-outlined text-base text-slate-400">calendar_month</span>
                                     <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wide">{date}</h4>
                                 </div>
-                                <span className="text-[10px] font-bold px-2 py-0.5 bg-white border border-slate-200 text-slate-500 rounded-full shadow-sm">
+                                <span className="text-[10px] font-bold px-2.5 py-0.5 bg-blue-50 border border-blue-100 text-blue-600 rounded-full shadow-sm">
                                     {dateActivities.length} Aktivitas
                                 </span>
                             </div>
@@ -550,7 +629,13 @@ const ActivityList = ({ activities }) => {
                                 const statusConfig = getStatusConfig(activity.status);
                                 const cardId = activity.id || `activity-${date}-${idx}`;
                                 const isExpanded = expandedCards[cardId];
-                                const style = getActivityStyle(activity.title, activity.category);
+                                // Use activity's own styling if available, otherwise use getActivityStyle
+                                const fallbackStyle = getActivityStyle(activity.title, activity.category);
+                                const style = {
+                                    bg: activity.bg || fallbackStyle.bg,
+                                    color: activity.color || fallbackStyle.color,
+                                    icon: fallbackStyle.icon
+                                };
 
                                 return (
                                     <div
@@ -584,7 +669,7 @@ const ActivityList = ({ activities }) => {
                                                 {/* Right Side Info & Chevron Wrapper */}
                                                 <div className="flex items-start gap-2 shrink-0 pl-1">
                                                     <div className="text-right">
-                                                        <div className="text-xs font-bold text-emerald-500 mb-0.5">
+                                                        <div className="text-xs font-bold text-blue-500 mb-0.5">
                                                             +{activity.points}
                                                         </div>
                                                         <div className={`text-[9px] font-semibold ${statusConfig.isPending ? 'text-yellow-600' : 'text-slate-400'}`}>
@@ -618,7 +703,7 @@ const ActivityList = ({ activities }) => {
                                                 <div className="grid grid-cols-[90px_1fr] items-center">
                                                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Kategori</span>
                                                     <div>
-                                                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-block ${activity.bg || 'bg-blue-50'} ${activity.color || 'text-blue-600'}`}>
+                                                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-block ${activity.categoryBg || activity.bg || 'bg-blue-50'} ${activity.categoryColor || activity.color || 'text-blue-600'}`}>
                                                             {activity.category || 'Ibadah'}
                                                         </span>
                                                     </div>
@@ -700,14 +785,14 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
     const verifiedActivities = activities?.filter(a => a.status === 'Terverifikasi') || [];
 
     return (
-        <div className="h-screen overflow-y-auto scrollbar-hide scroll-smooth overscroll-none bg-[#EEF7FF] font-sans relative select-none touch-manipulation animate-fade-in pb-0">
+        <div className="h-screen bg-[#F8FAFC] font-sans relative overflow-hidden notranslate" translate="no">
             {/* Smooth Background Gradient Decoration */}
             <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
-            <PullToRefresh onRefresh={() => window.location.reload()}>
-                <div className="min-h-full">
+            <div className="h-full relative overflow-hidden">
+                <div className="min-h-full pb-24">
                     {/* Header - Sticky with Staggered Entrance */}
-                    <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] transition-all duration-300 animate-fade-in-up border-b border-slate-200" style={{ animationDuration: '0.6s' }}>
+                    <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] transition-all duration-300 animate-fade-in-up opacity-0 border-b border-slate-200" style={{ animationDuration: '0.6s' }}>
                         <HeaderMobile
                             student={studentInfo}
                             teacherNote={teacherNote}
@@ -715,34 +800,38 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
                         />
                     </div>
 
-                    <div className="px-6 space-y-8 relative z-10 pt-4">
+                    <div className="px-6 space-y-6 relative z-10 pt-4">
                         {/* 1. Points Card (Delay 0.1s) */}
                         <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                            <PointsCard totalPoints={stats?.totalPoints || 0} />
+                            <PointsCard
+                                totalPoints={stats?.totalPoints || 0}
+                                semesterLabel={stats?.semesterLabel}
+                                academicYearLabel={stats?.academicYearLabel}
+                            />
                         </div>
 
-                        {/* 2. Teacher Notes (Delay 0.2s) - Moved up as Progress is now in Menu */}
+                        {/* 2. Teacher Notes (Delay 0.2s) */}
                         <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                             <TeacherNotes note={teacherNote} />
                         </div>
 
-                        {/* 3. Menu Cards (Delay 0.3s) - Now contains Progress in Riwayat */}
+                        {/* 3. Menu Cards (Delay 0.3s) */}
                         <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                             <MenuCards stats={stats} activities={activities} />
                         </div>
 
                         {/* 4. Recent Activity (Delay 0.4s) */}
-                        <div className="animate-fade-in-up opacity-0 pb-48" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.9s' }}>
+                        <div className="animate-fade-in-up opacity-0 pb-1" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.9s' }}>
                             <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-2">
-                                    <div className="size-8 rounded-full bg-emerald-100/50 text-emerald-600 flex items-center justify-center">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="size-8 rounded-xl bg-blue-100/50 text-blue-600 flex items-center justify-center">
                                         <span className="material-symbols-outlined notranslate text-lg">history</span>
                                     </div>
-                                    <h3 className="text-base font-bold text-slate-800">Aktivitas Terakhir</h3>
+                                    <h3 className="text-[15px] font-bold text-slate-800">Aktivitas Terakhir</h3>
                                 </div>
                                 <button
                                     onClick={() => navigate('/student/history')}
-                                    className="text-xs font-bold text-blue-500 hover:text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1"
+                                    className="text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-sky-500 hover:from-blue-600 hover:to-sky-600 px-4 py-1.5 rounded-full transition-all shadow-md shadow-blue-200/50 flex items-center gap-1"
                                 >
                                     Lihat Semua
                                     <span className="material-symbols-outlined notranslate text-sm">arrow_forward</span>
@@ -750,60 +839,6 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
                             </div>
                             <ActivityList activities={activities} />
                         </div>
-                    </div>
-                </div>
-            </PullToRefresh>
-
-            {/* Bottom Navigation */}
-            <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 pointer-events-none">
-                {/* FAB Button */}
-                <div className="flex justify-center pointer-events-auto">
-                    <button
-                        onClick={() => navigate('/student/input')}
-                        className="relative -mb-10 w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-[0_8px_24px_-4px_rgba(59,130,246,0.5)] active:scale-95 transition-transform z-10 border-4 border-white"
-                    >
-                        <span className="material-symbols-outlined notranslate text-white text-3xl">add</span>
-                    </button>
-                </div>
-
-                {/* Nav Bar - Full Width with Rounded Top */}
-                <div className="bg-white px-8 pt-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pointer-events-auto rounded-t-3xl border-t border-slate-200 shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.08)]">
-                    <div className="flex items-center justify-between">
-                        {/* Dashboard - Active */}
-                        <button className="flex flex-col items-center text-blue-600 min-w-[60px] outline-none border-none bg-transparent">
-                            <span className="material-symbols-outlined notranslate text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>home</span>
-                            <span className="text-xs font-bold mt-1">Dashboard</span>
-                        </button>
-
-                        {/* Riwayat */}
-                        <button
-                            onClick={() => navigate('/student/history')}
-                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px] outline-none border-none bg-transparent"
-                        >
-                            <span className="material-symbols-outlined notranslate text-[28px]">schedule</span>
-                            <span className="text-xs font-medium mt-1">Riwayat</span>
-                        </button>
-
-                        {/* Spacer for FAB */}
-                        <div className="w-16"></div>
-
-                        {/* Peringkat */}
-                        <button
-                            onClick={() => navigate('/student/leaderboard')}
-                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px] outline-none border-none bg-transparent"
-                        >
-                            <span className="material-symbols-outlined notranslate text-[28px]">leaderboard</span>
-                            <span className="text-xs font-medium mt-1">Peringkat</span>
-                        </button>
-
-                        {/* Profil */}
-                        <button
-                            onClick={() => navigate('/student/profile')}
-                            className="flex flex-col items-center text-slate-400 active:scale-95 transition-all min-w-[60px] outline-none border-none bg-transparent"
-                        >
-                            <span className="material-symbols-outlined notranslate text-[28px]">person</span>
-                            <span className="text-xs font-medium mt-1">Profil</span>
-                        </button>
                     </div>
                 </div>
             </div>

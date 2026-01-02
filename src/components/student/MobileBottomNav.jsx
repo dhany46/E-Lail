@@ -5,8 +5,16 @@ const MobileBottomNav = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Hide on dashboard page (has its own nav)
-    if (location.pathname === '/student/dashboard') {
+    // Hide on specific pages
+    const hiddenPaths = [
+        '/student/dashboard',
+        '/student/history',
+        '/student/leaderboard',
+        '/student/profile',
+        '/student/input'
+    ];
+
+    if (hiddenPaths.includes(location.pathname)) {
         return null;
     }
 

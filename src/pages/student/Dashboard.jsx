@@ -39,49 +39,110 @@ const loadAllActivities = () => {
                         id: `${dateStr}-prayer-${idx}`,
                         rawDate: dateStr,
                         rawTime: submittedAt || prayerTime || '00:00',
-                        title: `Shalat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
+                        title: `Salat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
                         subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'} • ${descTime} WIB`,
+                        category: "Salat Wajib",
                         date: formattedDate,
                         time: `${formattedDate} • ${headerTime} WIB`,
                         points: isCongregation ? 25 : 10,
                         status: "Menunggu",
                         icon: "mosque",
-                        color: "text-primary",
-                        bg: "bg-primary/10"
+                        color: "text-blue-600",
+                        bg: "bg-blue-50"
                     });
                 });
             }
 
-            // Process tadarus
-            if (data.tadarus && typeof data.tadarus === 'object') {
+            // Process tadarus (Array Support)
+            const tadarusList = Array.isArray(data.tadarus)
+                ? data.tadarus
+                : (data.tadarus ? [data.tadarus] : []);
+
+            tadarusList.forEach((item, idx) => {
+                if (!item) return;
+
+                // Process Al-Qur'an (Relaxed check)
+                if (item.surah || item.ayatStart) {
+                    allActivities.push({
+                        id: `${dateStr}-tadarus-quran-${idx}`,
+                        rawDate: dateStr,
+                        rawTime: item.submittedAt || '23:59:59',
+                        title: `Tadarus Al-Qur'an`,
+                        subtitle: `Surat ${item.surah} • Ayat ${item.ayatStart} - ${item.ayatEnd}`,
+                        category: "Tadarus Al-Qur'an",
+                        date: formattedDate,
+                        time: item.submittedAt ? `${formattedDate} • ${item.submittedAt.substring(0, 5)} WIB` : '-',
+                        points: 50,
+                        status: "Menunggu",
+                        icon: "menu_book",
+                        color: "text-blue-600",
+                        bg: "bg-blue-50"
+                    });
+                }
+
+                // Process Hijrati
+                if (item.page || item.jilid) {
+                    allActivities.push({
+                        id: `${dateStr}-tadarus-hijrati-${idx}`,
+                        rawDate: dateStr,
+                        rawTime: item.submittedAt || '23:59:59',
+                        title: `Hijrati`,
+                        subtitle: `Jilid ${item.jilid || '-'} • Halaman ${item.page || '-'}`,
+                        category: "Hijrati",
+                        date: formattedDate,
+                        time: item.submittedAt ? `${formattedDate} • ${item.submittedAt.substring(0, 5)} WIB` : '-',
+                        points: 30,
+                        status: "Menunggu",
+                        icon: "menu_book",
+                        color: "text-amber-600",
+                        bg: "bg-amber-50"
+                    });
+                }
+            });
+
+            // Process literacy
+            if (data.literacy && typeof data.literacy === 'object' && data.literacy.title) {
                 allActivities.push({
-                    id: `${dateStr}-tadarus`,
+                    id: `${dateStr}-literacy`,
                     rawDate: dateStr,
-                    rawTime: data.tadarus.submittedAt || '23:59:59',
-                    title: `Membaca Surat ${data.tadarus.surah}`,
-                    subtitle: `Ayat ${data.tadarus.ayatStart} - ${data.tadarus.ayatEnd}`,
+                    rawTime: data.literacy.submittedAt || '23:59:59',
+                    title: `Literasi`,
+                    subtitle: `${data.literacy.title} • Halaman ${data.literacy.page || '-'}`,
+                    category: "Literasi",
                     date: formattedDate,
-                    time: data.tadarus.submittedAt ? `${formattedDate} • ${data.tadarus.submittedAt.substring(0, 5)} WIB` : '-',
-                    points: 50,
+                    time: data.literacy.submittedAt ? `${formattedDate} • ${data.literacy.submittedAt.substring(0, 5)} WIB` : '-',
+                    points: 15,
                     status: "Menunggu",
-                    icon: "menu_book",
-                    color: "text-primary-dark",
-                    bg: "bg-primary/10"
+                    icon: "auto_stories",
+                    color: "text-indigo-600",
+                    bg: "bg-indigo-50",
+                    categoryColor: "text-indigo-600",
+                    categoryBg: "bg-indigo-100"
                 });
             }
 
             // Process additional worships
             if (data.additional && Array.isArray(data.additional)) {
                 const additionalLabels = {
-                    'dhuha': { label: 'Sholat Dhuha', icon: 'mosque', points: 15 },
-                    'infaq': { label: 'Infaq / Sedekah', icon: 'volunteer_activism', points: 10 },
-                    'help': { label: 'Membantu Orang Tua', icon: 'favorite', points: 25 }
+                    // Ibadah Sunah - categoryColor amber sesuai InputMobile
+                    'dhuha': { label: 'Salat Duha', category: 'Ibadah Sunah', points: 15, color: 'text-amber-600', bg: 'bg-amber-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
+                    'tahajud': { label: 'Salat Tahajud', category: 'Ibadah Sunah', points: 20, color: 'text-indigo-600', bg: 'bg-indigo-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
+                    'rawatib': { label: 'Salat Rawatib', category: 'Ibadah Sunah', points: 10, color: 'text-cyan-600', bg: 'bg-cyan-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
+                    'senin_kamis': { label: 'Puasa Senin / Kamis', category: 'Ibadah Sunah', points: 30, color: 'text-rose-600', bg: 'bg-rose-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
+                    'daud': { label: 'Puasa Daud', category: 'Ibadah Sunah', points: 40, color: 'text-purple-600', bg: 'bg-purple-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
+                    // Ibadah Lainnya - categoryColor pink sesuai InputMobile
+                    'infaq': { label: 'Infak / Sedekah', category: 'Ibadah Lainnya', points: 10, color: 'text-emerald-600', bg: 'bg-emerald-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
+                    'help': { label: 'Bantu Orang Tua', category: 'Ibadah Lainnya', points: 25, color: 'text-rose-600', bg: 'bg-rose-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
+                    'five_s': { label: 'Melakukan 5S', category: 'Ibadah Lainnya', points: 10, color: 'text-amber-600', bg: 'bg-amber-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
+                    'magic_words': { label: '5 Kata Ajaib', category: 'Ibadah Lainnya', points: 10, color: 'text-purple-600', bg: 'bg-purple-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
+                    'help_others': { label: 'Bantu Sesama', category: 'Ibadah Lainnya', points: 20, color: 'text-blue-600', bg: 'bg-blue-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
+                    'no_bad_words': { label: 'Tidak Berkata Kasar', category: 'Ibadah Lainnya', points: 15, color: 'text-teal-600', bg: 'bg-teal-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' }
                 };
                 data.additional.forEach((item, idx) => {
                     const isObject = typeof item === 'object' && item !== null;
                     const itemId = isObject ? item.id : item;
                     const itemTime = isObject && item.submittedAt ? item.submittedAt : null;
-                    const info = additionalLabels[itemId] || { label: itemId, icon: 'star', points: 10 };
+                    const info = additionalLabels[itemId] || { label: itemId, category: 'Ibadah Lainnya', points: 10, color: 'text-slate-600', bg: 'bg-slate-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' };
 
                     allActivities.push({
                         id: `${dateStr}-additional-${idx}`,
@@ -89,13 +150,15 @@ const loadAllActivities = () => {
                         rawTime: itemTime || '23:59:59',
                         title: info.label,
                         subtitle: (isObject && item.note) ? item.note : 'Ibadah tambahan hari ini',
+                        category: info.category,
                         date: formattedDate,
                         time: itemTime ? `${formattedDate} • ${itemTime.substring(0, 5)} WIB` : '-',
                         points: info.points,
                         status: "Menunggu",
-                        icon: info.icon,
-                        color: "text-primary",
-                        bg: "bg-primary/10"
+                        color: info.color,
+                        bg: info.bg,
+                        categoryColor: info.categoryColor,
+                        categoryBg: info.categoryBg
                     });
                 });
             }
@@ -145,22 +208,50 @@ const Dashboard = () => {
         setActivities(allLoadedActivities);
     }, []);
 
-    // Calculate stats
+    // Calculate stats (Semester Based)
     useEffect(() => {
         const todayNow = new Date();
-        const today = `${todayNow.getFullYear()}-${String(todayNow.getMonth() + 1).padStart(2, '0')}-${String(todayNow.getDate()).padStart(2, '0')}`;
-        const totalPoints = activities.reduce((sum, a) => sum + a.points, 0);
+        const year = todayNow.getFullYear();
+        const month = todayNow.getMonth(); // 0-11
+        const today = `${year}-${String(month + 1).padStart(2, '0')}-${String(todayNow.getDate()).padStart(2, '0')}`;
+
+        // Semester & Academic Year Logic
+        let semesterStart, semesterEnd, semesterLabel, academicYearLabel;
+
+        if (month >= 6) { // Jul - Dec (Semester 1)
+            semesterStart = new Date(`${year}-07-01`);
+            semesterEnd = new Date(`${year}-12-31`);
+            semesterLabel = "Semester 1";
+            academicYearLabel = `${year}/${year + 1}`;
+        } else { // Jan - Jun (Semester 2)
+            semesterStart = new Date(`${year}-01-01`);
+            semesterEnd = new Date(`${year}-06-30`);
+            semesterLabel = "Semester 2";
+            academicYearLabel = `${year - 1}/${year}`;
+        }
+
+        // Filter activities for CURRENT SEMESTER only
+        const semesterActivities = activities.filter(a => {
+            const activityDate = new Date(a.rawDate);
+            return activityDate >= semesterStart && activityDate <= semesterEnd;
+        });
+
+        const totalPoints = semesterActivities.reduce((sum, a) => sum + a.points, 0);
+
+        // Today stats remains based on ALL activities for today (regardless of semester logic, though usually overlaps)
         const todayActivities = activities.filter(a => a.rawDate === today);
         const todayPoints = todayActivities.reduce((sum, a) => sum + a.points, 0);
         const pendingCount = activities.filter(a => a.status === 'Menunggu').length;
         const todayCount = todayActivities.length;
 
         setStats({
-            totalPoints,
+            totalPoints, // Now stores Semester Points
             todayPoints,
             pendingCount,
             todayCount,
-            targetDaily: 8
+            targetDaily: 8,
+            semesterLabel,
+            academicYearLabel
         });
     }, [activities]);
 

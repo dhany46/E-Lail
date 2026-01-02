@@ -138,6 +138,59 @@ body {
   animation: bounce-slow 3s infinite;
 }
 
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.6;
+  }
+
+  80% {
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+    opacity: 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes confetti {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotateX(0) rotateY(0);
+    opacity: 1;
+  }
+
+  25% {
+    transform: translateY(25vh) translateX(4vw) rotateX(180deg) rotateY(90deg);
+  }
+
+  50% {
+    transform: translateY(50vh) translateX(-4vw) rotateX(360deg) rotateY(180deg);
+  }
+
+  75% {
+    transform: translateY(75vh) translateX(4vw) rotateX(540deg) rotateY(270deg);
+  }
+
+  100% {
+    transform: translateY(110vh) translateX(0) rotateX(720deg) rotateY(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-confetti {
+  animation: confetti linear forwards;
+  /* Linear is better for physics-like falling */
+}
+
 /* Page Transition Animations */
 @keyframes pageSlideInRight {
   from {
@@ -188,23 +241,23 @@ body {
 }
 
 /* Stagger children animation */
-.stagger-children > *:nth-child(1) {
+.stagger-children>*:nth-child(1) {
   animation-delay: 0.05s;
 }
 
-.stagger-children > *:nth-child(2) {
+.stagger-children>*:nth-child(2) {
   animation-delay: 0.1s;
 }
 
-.stagger-children > *:nth-child(3) {
+.stagger-children>*:nth-child(3) {
   animation-delay: 0.15s;
 }
 
-.stagger-children > *:nth-child(4) {
+.stagger-children>*:nth-child(4) {
   animation-delay: 0.2s;
 }
 
-.stagger-children > *:nth-child(5) {
+.stagger-children>*:nth-child(5) {
   animation-delay: 0.25s;
 }
 

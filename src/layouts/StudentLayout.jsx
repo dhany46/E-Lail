@@ -3,8 +3,9 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import logo from '../assets/logo.jpg';
 import Background from '../components/ui/Background';
-import MobileBottomNav from '../components/student/MobileBottomNav';
+import MenuButtonNav from '../components/student/MenuButtonNav';
 import PWAInstallPrompt from '../components/ui/PWAInstallPrompt';
+import PullToRefresh from '../components/ui/PullToRefresh';
 import { StudentProvider, useStudentContext } from '../context/StudentContext';
 
 const SidebarItem = ({ icon, label, to, active }) => {
@@ -174,7 +175,7 @@ const StudentLayoutContent = () => {
             </aside>
 
             {/* Bottom Navigation for Mobile (Global) */}
-            <MobileBottomNav />
+            <MenuButtonNav />
 
             {/* Main Content Area */}
             <main className="flex-1 flex flex-col min-w-0 overflow-hidden z-10 relative bg-transparent">
@@ -192,7 +193,7 @@ const StudentLayoutContent = () => {
 
                 {/* Content Outlet */}
                 {/* Modified: Remove generic scrolling for full container pages to let them handle their own scrolling (and P2R) */}
-                <div className={`flex-1 ${isFullContainerPage ? 'overflow-hidden p-0 md:p-6 lg:p-8' : 'overflow-y-auto scrollbar-hide scroll-smooth overscroll-y-auto p-4 md:p-6 lg:p-8'} pb-24 md:pb-6`}>
+                <div className={`flex-1 ${isFullContainerPage ? 'overflow-hidden p-0 md:p-6 lg:p-8' : 'overflow-y-auto scrollbar-hide scroll-smooth overscroll-y-auto p-4 md:p-6 lg:p-8 pb-24'} md:pb-6`}>
                     <div className="w-full max-w-full md:max-w-screen-xl mx-auto h-full">
                         <AnimatePresence mode="wait">
                             <motion.div
@@ -203,7 +204,9 @@ const StudentLayoutContent = () => {
                                 transition={{ duration: 0.15 }}
                                 className="h-full"
                             >
-                                <Outlet />
+                                <PullToRefresh onRefresh={() => window.location.reload()}>
+                                    <Outlet />
+                                </PullToRefresh>
                             </motion.div>
                         </AnimatePresence>
                     </div>

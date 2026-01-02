@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Mail, ChevronDown, Info, School, GraduationCap, Star, Book, Rocket, Cloud, Sparkles, Phone } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.jpg';
 
 const Login = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [role, setRole] = useState('Admin'); // 'Admin', 'Guru', or 'Siswa'
     const [formData, setFormData] = useState({
         email: '',
@@ -47,6 +49,11 @@ const Login = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('Login attempt', { role, ...formData });
+        
+        // Simulate login success
+        const userData = { role, ...formData };
+        login(userData);
+
         if (role === 'Admin') {
             navigate('/admin/dashboard');
         } else if (role === 'Guru') {
