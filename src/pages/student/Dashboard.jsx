@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { FaStar } from 'react-icons/fa';
 import DashboardDesktop from './dashboard/DashboardDesktop';
 import DashboardMobile from './dashboard/DashboardMobile';
+import { getActivityConfig, getAllWorshipCategories } from '../../utils/worshipConfig';
 
 // Helper function to load all activities from localStorage
 // Keeping this here for shared access
@@ -123,26 +125,37 @@ const loadAllActivities = () => {
 
             // Process additional worships
             if (data.additional && Array.isArray(data.additional)) {
-                const additionalLabels = {
-                    // Ibadah Sunah - categoryColor amber sesuai InputMobile
-                    'dhuha': { label: 'Salat Duha', category: 'Ibadah Sunah', points: 15, color: 'text-amber-600', bg: 'bg-amber-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                    'tahajud': { label: 'Salat Tahajud', category: 'Ibadah Sunah', points: 20, color: 'text-indigo-600', bg: 'bg-indigo-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                    'rawatib': { label: 'Salat Rawatib', category: 'Ibadah Sunah', points: 10, color: 'text-cyan-600', bg: 'bg-cyan-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                    'senin_kamis': { label: 'Puasa Senin / Kamis', category: 'Ibadah Sunah', points: 30, color: 'text-rose-600', bg: 'bg-rose-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                    'daud': { label: 'Puasa Daud', category: 'Ibadah Sunah', points: 40, color: 'text-purple-600', bg: 'bg-purple-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                    // Ibadah Lainnya - categoryColor pink sesuai InputMobile
-                    'infaq': { label: 'Infak / Sedekah', category: 'Ibadah Lainnya', points: 10, color: 'text-emerald-600', bg: 'bg-emerald-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                    'help': { label: 'Bantu Orang Tua', category: 'Ibadah Lainnya', points: 25, color: 'text-rose-600', bg: 'bg-rose-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                    'five_s': { label: 'Melakukan 5S', category: 'Ibadah Lainnya', points: 10, color: 'text-amber-600', bg: 'bg-amber-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                    'magic_words': { label: '5 Kata Ajaib', category: 'Ibadah Lainnya', points: 10, color: 'text-purple-600', bg: 'bg-purple-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                    'help_others': { label: 'Bantu Sesama', category: 'Ibadah Lainnya', points: 20, color: 'text-blue-600', bg: 'bg-blue-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                    'no_bad_words': { label: 'Tidak Berkata Kasar', category: 'Ibadah Lainnya', points: 15, color: 'text-teal-600', bg: 'bg-teal-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' }
+                // Get all worship categories from admin settings
+                const allCategories = getAllWorshipCategories();
+                
+                // Dynamic activity info lookup
+                const getActivityInfo = (activityId) => {
+                    for (const cat of allCategories) {
+                        const foundItem = cat.items.find(item => item.id === activityId);
+                        if (foundItem) {
+                            const actConfig = getActivityConfig(activityId);
+                            const colorName = actConfig.colorName || 'blue';
+                            const catColorName = cat.color?.replace('bg-', '').replace('-500', '') || 'pink';
+                            
+                            return {
+                                label: foundItem.label,
+                                points: foundItem.points,
+                                category: cat.title,
+                                color: `text-${colorName}-600`,
+                                bg: `bg-${colorName}-50`,
+                                categoryColor: `text-${catColorName}-600`,
+                                categoryBg: `bg-${catColorName}-100`
+                            };
+                        }
+                    }
+                    return { label: activityId, category: 'Ibadah Lainnya', points: 10, color: 'text-slate-600', bg: 'bg-slate-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' };
                 };
+                
                 data.additional.forEach((item, idx) => {
                     const isObject = typeof item === 'object' && item !== null;
                     const itemId = isObject ? item.id : item;
                     const itemTime = isObject && item.submittedAt ? item.submittedAt : null;
-                    const info = additionalLabels[itemId] || { label: itemId, category: 'Ibadah Lainnya', points: 10, color: 'text-slate-600', bg: 'bg-slate-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' };
+                    const info = getActivityInfo(itemId);
 
                     allActivities.push({
                         id: `${dateStr}-additional-${idx}`,

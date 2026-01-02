@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import TeachersMobile from './teachers/TeachersMobile';
+import TeachersDesktop from './teachers/TeachersDesktop';
 
 const ManageTeachers = () => {
-    return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold text-slate-800">Manajemen Guru</h1>
-            <p className="text-slate-500">Halaman ini telah di-reset dan siap dibangun ulang.</p>
-        </div>
-    );
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 1024);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return isMobile ? <TeachersMobile /> : <TeachersDesktop />;
 };
 
 export default ManageTeachers;

@@ -5,11 +5,12 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import DashboardLayout from './layouts/DashboardLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/admin/Dashboard';
-import ManageClasses from './pages/admin/ManageClasses';
-import ManageTeachers from './pages/admin/ManageTeachers';
 import ManageStudents from './pages/admin/ManageStudents';
+import ManageTeachers from './pages/admin/ManageTeachers';
+import ManageClasses from './pages/admin/ManageClasses';
 import Activities from './pages/admin/Activities';
 import Settings from './pages/admin/Settings';
+import WorshipPoints from './pages/admin/WorshipPoints';
 import './index.css';
 
 import StudentLayout from './layouts/StudentLayout';
@@ -33,7 +34,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   if (loading) return null; // Or a loading spinner
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
@@ -41,24 +42,12 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     if (user.role === 'Admin') return <Navigate to="/admin/dashboard" replace />;
     if (user.role === 'Guru') return <Navigate to="/teacher/dashboard" replace />;
     if (user.role === 'Siswa') return <Navigate to="/student/dashboard" replace />;
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;
 };
 
-// Redirect if already logged in
-const LoginRoute = ({ children }) => {
-    const { user, loading } = useAuth();
-    if (loading) return null;
-
-    if (user) {
-        if (user.role === 'Admin') return <Navigate to="/admin/dashboard" replace />;
-        if (user.role === 'Guru') return <Navigate to="/teacher/dashboard" replace />;
-        if (user.role === 'Siswa') return <Navigate to="/student/dashboard" replace />;
-    }
-    return children;
-};
 
 function App() {
   return (
@@ -66,17 +55,18 @@ function App() {
       <ToastProvider>
         <Router>
           <Routes>
-            <Route path="/login" element={<LoginRoute><Login /></LoginRoute>} />
+            <Route path="/login" element={<Navigate to="/" replace />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<ProtectedRoute allowedRoles={['Admin']}><DashboardLayout /></ProtectedRoute>}>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
-              <Route path="classes" element={<ManageClasses />} />
-              <Route path="teachers" element={<ManageTeachers />} />
               <Route path="students" element={<ManageStudents />} />
+              <Route path="teachers" element={<ManageTeachers />} />
+              <Route path="classes" element={<ManageClasses />} />
               <Route path="activities" element={<Activities />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="worship-points" element={<WorshipPoints />} />
             </Route>
 
             {/* Student Routes */}
@@ -103,8 +93,8 @@ function App() {
             </Route>
 
             {/* Default Redirect */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Login />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>
       </ToastProvider>

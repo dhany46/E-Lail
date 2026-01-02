@@ -48,18 +48,54 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Login attempt', { role, ...formData });
-        
-        // Simulate login success
-        const userData = { role, ...formData };
-        login(userData);
 
-        if (role === 'Admin') {
-            navigate('/admin/dashboard');
-        } else if (role === 'Guru') {
-            navigate('/teacher/dashboard');
+        if (role === 'Siswa') {
+            // Validate Student Login
+            const savedStudents = localStorage.getItem('students_data');
+            let students = [];
+
+            if (savedStudents) {
+                try {
+                    students = JSON.parse(savedStudents);
+                } catch (e) {
+                    console.error('Error parsing students data', e);
+                }
+            }
+
+            // Fallback default data if localStorage is empty
+            // Removed to ensure clean reset behavior
+            if (students.length === 0) {
+                students = [];
+            }
+
+            const inputNIS = String(formData.nis).trim();
+            const foundStudent = students.find(s => String(s.nis).trim() === inputNIS);
+
+            if (foundStudent) {
+                const userData = { role: 'Siswa', ...foundStudent };
+                login(userData);
+                navigate('/student/dashboard');
+            } else {
+                alert(`NIS "${inputNIS}" tidak ditemukan! Silakan hubungi admin sekolah.`);
+            }
+
         } else {
-            navigate('/student/dashboard');
+            // Admin & Teacher Login
+            if (role === 'Admin') {
+                if (String(formData.email).trim() !== 'admin@admin.com') {
+                    alert('Akses Admin Ditolak: Email tidak dikenali.');
+                    return;
+                }
+            }
+
+            const userData = { role, ...formData };
+            login(userData);
+
+            if (role === 'Admin') {
+                navigate('/admin/dashboard');
+            } else if (role === 'Guru') {
+                navigate('/teacher/dashboard');
+            }
         }
     };
 

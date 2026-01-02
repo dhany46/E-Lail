@@ -34,6 +34,7 @@ import {
 } from "react-icons/fa";
 import { MdVerified, MdCampaign, MdNotificationsOff, MdNightsStay, MdNoFood } from "react-icons/md";
 import { BiSolidDonateHeart } from "react-icons/bi";
+import { getActivityConfig, getAllWorshipCategories, AVAILABLE_COLORS } from '../../../utils/worshipConfig';
 
 
 const AchievementPopup = ({ onClose }) => {
@@ -364,213 +365,243 @@ const HeroStats = ({ stats }) => {
     );
 };
 
-const HistoryMobile = () => {
-    const navigate = useNavigate();
-    // Load activities from localStorage with lazy initialization to prevent flash
-    const [activities, setActivities] = useState(() => {
-        const allActivities = [];
-        // Get all localStorage keys that match our pattern
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('daily_report_')) {
-                const dateStr = key.replace('daily_report_', '');
-                let data = null;
-                try {
-                    data = JSON.parse(localStorage.getItem(key));
-                } catch (e) {
-                    continue;
-                }
+// Helper function to get activity info from worshipConfig (outside component)
+// Helper function to get activity info from worshipConfig (outside component)
+const getActivityInfoFromConfig = (activityId) => {
+    // Ensure fresh config is loaded every time
+    const allWorshipCategories = getAllWorshipCategories();
 
-                if (!data) continue;
+    // Normalize ID for comparison
+    const targetId = String(activityId).trim();
 
-                // Format date for display
-                const dateObj = new Date(dateStr);
-                const formattedDate = dateObj.toLocaleDateString('id-ID', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric'
-                });
+    for (const cat of allWorshipCategories) {
+        // Robust find with string normalization
+        const foundItem = cat.items.find(item => String(item.id).trim() === targetId);
 
-                // Process prayers - handle both old format (string) and new format (object)
-                if (data.prayers && Array.isArray(data.prayers)) {
-                    data.prayers.forEach((prayer, idx) => {
-                        // Handle both formats: string ID or object {id, time, isCongregation}
-                        const isObject = typeof prayer === 'object' && prayer !== null;
-                        const prayerId = isObject ? prayer.id : prayer;
-                        const prayerTime = isObject && prayer.time ? prayer.time : null;
-                        const isCongregation = isObject ? prayer.isCongregation : false;
+        if (foundItem) {
+            const actConfig = getActivityConfig(targetId);
+            const colorName = actConfig.colorName || 'blue';
+            const IconComp = actConfig.icon || FaStar;
 
-                        const submittedAt = isObject && prayer.submittedAt ? prayer.submittedAt : null;
-                        const displayTime = submittedAt ? submittedAt.substring(0, 5) : (prayerTime || '-');
+            // Determine category colors safely
+            let catColorName = 'pink';
+            if (cat.color) {
+                // Try to extract color name from class like 'bg-amber-500' or default to pink
+                const match = cat.color.match(/bg-([a-z]+)-/);
+                if (match) catColorName = match[1];
+            }
 
-                        allActivities.push({
-                            id: `${dateStr}-prayer-${idx}`,
-                            date: formattedDate,
-                            rawDate: dateStr,
-                            rawTime: submittedAt || prayerTime || '00:00',
-                            time: `${displayTime} WIB`,
-                            title: `Salat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
-                            subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'}${prayerTime ? ` • ${prayerTime.replace(' WIB', '').replace('WIB', '')} WIB` : ''}`,
-                            category: "Salat Wajib",
-                            status: "Menunggu",
-                            points: isCongregation ? 25 : 10,
-                            icon: <FaMosque className="text-xl" />,
-                            color: 'text-blue-600',
-                            bg: 'bg-blue-50'
-                        });
-                    });
-                }
+            return {
+                label: foundItem.label,
+                points: foundItem.points,
+                category: cat.title,
+                icon: <IconComp className="text-xl" />,
+                color: `text-${colorName}-600`,
+                bg: `bg-${colorName}-50`,
+                categoryColor: `text-${catColorName}-600`,
+                categoryBg: `bg-${catColorName}-100`
+            };
+        }
+    }
 
-                // Process tadarus (Array Support)
-                const tadarusList = Array.isArray(data.tadarus)
-                    ? data.tadarus
-                    : (data.tadarus ? [data.tadarus] : []);
+    // Fallback for unknown/deleted activities
+    return {
+        label: activityId,
+        points: 10,
+        category: 'Ibadah Lainnya',
+        icon: <FaStar className="text-xl" />,
+        color: 'text-pink-600',
+        bg: 'bg-pink-50',
+        categoryColor: 'text-pink-600',
+        categoryBg: 'bg-pink-100'
+    };
+};
 
-                tadarusList.forEach((item, idx) => {
-                    if (!item) return;
+// Function to load activities from localStorage
+const loadActivitiesFromStorage = () => {
+    const allActivities = [];
 
-                    // Extremely Permissive Detection
-                    // If ANY Al-Qur'an field is present, treat as Al-Qur'an
-                    const isQuran = item.surah || item.ayatStart || item.ayatEnd;
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('daily_report_')) {
+            const dateStr = key.replace('daily_report_', '');
+            let data = null;
+            try {
+                data = JSON.parse(localStorage.getItem(key));
+            } catch (e) {
+                continue;
+            }
 
-                    if (isQuran) {
-                        allActivities.push({
-                            id: `${dateStr}-tadarus-quran-${idx}`,
-                            date: formattedDate,
-                            rawDate: dateStr,
-                            rawTime: item.submittedAt || '23:59:59',
-                            time: item.submittedAt ? `${item.submittedAt.substring(0, 5)} WIB` : '-',
-                            title: `Tadarus Al-Qur'an`,
-                            subtitle: `Surat ${item.surah || '-'} • Ayat ${item.ayatStart || '-'} - ${item.ayatEnd || '-'}`,
-                            category: "Tadarus Al-Qur'an",
-                            status: "Menunggu",
-                            points: 50,
-                            icon: <FaBookOpen className="text-xl" />,
-                            color: 'text-blue-600',
-                            bg: 'bg-blue-50',
-                            categoryColor: 'text-blue-600',
-                            categoryBg: 'bg-blue-100'
-                        });
-                    }
+            if (!data) continue;
 
-                    // If ANY Hijrati field is present, treat as Hijrati
-                    const isHijrati = item.page || item.jilid;
+            const dateObj = new Date(dateStr);
+            const formattedDate = dateObj.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
 
-                    if (isHijrati) {
-                        allActivities.push({
-                            id: `${dateStr}-tadarus-hijrati-${idx}`,
-                            date: formattedDate,
-                            rawDate: dateStr,
-                            rawTime: item.submittedAt || '23:59:59',
-                            time: item.submittedAt ? `${item.submittedAt.substring(0, 5)} WIB` : '-',
-                            title: `Hijrati`,
-                            subtitle: `Jilid ${item.jilid || '-'} • Halaman ${item.page || '-'}`,
-                            category: "Hijrati",
-                            status: "Menunggu",
-                            points: 30,
-                            icon: <FaBookOpen className="text-xl" />,
-                            color: 'text-amber-600',
-                            bg: 'bg-amber-50',
-                            categoryColor: 'text-amber-600',
-                            categoryBg: 'bg-amber-100'
-                        });
-                    }
-                });
+            // Process prayers
+            if (data.prayers && Array.isArray(data.prayers)) {
+                data.prayers.forEach((prayer, idx) => {
+                    const isObject = typeof prayer === 'object' && prayer !== null;
+                    const prayerId = isObject ? prayer.id : prayer;
+                    const prayerTime = isObject && prayer.time ? prayer.time : null;
+                    const isCongregation = isObject ? prayer.isCongregation : false;
+                    const submittedAt = isObject && prayer.submittedAt ? prayer.submittedAt : null;
+                    const displayTime = submittedAt ? submittedAt.substring(0, 5) : (prayerTime || '-');
 
-
-
-                // Process additional worships - handle both old (string) and new (object)
-                if (data.additional && Array.isArray(data.additional)) {
-                    const additionalLabels = {
-                        // Ibadah Sunah
-                        'dhuha': { label: 'Salat Duha', points: 15, category: 'Ibadah Sunah', icon: <FaCloudSun className="text-xl" />, color: 'text-amber-600', bg: 'bg-amber-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                        'tahajud': { label: 'Salat Tahajud', points: 20, category: 'Ibadah Sunah', icon: <MdNightsStay className="text-xl" />, color: 'text-indigo-600', bg: 'bg-indigo-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                        'rawatib': { label: 'Salat Rawatib', points: 10, category: 'Ibadah Sunah', icon: <FaMosque className="text-xl" />, color: 'text-cyan-600', bg: 'bg-cyan-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                        'senin_kamis': { label: 'Puasa Senin / Kamis', points: 30, category: 'Ibadah Sunah', icon: <MdNoFood className="text-xl" />, color: 'text-rose-600', bg: 'bg-rose-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                        'daud': { label: 'Puasa Daud', points: 40, category: 'Ibadah Sunah', icon: <MdNoFood className="text-xl" />, color: 'text-purple-600', bg: 'bg-purple-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                        // Ibadah Lainnya
-                        'infaq': { label: 'Infak / Sedekah', points: 10, category: 'Ibadah Lainnya', icon: <BiSolidDonateHeart className="text-xl" />, color: 'text-emerald-600', bg: 'bg-emerald-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                        'help': { label: 'Bantu Orang Tua', points: 25, category: 'Ibadah Lainnya', icon: <FaHeart className="text-xl" />, color: 'text-rose-600', bg: 'bg-rose-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                        'five_s': { label: 'Melakukan 5S', points: 10, category: 'Ibadah Lainnya', icon: <FaSmileWink className="text-xl" />, color: 'text-amber-600', bg: 'bg-amber-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                        'magic_words': { label: '5 Kata Ajaib', points: 10, category: 'Ibadah Lainnya', icon: <FaMagic className="text-xl" />, color: 'text-purple-600', bg: 'bg-purple-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                        'help_others': { label: 'Bantu Sesama', points: 20, category: 'Ibadah Lainnya', icon: <FaHandHoldingHeart className="text-xl" />, color: 'text-blue-600', bg: 'bg-blue-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                        'no_bad_words': { label: 'Tidak Berkata Kasar', points: 15, category: 'Ibadah Lainnya', icon: <FaCommentSlash className="text-xl" />, color: 'text-teal-600', bg: 'bg-teal-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' }
-                    };
-                    data.additional.forEach((item, idx) => {
-                        // Handle both string ID and object format
-                        const isObject = typeof item === 'object' && item !== null;
-                        const itemId = isObject ? item.id : item;
-                        const itemTime = isObject && item.submittedAt ? item.submittedAt : null;
-
-                        const info = additionalLabels[itemId] || { label: itemId, points: 10, category: 'Ibadah Lainnya', icon: <FaStar className="text-xl" />, color: 'text-pink-600', bg: 'bg-pink-50' };
-                        allActivities.push({
-                            id: `${dateStr}-additional-${idx}`,
-                            date: formattedDate,
-                            rawDate: dateStr,
-                            rawTime: itemTime || '23:59:59',
-                            time: itemTime ? `${itemTime.substring(0, 5)} WIB` : '-',
-                            title: info.label,
-                            subtitle: (isObject && item.note) ? item.note : 'Ibadah tambahan hari ini',
-                            category: info.category,
-                            status: "Menunggu",
-                            points: info.points,
-                            icon: info.icon,
-                            color: info.color || 'text-pink-600',
-                            bg: info.bg || 'bg-pink-50',
-                            categoryColor: info.categoryColor || 'text-pink-600',
-                            categoryBg: info.categoryBg || 'bg-pink-100'
-                        });
-                    });
-                }
-
-                // Process Literacy
-                if (data.literacy && typeof data.literacy === 'object') {
                     allActivities.push({
-                        id: `${dateStr}-literacy`,
+                        id: `${dateStr}-prayer-${idx}`,
                         date: formattedDate,
                         rawDate: dateStr,
-                        rawTime: data.literacy.submittedAt || '23:59:59',
-                        time: data.literacy.submittedAt ? `${data.literacy.submittedAt.substring(0, 5)} WIB` : '-',
-                        title: `Membaca Buku: ${data.literacy.title}`,
-                        subtitle: `Halaman ${data.literacy.page}`,
-                        category: "Literasi",
+                        rawTime: submittedAt || prayerTime || '00:00',
+                        time: `${displayTime} WIB`,
+                        title: `Salat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
+                        subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'}${prayerTime ? ` • ${prayerTime.replace(' WIB', '').replace('WIB', '')} WIB` : ''}`,
+                        category: "Salat Wajib",
                         status: "Menunggu",
-                        points: 15,
-                        icon: <FaBookOpen className="text-xl" />,
-                        color: 'text-indigo-600',
-                        bg: 'bg-indigo-50'
-                    });
-                }
-
-                // Process General Notes
-                if (data.notes) {
-                    allActivities.push({
-                        id: `${dateStr}-note`,
-                        date: formattedDate,
-                        rawDate: dateStr,
-                        rawTime: data.submittedAt || '23:59:59',
-                        time: data.submittedAt ? `${data.submittedAt.substring(0, 5)} WIB` : '-',
-                        title: 'Catatan Tambahan',
-                        subtitle: data.notes,
-                        category: "Catatan",
-                        status: "Disetujui",
-                        points: 0,
-                        icon: <FaStickyNote className="text-xl" />,
+                        points: isCongregation ? 25 : 10,
+                        icon: <FaMosque className="text-xl" />,
                         color: 'text-blue-600',
                         bg: 'bg-blue-50'
                     });
+                });
+            }
+
+            // Process tadarus
+            const tadarusList = Array.isArray(data.tadarus)
+                ? data.tadarus
+                : (data.tadarus ? [data.tadarus] : []);
+
+            tadarusList.forEach((item, idx) => {
+                if (!item) return;
+
+                const isQuran = item.surah || item.ayatStart || item.ayatEnd;
+                if (isQuran) {
+                    allActivities.push({
+                        id: `${dateStr}-tadarus-quran-${idx}`,
+                        date: formattedDate,
+                        rawDate: dateStr,
+                        rawTime: item.submittedAt || '23:59:59',
+                        time: item.submittedAt ? `${item.submittedAt.substring(0, 5)} WIB` : '-',
+                        title: `Tadarus Al-Qur'an`,
+                        subtitle: `Surat ${item.surah || '-'} • Ayat ${item.ayatStart || '-'} - ${item.ayatEnd || '-'}`,
+                        category: "Tadarus Al-Qur'an",
+                        status: "Menunggu",
+                        points: 50,
+                        icon: <FaBookOpen className="text-xl" />,
+                        color: 'text-blue-600',
+                        bg: 'bg-blue-50',
+                        categoryColor: 'text-blue-600',
+                        categoryBg: 'bg-blue-100'
+                    });
                 }
+
+                const isHijrati = item.page || item.jilid;
+                if (isHijrati) {
+                    allActivities.push({
+                        id: `${dateStr}-tadarus-hijrati-${idx}`,
+                        date: formattedDate,
+                        rawDate: dateStr,
+                        rawTime: item.submittedAt || '23:59:59',
+                        time: item.submittedAt ? `${item.submittedAt.substring(0, 5)} WIB` : '-',
+                        title: `Hijrati`,
+                        subtitle: `Jilid ${item.jilid || '-'} • Halaman ${item.page || '-'}`,
+                        category: "Hijrati",
+                        status: "Menunggu",
+                        points: 30,
+                        icon: <FaBookOpen className="text-xl" />,
+                        color: 'text-amber-600',
+                        bg: 'bg-amber-50',
+                        categoryColor: 'text-amber-600',
+                        categoryBg: 'bg-amber-100'
+                    });
+                }
+            });
+
+            // Process additional worships
+            if (data.additional && Array.isArray(data.additional)) {
+                data.additional.forEach((item, idx) => {
+                    const isObject = typeof item === 'object' && item !== null;
+                    const itemId = isObject ? item.id : item;
+                    const itemTime = isObject && item.submittedAt ? item.submittedAt : null;
+
+                    const info = getActivityInfoFromConfig(itemId);
+                    allActivities.push({
+                        id: `${dateStr}-additional-${idx}`,
+                        date: formattedDate,
+                        rawDate: dateStr,
+                        rawTime: itemTime || '23:59:59',
+                        time: itemTime ? `${itemTime.substring(0, 5)} WIB` : '-',
+                        title: info.label,
+                        subtitle: (isObject && item.note) ? item.note : 'Ibadah tambahan hari ini',
+                        category: info.category,
+                        status: "Menunggu",
+                        points: info.points,
+                        icon: info.icon,
+                        color: info.color || 'text-pink-600',
+                        bg: info.bg || 'bg-pink-50',
+                        categoryColor: info.categoryColor || 'text-pink-600',
+                        categoryBg: info.categoryBg || 'bg-pink-100'
+                    });
+                });
+            }
+
+            // Process Literacy
+            if (data.literacy && typeof data.literacy === 'object') {
+                allActivities.push({
+                    id: `${dateStr}-literacy`,
+                    date: formattedDate,
+                    rawDate: dateStr,
+                    rawTime: data.literacy.submittedAt || '23:59:59',
+                    time: data.literacy.submittedAt ? `${data.literacy.submittedAt.substring(0, 5)} WIB` : '-',
+                    title: `Membaca Buku: ${data.literacy.title}`,
+                    subtitle: `Halaman ${data.literacy.page}`,
+                    category: "Literasi",
+                    status: "Menunggu",
+                    points: 15,
+                    icon: <FaBookOpen className="text-xl" />,
+                    color: 'text-indigo-600',
+                    bg: 'bg-indigo-50'
+                });
+            }
+
+            // Process General Notes
+            if (data.notes) {
+                allActivities.push({
+                    id: `${dateStr}-note`,
+                    date: formattedDate,
+                    rawDate: dateStr,
+                    rawTime: data.submittedAt || '23:59:59',
+                    time: data.submittedAt ? `${data.submittedAt.substring(0, 5)} WIB` : '-',
+                    title: 'Catatan Tambahan',
+                    subtitle: data.notes,
+                    category: "Catatan",
+                    status: "Disetujui",
+                    points: 0,
+                    icon: <FaStickyNote className="text-xl" />,
+                    color: 'text-blue-600',
+                    bg: 'bg-blue-50'
+                });
             }
         }
+    }
 
-        // Sort by date and time (newest first - latest input on top)
-        allActivities.sort((a, b) => {
-            const dateCompare = new Date(b.rawDate) - new Date(a.rawDate);
-            if (dateCompare !== 0) return dateCompare;
-            return b.rawTime.localeCompare(a.rawTime);
-        });
-        return allActivities;
+    // Sort by date and time (newest first - latest input on top)
+    allActivities.sort((a, b) => {
+        const dateCompare = new Date(b.rawDate) - new Date(a.rawDate);
+        if (dateCompare !== 0) return dateCompare;
+        return b.rawTime.localeCompare(a.rawTime);
     });
+    return allActivities;
+};
+
+const HistoryMobile = () => {
+    const navigate = useNavigate();
+
+    // Load activities from localStorage
+    const [activities, setActivities] = useState(() => loadActivitiesFromStorage());
 
     const [filter, setFilter] = useState("Semua");
     const [stats, setStats] = useState({ totalPoints: 0, todayPoints: 0 });
@@ -607,209 +638,24 @@ const HistoryMobile = () => {
         }));
     };
 
-    // Load activities from localStorage
+    // Load activities from localStorage with auto-refresh
     useEffect(() => {
         const loadActivities = () => {
-            const allActivities = [];
-
-            // Get all localStorage keys that match our pattern
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.startsWith('daily_report_')) {
-                    const dateStr = key.replace('daily_report_', '');
-                    const data = JSON.parse(localStorage.getItem(key));
-
-                    // Format date for display
-                    const dateObj = new Date(`${dateStr}T00:00:00`);
-                    const formattedDate = dateObj.toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric'
-                    });
-
-                    // Process prayers - handle both old format (string) and new format (object)
-                    if (data.prayers && Array.isArray(data.prayers)) {
-                        data.prayers.forEach((prayer, idx) => {
-                            // Handle both formats: string ID or object {id, time, isCongregation}
-                            const isObject = typeof prayer === 'object' && prayer !== null;
-                            const prayerId = isObject ? prayer.id : prayer;
-                            const prayerTime = isObject && prayer.time ? prayer.time : null;
-                            const isCongregation = isObject ? prayer.isCongregation : false;
-
-                            const submittedAt = isObject && prayer.submittedAt ? prayer.submittedAt : null;
-                            // Header Time = Input Time (submittedAt)
-                            const headerTime = submittedAt ? submittedAt.substring(0, 5) : (prayerTime || '-');
-                            // Description Time = Actual Prayer Time
-                            const descTime = prayerTime ? prayerTime.replace(' WIB', '').replace('WIB', '') : (submittedAt ? submittedAt.substring(0, 5) : '-');
-
-                            allActivities.push({
-                                id: `${dateStr}-prayer-${idx}`,
-                                date: formattedDate,
-                                rawDate: dateStr,
-                                rawTime: submittedAt || prayerTime || '00:00', // Sort by input time usually
-                                time: `${headerTime} WIB`,
-                                title: `Salat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
-                                subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'} • ${descTime} WIB`,
-                                category: "Salat Wajib",
-                                status: "Menunggu",
-                                points: isCongregation ? 25 : 10,
-                                icon: <FaMosque className="text-xl" />,
-                                color: 'text-blue-600',
-                                bg: 'bg-blue-50'
-                            });
-                        });
-                    }
-
-                    // Process tadarus (Array Support)
-                    const tadarusList = Array.isArray(data.tadarus)
-                        ? data.tadarus
-                        : (data.tadarus ? [data.tadarus] : []);
-
-                    tadarusList.forEach((item, idx) => {
-                        if (!item) return;
-
-                        // Extremely Permissive Detection
-                        // If ANY Al-Qur'an field is present, treat as Al-Qur'an
-                        const isQuran = item.surah || item.ayatStart || item.ayatEnd;
-
-                        if (isQuran) {
-                            allActivities.push({
-                                id: `${dateStr}-tadarus-quran-${idx}`,
-                                date: formattedDate,
-                                rawDate: dateStr,
-                                rawTime: item.submittedAt || '23:59:59',
-                                time: item.submittedAt ? `${item.submittedAt.substring(0, 5)} WIB` : '-',
-                                title: `Tadarus Al-Qur'an`,
-                                subtitle: `Surat ${item.surah || '-'} • Ayat ${item.ayatStart || '-'} - ${item.ayatEnd || '-'}`,
-                                category: "Tadarus Al-Qur'an",
-                                status: "Menunggu",
-                                points: 50,
-                                icon: <FaBookOpen className="text-xl" />,
-                                color: 'text-blue-600',
-                                bg: 'bg-blue-50',
-                                categoryColor: 'text-blue-600',
-                                categoryBg: 'bg-blue-100'
-                            });
-                        }
-
-                        // If ANY Hijrati field is present, treat as Hijrati
-                        const isHijrati = item.page || item.jilid;
-
-                        if (isHijrati) {
-                            allActivities.push({
-                                id: `${dateStr}-tadarus-hijrati-${idx}`,
-                                date: formattedDate,
-                                rawDate: dateStr,
-                                rawTime: item.submittedAt || '23:59:59',
-                                time: item.submittedAt ? `${item.submittedAt.substring(0, 5)} WIB` : '-',
-                                title: `Hijrati`,
-                                subtitle: `Jilid ${item.jilid || '-'} • Halaman ${item.page || '-'}`,
-                                category: "Hijrati",
-                                status: "Menunggu",
-                                points: 30,
-                                icon: <FaBookOpen className="text-xl" />,
-                                color: 'text-amber-600',
-                                bg: 'bg-amber-50',
-                                categoryColor: 'text-amber-600',
-                                categoryBg: 'bg-amber-100'
-                            });
-                        }
-                    });
-
-                    // Process additional worships - handle both old (string) and new (object)
-                    if (data.additional && Array.isArray(data.additional)) {
-                        const additionalLabels = {
-                            // Ibadah Sunah
-                            'dhuha': { label: 'Salat Duha', points: 15, category: 'Ibadah Sunah', icon: <FaCloudSun className="text-xl" />, color: 'text-amber-600', bg: 'bg-amber-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                            'tahajud': { label: 'Salat Tahajud', points: 20, category: 'Ibadah Sunah', icon: <MdNightsStay className="text-xl" />, color: 'text-indigo-600', bg: 'bg-indigo-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                            'rawatib': { label: 'Salat Rawatib', points: 10, category: 'Ibadah Sunah', icon: <FaMosque className="text-xl" />, color: 'text-cyan-600', bg: 'bg-cyan-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                            'senin_kamis': { label: 'Puasa Senin / Kamis', points: 30, category: 'Ibadah Sunah', icon: <MdNoFood className="text-xl" />, color: 'text-rose-600', bg: 'bg-rose-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                            'daud': { label: 'Puasa Daud', points: 40, category: 'Ibadah Sunah', icon: <MdNoFood className="text-xl" />, color: 'text-purple-600', bg: 'bg-purple-50', categoryColor: 'text-amber-600', categoryBg: 'bg-amber-100' },
-                            // Ibadah Lainnya
-                            'infaq': { label: 'Infak / Sedekah', points: 10, category: 'Ibadah Lainnya', icon: <BiSolidDonateHeart className="text-xl" />, color: 'text-emerald-600', bg: 'bg-emerald-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                            'help': { label: 'Bantu Orang Tua', points: 25, category: 'Ibadah Lainnya', icon: <FaHeart className="text-xl" />, color: 'text-rose-600', bg: 'bg-rose-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                            'five_s': { label: 'Melakukan 5S', points: 10, category: 'Ibadah Lainnya', icon: <FaSmileWink className="text-xl" />, color: 'text-amber-600', bg: 'bg-amber-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                            'magic_words': { label: '5 Kata Ajaib', points: 10, category: 'Ibadah Lainnya', icon: <FaMagic className="text-xl" />, color: 'text-purple-600', bg: 'bg-purple-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                            'help_others': { label: 'Bantu Sesama', points: 20, category: 'Ibadah Lainnya', icon: <FaHandHoldingHeart className="text-xl" />, color: 'text-blue-600', bg: 'bg-blue-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' },
-                            'no_bad_words': { label: 'Tidak Berkata Kasar', points: 15, category: 'Ibadah Lainnya', icon: <FaCommentSlash className="text-xl" />, color: 'text-teal-600', bg: 'bg-teal-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' }
-                        };
-                        data.additional.forEach((item, idx) => {
-                            // Handle both string ID and object format
-                            const isObject = typeof item === 'object' && item !== null;
-                            const itemId = isObject ? item.id : item;
-                            const itemTime = isObject && item.submittedAt ? item.submittedAt : null;
-
-                            const info = additionalLabels[itemId] || { label: itemId, points: 10, category: 'Ibadah Lainnya', icon: <FaStar className="text-xl" />, color: 'text-pink-600', bg: 'bg-pink-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' };
-                            allActivities.push({
-                                id: `${dateStr}-additional-${idx}`,
-                                date: formattedDate,
-                                rawDate: dateStr,
-                                rawTime: itemTime || '23:59:59',
-                                time: itemTime ? `${itemTime.substring(0, 5)} WIB` : '-',
-                                title: info.label,
-                                subtitle: (isObject && item.note) ? item.note : 'Ibadah tambahan hari ini',
-                                category: info.category,
-                                status: "Menunggu",
-                                points: info.points,
-                                icon: info.icon,
-                                color: info.color || 'text-pink-600',
-                                bg: info.bg || 'bg-pink-50',
-                                categoryColor: info.categoryColor || 'text-pink-600',
-                                categoryBg: info.categoryBg || 'bg-pink-100'
-                            });
-                        });
-                    }
-
-                    // Process Literacy
-                    if (data.literacy && typeof data.literacy === 'object') {
-                        allActivities.push({
-                            id: `${dateStr}-literacy`,
-                            date: formattedDate,
-                            rawDate: dateStr,
-                            rawTime: data.literacy.submittedAt || '23:59:59',
-                            time: data.literacy.submittedAt ? `${data.literacy.submittedAt.substring(0, 5)} WIB` : '-',
-                            title: `Membaca Buku: ${data.literacy.title}`,
-                            subtitle: `Halaman ${data.literacy.page}`,
-                            category: "Literasi",
-                            status: "Menunggu",
-                            points: 15,
-                            icon: <FaBookOpen className="text-xl" />,
-                            color: 'text-indigo-600',
-                            bg: 'bg-indigo-50'
-                        });
-                    }
-
-                    // Process General Notes
-                    if (data.notes) {
-                        allActivities.push({
-                            id: `${dateStr}-note`,
-                            date: formattedDate,
-                            rawDate: dateStr,
-                            rawTime: data.submittedAt || '23:59:59',
-                            time: data.submittedAt ? `${data.submittedAt.substring(0, 5)} WIB` : '-',
-                            title: 'Catatan Tambahan',
-                            subtitle: data.notes,
-                            category: "Catatan",
-                            status: "Disetujui",
-                            points: 0,
-                            icon: <FaStickyNote className="text-xl" />,
-                            color: 'text-blue-600',
-                            bg: 'bg-blue-50'
-                        });
-                    }
-                }
-            }
-
-            // Sort by date and time (newest first - latest input on top)
-            allActivities.sort((a, b) => {
-                const dateCompare = new Date(b.rawDate) - new Date(a.rawDate);
-                if (dateCompare !== 0) return dateCompare;
-                return b.rawTime.localeCompare(a.rawTime);
-            });
-            setActivities(allActivities);
+            const loadedActivities = loadActivitiesFromStorage();
+            setActivities(loadedActivities);
         };
 
         loadActivities();
+
+        // Listen for storage events (e.g. from other tabs or updates)
+        const handleStorageChange = () => loadActivities();
+        window.addEventListener('storage', handleStorageChange);
+
+        // Also simpler interval check or focus check could be added if needed, 
+        // but for now relying on storage event + initial load.
+        // If the user navigates within the app, the component remounts and loadActivities() runs.
+
+        return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
 
     // Calculate stats
