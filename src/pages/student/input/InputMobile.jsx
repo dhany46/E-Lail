@@ -400,7 +400,7 @@ const InputMobile = () => {
     const [expandedSections, setExpandedSections] = useState({
         prayers: true,
         tadarus: false,
-        sunnah: true,
+        sunnah: false,
         literacy: false,
         additional: false
     });

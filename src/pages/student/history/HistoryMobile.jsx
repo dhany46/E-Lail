@@ -317,7 +317,7 @@ const HeroStats = ({ stats }) => {
                             <span className="text-base drop-shadow-sm">⏳</span>
                         </div>
                         <div className="px-2 py-0.5 rounded-full bg-white/20 border border-white/20 backdrop-blur-md shadow-sm flex items-center justify-center">
-                            <span className="text-[9px] font-bold text-white tracking-wide uppercase">Verifikasi Status</span>
+                            <span className="text-[9px] font-bold text-white tracking-wide uppercase">VERIFIKASI</span>
                         </div>
                     </div>
 
@@ -1001,7 +1001,7 @@ const HistoryMobile = () => {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="flex items-baseline gap-0.5">
+                                            <div className="flex items-baseline justify-end gap-0.5">
                                                 <span className="text-2xl font-bold">{todayActivitiesCount}</span>
                                                 <span className="text-sm font-medium opacity-80">/ {dailyTarget}</span>
                                             </div>

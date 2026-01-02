@@ -374,7 +374,7 @@ const MenuCards = ({ stats, activities }) => {
             delay: "0.2s"
         },
         {
-            pill: "KABAR GURU",
+            pill: "VERIFIKASI",
             title: "Verifikasi",
             count: pendingCount,
             subtitle: "Menunggu dinilai \u00A0🧐",
@@ -433,10 +433,12 @@ const MenuCards = ({ stats, activities }) => {
                                 <div className="min-w-0 flex-1">
                                     {card.hasProgress ? (
                                         <>
-                                            <h4 className="font-extrabold text-[13px] text-white tracking-tight leading-4 mb-1 drop-shadow-sm line-clamp-1">
-                                                {card.title}
-                                            </h4>
-                                            <p className="text-[10px] font-semibold text-white/90 mb-1">{card.subtitle}</p>
+                                            <div className="flex justify-between items-end mb-1.5">
+                                                <h4 className="font-extrabold text-[13px] text-white tracking-tight leading-4 drop-shadow-sm line-clamp-1">
+                                                    {card.title}
+                                                </h4>
+                                                <span className="text-xl font-black text-white leading-none drop-shadow-sm">{card.subtitle}</span>
+                                            </div>
                                             <div className="bg-blue-900/30 rounded-full h-2 overflow-hidden border border-white/10">
                                                 <div
                                                     className="bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 h-full rounded-full transition-all duration-700 ease-out"
