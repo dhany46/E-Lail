@@ -231,13 +231,13 @@ const PointsCard = ({ totalPoints, semesterLabel, academicYearLabel }) => {
                         </h1>
                     </div>
                     {/* Academic Year Badge */}
-                    <div className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-sm flex items-center gap-2">
-                        <div className="size-6 rounded-full bg-white/20 flex items-center justify-center">
-                            <span className={`material-symbols-outlined notranslate text-sm ${isAnimating ? 'animate-bounce' : ''}`}>school</span>
+                    <div className="bg-white/10 backdrop-blur-md px-2 py-1 rounded-xl border border-white/20 shadow-sm flex items-center gap-2">
+                        <div className={`size-7 rounded-full bg-white/20 flex items-center justify-center border border-white/10 ${isAnimating ? 'animate-bounce' : ''}`}>
+                            <span className="material-symbols-outlined notranslate text-sm text-white">school</span>
                         </div>
-                        <div className="flex flex-col">
-                            <span className="text-[10px] text-blue-50 font-bold leading-tight mb-0.5">{semesterLabel || 'Semester'}</span>
-                            <span className="text-[10px] font-bold text-white leading-none">{academicYearLabel || '-'}</span>
+                        <div className="flex flex-col justify-center">
+                            <span className="text-[9px] text-blue-100 font-normal tracking-wide uppercase leading-none mb-0.5">{semesterLabel || 'Semester'}</span>
+                            <span className="text-[11px] font-medium text-white tracking-tight leading-none">{academicYearLabel || '-'}</span>
                         </div>
                     </div>
                 </div>
