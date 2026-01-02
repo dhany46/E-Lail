@@ -285,7 +285,7 @@ const LeaderboardMobile = () => {
 
             {/* Sticky Footer - Outside animated container - Uses Portal to escape Transforms */}
             {createPortal(
-                <div className="fixed bottom-[110px] left-0 right-0 px-4 z-[9999] flex justify-center animate-fade-in-up" style={{ animationDelay: '0.5s', animationFillMode: 'forwards', animationDuration: '0.6s' }}>
+                <div className="fixed bottom-[110px] left-0 right-0 px-4 z-[9999] flex justify-center">
                     <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl py-2.5 px-3 flex items-center shadow-lg shadow-blue-400/30 text-white relative overflow-hidden border-2 border-white ring-1 ring-slate-100 w-full max-w-[400px]">
 
                         {/* Background Decoration */}
