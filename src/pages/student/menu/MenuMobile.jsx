@@ -1,12 +1,58 @@
-// ... imports
-
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 
 const MenuMobile = () => {
-    // ... hooks
+    const navigate = useNavigate();
+    const { logout } = useAuth();
+    // Assuming student info comes from context or props in a real app, 
+    // but preserving the original structure which likely used a hardcoded or parent-passed 'student' object
+    // For now, I'll use a placeholder or check if it was passed. 
+    // Looking at previous file content, it seemed 'student' and 'menuItems' were undefined variables in the snippet I saw.
+    // I need to be careful. The previous view showed comments like // ... hooks and // ... menuItems
+    // This implies I might have lost the original content of menuItems if I don't retrieve it.
+    // WAIT. Step 212 showed the FULL content. 
+    // I should copy the content from Step 212 and apply the fix.
 
-    // ... menuItems
+    const student = {
+        name: "Ahmad Zaki",
+        class: "4B"
+    };
+
+    const menuItems = [
+        {
+            title: "Jejak Kebaikan",
+            path: "/student/history",
+            icon: "history_edu",
+            bg: "bg-orange-50",
+            color: "text-orange-600"
+        },
+        {
+            title: "Panggung Juara",
+            path: "/student/leaderboard",
+            icon: "military_tech",
+            bg: "bg-yellow-50",
+            color: "text-yellow-600"
+        },
+        {
+            title: "Target Harian",
+            path: "/student/input",
+            icon: "checklist",
+            bg: "bg-blue-50",
+            color: "text-blue-600"
+        },
+        {
+            title: "Profil Santri",
+            path: "/student/profile",
+            icon: "person",
+            bg: "bg-emerald-50",
+            color: "text-emerald-600"
+        }
+    ];
+
 
     const handleLogout = () => {
+        logout();
         navigate('/login');
     };
 

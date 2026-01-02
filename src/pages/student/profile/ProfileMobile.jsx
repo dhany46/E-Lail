@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaExclamationTriangle, FaCheckCircle, FaTrash } from "react-icons/fa";
 import { BookOpen, User, Mail, Sparkles, Phone } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
 
 
 import iconWarning from '../../../assets/icon_warning.png';
@@ -184,6 +185,7 @@ const loadAllActivities = () => {
 
 const ProfileMobile = () => {
     const navigate = useNavigate();
+    const { logout } = useAuth();
     const [activities, setActivities] = useState([]);
     const [stats, setStats] = useState({
         totalPoints: 0,
@@ -571,7 +573,10 @@ const ProfileMobile = () => {
                 <ConfirmModal
                     isOpen={showLogoutModal}
                     onClose={() => setShowLogoutModal(false)}
-                    onConfirm={() => navigate('/')}
+                    onConfirm={() => {
+                        logout();
+                        navigate('/');
+                    }}
                     title="Keluar Akun?"
                     message="Kamu akan kembali ke halaman login. Lanjutkan?"
                     confirmText="Ya, Keluar"
