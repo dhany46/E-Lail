@@ -646,13 +646,11 @@ const ActivityList = ({ activities }) => {
                         {/* Date Header - Redesigned to match Mockup */}
                         {(groupIdx > 0 || Object.keys(groupedActivities).length === 1) && (
                             <div className={`pl-6 pr-6 py-3.5 flex items-center justify-between bg-slate-50/60 border-b border-slate-100 ${groupIdx > 0 ? 'border-t border-dashed border-slate-200' : ''}`}>
-                                <div className="space-y-0.5">
-                                    <h4 className="text-sm font-bold text-slate-800 tracking-tight leading-none">
-                                        {group.dayName}
-                                    </h4>
-                                    <div className="flex items-center gap-1 text-slate-400">
-                                        <span className="material-symbols-outlined text-[10px]">calendar_month</span>
-                                        <span className="text-[11px] font-medium">{group.fullDate}</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-blue-500 text-base">calendar_month</span>
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="text-sm font-bold text-slate-800">{group.dayName},</span>
+                                        <span className="text-sm font-medium text-slate-500">{group.fullDate}</span>
                                     </div>
                                 </div>
                                 <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-bold border border-blue-100/50 shadow-sm flex items-center gap-1.5">

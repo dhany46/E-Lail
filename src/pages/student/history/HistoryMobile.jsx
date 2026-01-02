@@ -986,9 +986,16 @@ const HistoryMobile = () => {
                         <div className="space-y-5 relative z-10 px-6 mt-6">
                             {/* Daily Target Progress Card - Clean & Theme Aligned */}
                             <div className="bg-gradient-to-r from-blue-500 via-blue-500 to-sky-400 rounded-3xl p-5 shadow-lg shadow-blue-200/40 text-white relative overflow-hidden">
-                                {/* Background Decorations */}
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl"></div>
-                                <div className="absolute bottom-0 left-0 w-24 h-24 bg-sky-300/10 rounded-full -ml-8 -mb-8 blur-xl"></div>
+                                {/* Background Decorations - Enhanced */}
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                                <div className="absolute bottom-0 left-0 w-28 h-28 bg-sky-300/15 rounded-full -ml-10 -mb-10"></div>
+                                <div className="absolute top-1/2 right-4 w-16 h-16 bg-white/5 rounded-full"></div>
+                                {/* Floating stars decoration */}
+                                <div className="absolute top-3 right-16 text-white/20 text-xl">✦</div>
+                                <div className="absolute top-8 right-8 text-white/15 text-sm">✦</div>
+                                <div className="absolute bottom-4 right-24 text-white/10 text-2xl">✦</div>
+                                {/* Decorative lines */}
+                                <div className="absolute top-0 left-1/3 w-px h-full bg-gradient-to-b from-white/0 via-white/10 to-white/0"></div>
 
                                 <div className="relative z-10">
                                     {/* Header Row */}
@@ -1146,14 +1153,12 @@ const HistoryMobile = () => {
                                                     <div key={date}>
                                                         {/* Date Header - Elegant New Style */}
                                                         <div className="px-6 mb-4 mt-2 flex items-center justify-between relative z-10">
-                                                            <div className="flex flex-col">
-                                                                <h3 className="text-base font-black text-slate-800 tracking-tight leading-none">
-                                                                    {formatDateFull(date).split(',')[0]}
-                                                                </h3>
-                                                                <span className="text-xs font-medium text-slate-500 mt-1 flex items-center gap-1">
-                                                                    <FaCalendarAlt className="text-[10px] opacity-70" />
-                                                                    {formatDateFull(date).split(',').slice(1).join(',').trim()}
-                                                                </span>
+                                                            <div className="flex items-center gap-2">
+                                                                <FaCalendarAlt className="text-blue-500 text-base" />
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <span className="text-sm font-bold text-slate-800">{formatDateFull(date).split(',')[0]},</span>
+                                                                    <span className="text-sm font-medium text-slate-500">{formatDateFull(date).split(',').slice(1).join(',').trim()}</span>
+                                                                </div>
                                                             </div>
                                                             <div className="flex items-center gap-2">
                                                                 <span className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-bold border border-blue-100/50 shadow-sm flex items-center gap-1.5">
