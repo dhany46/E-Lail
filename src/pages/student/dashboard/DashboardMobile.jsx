@@ -235,9 +235,9 @@ const PointsCard = ({ totalPoints, semesterLabel, academicYearLabel }) => {
                         <div className={`size-7 rounded-full bg-white/20 flex items-center justify-center border border-white/10 ${isAnimating ? 'animate-bounce' : ''}`}>
                             <span className="material-symbols-outlined notranslate text-sm text-white">school</span>
                         </div>
-                        <div className="flex flex-col justify-center">
-                            <span className="text-[9px] text-blue-100 font-normal tracking-wide uppercase leading-none mb-0.5">{semesterLabel || 'Semester'}</span>
-                            <span className="text-[11px] font-medium text-white tracking-tight leading-none">{academicYearLabel || '-'}</span>
+                        <div className="flex flex-col">
+                            <span className="text-[10px] text-blue-50 font-bold leading-none">{semesterLabel || 'Semester'}</span>
+                            <span className="text-[10px] font-bold text-white leading-none">{academicYearLabel || '-'}</span>
                         </div>
                     </div>
                 </div>
@@ -412,7 +412,7 @@ const MenuCards = ({ stats, activities }) => {
                         {/* Glass Shine */}
                         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 via-transparent to-black/5 pointer-events-none"></div>
 
-                        <div className="relative z-10 p-3.5 flex flex-col h-full justify-between">
+                        <div className="relative z-10 p-3.5 flex flex-col h-full">
                             {/* Top Row */}
                             <div className="flex justify-between items-start">
                                 <div className="size-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-sm border border-white/20 text-white">
@@ -422,17 +422,17 @@ const MenuCards = ({ stats, activities }) => {
                                         <span className="text-lg filter drop-shadow-sm">{card.icon}</span>
                                     )}
                                 </div>
-                                <div className="px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md border border-white/10 max-w-[60%] truncate">
-                                    <span className="text-[7px] font-black text-white uppercase tracking-wider block truncate">{card.pill}</span>
+                                <div className="px-2 py-1 rounded-full bg-white/30 backdrop-blur-md border border-white/20 shadow-sm flex items-center justify-center min-h-[18px]">
+                                    <span className="text-[7px] font-black text-white uppercase tracking-widest drop-shadow-sm leading-none pt-[1px]">{card.pill}</span>
                                 </div>
                             </div>
 
                             {/* Bottom Content */}
-                            <div className="flex items-end justify-between gap-1">
+                            <div className="flex-1 flex items-center justify-between gap-1">
                                 <div className="min-w-0 flex-1">
                                     {card.hasProgress ? (
                                         <>
-                                            <h4 className="font-extrabold text-[15px] text-white tracking-tight leading-4 mb-1 drop-shadow-sm line-clamp-1">
+                                            <h4 className="font-extrabold text-[13px] text-white tracking-tight leading-4 mb-1 drop-shadow-sm line-clamp-1">
                                                 {card.title}
                                             </h4>
                                             <p className="text-[10px] font-semibold text-white/90 mb-1">{card.subtitle}</p>
@@ -445,7 +445,7 @@ const MenuCards = ({ stats, activities }) => {
                                         </>
                                     ) : (
                                         <>
-                                            <h4 className="font-extrabold text-[15px] text-white tracking-tight leading-4 mb-1 drop-shadow-sm line-clamp-1">
+                                            <h4 className="font-extrabold text-[13px] text-white tracking-tight leading-4 mb-1 drop-shadow-sm line-clamp-1">
                                                 {card.title}
                                             </h4>
                                             <p className="text-[10px] font-semibold text-white/90 line-clamp-1">{card.subtitle}</p>

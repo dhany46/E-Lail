@@ -409,7 +409,7 @@ const ProfileMobile = () => {
                                                 <span className={`material-symbols-outlined notranslate text-sm ${isAnimating ? 'animate-bounce' : ''}`}>school</span>
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-[10px] text-blue-50 font-bold leading-tight mb-0.5">{stats.semesterLabel || 'Semester'}</span>
+                                                <span className="text-[10px] text-blue-50 font-bold leading-none">{stats.semesterLabel || 'Semester'}</span>
                                                 <span className="text-[10px] font-bold text-white leading-none">{stats.academicYearLabel}</span>
                                             </div>
                                         </div>
