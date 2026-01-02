@@ -292,53 +292,42 @@ const HistoryHeader = ({ verifiedActivities, teacherNote }) => {
 
 // Hero Stats Component - Fun & Colorful for Kids
 const HeroStats = ({ stats }) => {
-    const totalPoints = stats?.totalPoints || 0;
+    const pendingCount = stats?.pendingCount || 0;
     const monthCount = stats?.monthCount || 0;
 
     // Calculate Monthly Target (approx days in month * daily target)
-    // Using 30 days * 5 daily target (default) = 150 approx, or dynamically
-    const dailyTarget = stats?.targetDaily || 5;
+    const dailyTarget = stats?.targetDaily || 8;
     const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
     const monthlyTarget = daysInMonth * dailyTarget;
 
-    // Simple level logic for display
-    const levelThresholds = [0, 100, 300, 600, 1000, 1500];
-    const levelNames = ['Pemula', 'Rajin', 'Bintang', 'Juara', 'Hebat', 'Master'];
-    let currentLevel = 0;
-    for (let i = levelThresholds.length - 1; i >= 0; i--) {
-        if (totalPoints >= levelThresholds[i]) {
-            currentLevel = i;
-            break;
-        }
-    }
-    const levelName = levelNames[currentLevel];
-
     return (
         <div className="grid grid-cols-2 gap-4">
-            {/* Card 1: Bintangku (Points) - Fun & Playful Orange */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-tr from-amber-400 via-orange-400 to-yellow-400 p-3.5 shadow-lg shadow-orange-200/50 group hover:scale-[1.02] transition-all duration-500">
-                {/* Fun Background Blobs matching Misi Harianku style */}
+            {/* Card 1: Verifikasi - Pending activities counter (styled like Total Ibadah) */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-tr from-emerald-400 via-green-500 to-teal-500 p-3.5 shadow-lg shadow-emerald-200/50 group hover:scale-[1.02] transition-all duration-500">
+                {/* Fun Background Blobs */}
                 <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 rounded-full -mr-6 -mt-6 blur-2xl group-hover:blur-3xl transition-all duration-700"></div>
-                <div className="absolute bottom-0 left-0 w-20 h-20 bg-yellow-200/20 rounded-full -ml-6 -mb-6 blur-xl"></div>
+                <div className="absolute bottom-0 left-0 w-20 h-20 bg-teal-300/20 rounded-full -ml-6 -mb-6 blur-xl"></div>
 
                 {/* Floating Icons */}
-                <FaStar className="absolute top-4 right-8 text-white/20 text-sm animate-spin-slow" />
-                <FaTrophy className="absolute bottom-3 right-3 text-white/10 text-2xl -rotate-12" />
+                <div className="absolute top-3 right-8 text-white/20 text-sm">✓</div>
+                <div className="absolute bottom-4 right-4 text-white/10 text-xl rotate-12">✦</div>
 
                 <div className="relative z-10 flex flex-col justify-between h-full min-h-[90px]">
                     <div className="flex items-center justify-between mb-2">
                         <div className="size-8 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-md shadow-inner border border-white/20 ring-1 ring-white/10">
-                            <span className="text-base drop-shadow-sm">⭐</span>
+                            <span className="text-base drop-shadow-sm">⏳</span>
                         </div>
                         <div className="px-2 py-0.5 rounded-full bg-white/20 border border-white/20 backdrop-blur-md shadow-sm flex items-center justify-center">
-                            <span className="text-[9px] font-bold text-white tracking-wide uppercase">{levelName}</span>
+                            <span className="text-[9px] font-bold text-white tracking-wide uppercase">Verifikasi Status</span>
                         </div>
                     </div>
 
                     <div>
-                        <p className="text-[10px] font-bold text-orange-50 uppercase tracking-wider mb-0.5 opacity-90">Total Poin</p>
+                        <p className="text-[10px] font-bold text-emerald-50 uppercase tracking-wider mb-0.5 opacity-90">Belum dinilai
+
+                        </p>
                         <h2 className="text-2xl font-black text-white tracking-tight leading-none drop-shadow-sm">
-                            {totalPoints.toLocaleString()}
+                            {pendingCount}
                         </h2>
                     </div>
                 </div>
@@ -836,8 +825,9 @@ const HistoryMobile = () => {
         const currentMonthPrefix = `${year}-${month}`; // YYYY-MM
 
         const monthCount = activities.filter(a => a.rawDate.startsWith(currentMonthPrefix)).length;
+        const pendingCount = activities.filter(a => a.status === 'Menunggu').length;
 
-        setStats({ totalPoints, monthCount });
+        setStats({ totalPoints, monthCount, pendingCount });
     }, [activities]);
 
     // Check for achievement
@@ -1002,10 +992,10 @@ const HistoryMobile = () => {
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex items-center gap-3">
                                             <div className="size-11 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
-                                                <FaRocket className="text-xl text-yellow-300" />
+                                                <span className="text-xl">🚀</span>
                                             </div>
                                             <div>
-                                                <h3 className="text-base font-bold text-white">Misi Harianmu</h3>
+                                                <h3 className="text-base font-bold text-white">Misi Ibadah Harianmu</h3>
                                                 <p className="text-[11px] font-medium text-blue-100 mt-0.5">
                                                     Kumpulkan 8 Kebaikan! ✨
                                                 </p>
@@ -1040,7 +1030,7 @@ const HistoryMobile = () => {
 
                             {/* Hero Stats (Bintangku & Ibadahku) */}
                             <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                                <HeroStats stats={{ totalPoints: stats.totalPoints, monthCount: stats.monthCount, targetDaily: dailyTarget }} />
+                                <HeroStats stats={{ pendingCount: stats.pendingCount, monthCount: stats.monthCount, targetDaily: dailyTarget }} />
                             </div>
 
                             {/* Riwayat Container */}

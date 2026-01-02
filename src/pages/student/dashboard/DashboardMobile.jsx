@@ -331,7 +331,7 @@ const MenuCards = ({ stats, activities }) => {
     const navigate = useNavigate();
 
     // Fallback stats if undefined
-    const safeStats = stats || { todayCount: 4, targetDaily: 5 }; // Defaulting to 4/5 for demo based on screenshot
+    const safeStats = stats || { todayCount: 4, targetDaily: 8 }; // Defaulting to 4/8 for demo based on screenshot
     const progressPercentage = Math.min((safeStats.todayCount / safeStats.targetDaily) * 100, 100);
 
     // Calculate pending verification count
