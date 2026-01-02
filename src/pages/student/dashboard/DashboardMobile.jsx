@@ -4,8 +4,6 @@ import { FaBell, FaMosque, FaCloudSun, FaBookOpen, FaHeart, FaStar, FaStickyNote
 import { MdNightsStay, MdNoFood } from "react-icons/md";
 import { BiSolidDonateHeart } from "react-icons/bi";
 
-
-
 // --- Sub-Components ---
 
 const HeaderMobile = ({ student, teacherNote, verifiedActivities }) => {
@@ -81,19 +79,22 @@ const HeaderMobile = ({ student, teacherNote, verifiedActivities }) => {
     }
 
     return (
-        <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-                <div className="size-11 rounded-full ring-2 ring-teal-400 ring-offset-1 ring-offset-blue-50">
+        <div className="flex items-center justify-between py-1">
+            <div className="flex items-center gap-4">
+                {/* Avatar */}
+                <div className="size-12 rounded-full ring-2 ring-teal-400/70 ring-offset-2 ring-offset-blue-50 shrink-0">
                     <img
-                        src={`https://ui-avatars.com/api/?name=${student?.name || 'Sarah'}&background=e0f2fe&color=0284c7&bold=true`}
+                        src="/avatars/dani.png"
                         alt="Avatar"
                         className="size-full rounded-full object-cover"
+                        style={{ objectPosition: 'center 35%' }}
                     />
                 </div>
-                <div className="flex flex-col gap-0.5">
-                    <p className="text-[11px] text-blue-600 font-bold tracking-wide">Assalamualaikum 👋</p>
-                    <h2 className="text-lg font-extrabold text-slate-800 leading-none truncate max-w-[180px]">Kakak {student?.name || 'Sarah'}!</h2>
-                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">{subGreeting}</p>
+                {/* Text Content */}
+                <div className="flex flex-col">
+                    <p className="text-[10px] text-blue-500 font-semibold tracking-wide mb-0.5">Assalamualaikum 👋</p>
+                    <h2 className="text-base font-extrabold text-slate-800 leading-tight truncate max-w-[180px]">Kakak {student?.name || 'Sarah'}!</h2>
+                    <p className="text-[10px] text-slate-400 font-medium mt-1">{subGreeting}</p>
                 </div>
             </div>
             <div className="relative" ref={notificationRef}>
