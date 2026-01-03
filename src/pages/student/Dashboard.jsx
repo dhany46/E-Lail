@@ -3,190 +3,15 @@ import { FaStar } from 'react-icons/fa';
 import DashboardDesktop from './dashboard/DashboardDesktop';
 import DashboardMobile from './dashboard/DashboardMobile';
 import { getActivityConfig, getAllWorshipCategories } from '../../utils/worshipConfig';
+import { getAppConfig } from '../../utils/constants';
+import { useAuth } from '../../context/AuthContext';
 
 // Helper function to load all activities from localStorage
 // Keeping this here for shared access
-const loadAllActivities = () => {
-    const allActivities = [];
-
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('daily_report_')) {
-            const dateStr = key.replace('daily_report_', '');
-            const data = JSON.parse(localStorage.getItem(key));
-
-            const dateObj = new Date(`${dateStr}T00:00:00`); // Force Local Time
-            const todayNow = new Date();
-            const todayStr = `${todayNow.getFullYear()}-${String(todayNow.getMonth() + 1).padStart(2, '0')}-${String(todayNow.getDate()).padStart(2, '0')}`;
-            const isToday = dateStr === todayStr;
-            const formattedDate = isToday ? 'Hari ini' : dateObj.toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'short'
-            });
-
-            // Process prayers
-            if (data.prayers && Array.isArray(data.prayers)) {
-                data.prayers.forEach((prayer, idx) => {
-                    const isObject = typeof prayer === 'object' && prayer !== null;
-                    const prayerId = isObject ? prayer.id : prayer;
-                    const prayerTime = isObject && prayer.time ? prayer.time : null;
-                    const isCongregation = isObject ? prayer.isCongregation : false;
-                    const submittedAt = isObject && prayer.submittedAt ? prayer.submittedAt : null;
-                    // Header Time = Input Time (submittedAt)
-                    const headerTime = submittedAt ? submittedAt.substring(0, 5) : (prayerTime || '-');
-                    // Description Time = Actual Prayer Time
-                    const descTime = prayerTime ? prayerTime.replace(' WIB', '').replace('WIB', '') : (submittedAt ? submittedAt.substring(0, 5) : '-');
-
-                    allActivities.push({
-                        id: `${dateStr}-prayer-${idx}`,
-                        rawDate: dateStr,
-                        rawTime: submittedAt || prayerTime || '00:00',
-                        title: `Salat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
-                        subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'} • ${descTime} WIB`,
-                        category: "Salat Wajib",
-                        date: formattedDate,
-                        time: `${formattedDate} • ${headerTime} WIB`,
-                        points: isCongregation ? 25 : 10,
-                        status: "Menunggu",
-                        icon: "mosque",
-                        color: "text-blue-600",
-                        bg: "bg-blue-50"
-                    });
-                });
-            }
-
-            // Process tadarus (Array Support)
-            const tadarusList = Array.isArray(data.tadarus)
-                ? data.tadarus
-                : (data.tadarus ? [data.tadarus] : []);
-
-            tadarusList.forEach((item, idx) => {
-                if (!item) return;
-
-                // Process Al-Qur'an (Relaxed check)
-                if (item.surah || item.ayatStart) {
-                    allActivities.push({
-                        id: `${dateStr}-tadarus-quran-${idx}`,
-                        rawDate: dateStr,
-                        rawTime: item.submittedAt || '23:59:59',
-                        title: `Tadarus Al-Qur'an`,
-                        subtitle: `Surat ${item.surah} • Ayat ${item.ayatStart} - ${item.ayatEnd}`,
-                        category: "Tadarus Al-Qur'an",
-                        date: formattedDate,
-                        time: item.submittedAt ? `${formattedDate} • ${item.submittedAt.substring(0, 5)} WIB` : '-',
-                        points: 50,
-                        status: "Menunggu",
-                        icon: "menu_book",
-                        color: "text-blue-600",
-                        bg: "bg-blue-50"
-                    });
-                }
-
-                // Process Hijrati
-                if (item.page || item.jilid) {
-                    allActivities.push({
-                        id: `${dateStr}-tadarus-hijrati-${idx}`,
-                        rawDate: dateStr,
-                        rawTime: item.submittedAt || '23:59:59',
-                        title: `Hijrati`,
-                        subtitle: `Jilid ${item.jilid || '-'} • Halaman ${item.page || '-'}`,
-                        category: "Hijrati",
-                        date: formattedDate,
-                        time: item.submittedAt ? `${formattedDate} • ${item.submittedAt.substring(0, 5)} WIB` : '-',
-                        points: 30,
-                        status: "Menunggu",
-                        icon: "menu_book",
-                        color: "text-amber-600",
-                        bg: "bg-amber-50"
-                    });
-                }
-            });
-
-            // Process literacy
-            if (data.literacy && typeof data.literacy === 'object' && data.literacy.title) {
-                allActivities.push({
-                    id: `${dateStr}-literacy`,
-                    rawDate: dateStr,
-                    rawTime: data.literacy.submittedAt || '23:59:59',
-                    title: `Literasi`,
-                    subtitle: `${data.literacy.title} • Halaman ${data.literacy.page || '-'}`,
-                    category: "Literasi",
-                    date: formattedDate,
-                    time: data.literacy.submittedAt ? `${formattedDate} • ${data.literacy.submittedAt.substring(0, 5)} WIB` : '-',
-                    points: 15,
-                    status: "Menunggu",
-                    icon: "auto_stories",
-                    color: "text-indigo-600",
-                    bg: "bg-indigo-50",
-                    categoryColor: "text-indigo-600",
-                    categoryBg: "bg-indigo-100"
-                });
-            }
-
-            // Process additional worships
-            if (data.additional && Array.isArray(data.additional)) {
-                // Get all worship categories from admin settings
-                const allCategories = getAllWorshipCategories();
-                
-                // Dynamic activity info lookup
-                const getActivityInfo = (activityId) => {
-                    for (const cat of allCategories) {
-                        const foundItem = cat.items.find(item => item.id === activityId);
-                        if (foundItem) {
-                            const actConfig = getActivityConfig(activityId);
-                            const colorName = actConfig.colorName || 'blue';
-                            const catColorName = cat.color?.replace('bg-', '').replace('-500', '') || 'pink';
-                            
-                            return {
-                                label: foundItem.label,
-                                points: foundItem.points,
-                                category: cat.title,
-                                color: `text-${colorName}-600`,
-                                bg: `bg-${colorName}-50`,
-                                categoryColor: `text-${catColorName}-600`,
-                                categoryBg: `bg-${catColorName}-100`
-                            };
-                        }
-                    }
-                    return { label: activityId, category: 'Ibadah Lainnya', points: 10, color: 'text-slate-600', bg: 'bg-slate-50', categoryColor: 'text-pink-600', categoryBg: 'bg-pink-100' };
-                };
-                
-                data.additional.forEach((item, idx) => {
-                    const isObject = typeof item === 'object' && item !== null;
-                    const itemId = isObject ? item.id : item;
-                    const itemTime = isObject && item.submittedAt ? item.submittedAt : null;
-                    const info = getActivityInfo(itemId);
-
-                    allActivities.push({
-                        id: `${dateStr}-additional-${idx}`,
-                        rawDate: dateStr,
-                        rawTime: itemTime || '23:59:59',
-                        title: info.label,
-                        subtitle: (isObject && item.note) ? item.note : 'Ibadah tambahan hari ini',
-                        category: info.category,
-                        date: formattedDate,
-                        time: itemTime ? `${formattedDate} • ${itemTime.substring(0, 5)} WIB` : '-',
-                        points: info.points,
-                        status: "Menunggu",
-                        color: info.color,
-                        bg: info.bg,
-                        categoryColor: info.categoryColor,
-                        categoryBg: info.categoryBg
-                    });
-                });
-            }
-        }
-    }
-
-    allActivities.sort((a, b) => {
-        const dateCompare = new Date(b.rawDate) - new Date(a.rawDate);
-        if (dateCompare !== 0) return dateCompare;
-        return b.rawTime.localeCompare(a.rawTime);
-    });
-    return allActivities;
-};
+import { loadAllActivities } from '../../services/activityService.jsx';
 
 const Dashboard = () => {
+    const { user } = useAuth();
     const [activities, setActivities] = useState([]);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
     const [stats, setStats] = useState({
@@ -194,14 +19,8 @@ const Dashboard = () => {
         todayPoints: 0,
         pendingCount: 0,
         todayCount: 0,
-        targetDaily: 8
+        targetDaily: getAppConfig().dailyTarget
     });
-
-    const studentInfo = {
-        name: "Ahmad",
-        classRoom: "4B",
-        teacher: "Ust. Abdullah"
-    };
 
     // Handle Resize
     useEffect(() => {
@@ -262,7 +81,7 @@ const Dashboard = () => {
             todayPoints,
             pendingCount,
             todayCount,
-            targetDaily: 8,
+            targetDaily: getAppConfig().dailyTarget,
             semesterLabel,
             academicYearLabel
         });
@@ -323,7 +142,7 @@ const Dashboard = () => {
     const props = {
         activities,
         stats,
-        studentInfo,
+        studentInfo: user, // Pass user data from AuthContext as studentInfo
         teacherNote // Pass to children
     };
 

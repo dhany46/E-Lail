@@ -213,7 +213,10 @@ const DashboardDesktop = ({ activities, stats, studentInfo, teacherNote }) => {
                                             <td className="py-4 px-4">
                                                 <div className="flex items-center gap-4">
                                                     <div className={`size-10 rounded-xl ${item.bg} ${item.color} flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105`}>
-                                                        <span className="material-symbols-outlined text-xl">{item.icon}</span>
+                                                        {typeof item.icon === 'string'
+                                                            ? <span className="material-symbols-outlined text-xl">{item.icon}</span>
+                                                            : item.icon
+                                                        }
                                                     </div>
                                                     <div className="flex flex-col">
                                                         <span className="text-sm font-bold text-gray-700 group-hover:text-emerald-700 transition-colors">{item.title}</span>

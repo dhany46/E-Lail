@@ -169,9 +169,9 @@ export const DEFAULT_CATEGORIES = [
         icon: FaBookOpen,
         color: 'bg-emerald-500',
         items: [
-            { id: 'alquran', label: "Al-Qur'an", points: 50 },
-            { id: 'hijrati', label: 'Hijrati', points: 30 },
-            { id: 'literasi', label: 'Literasi', points: 15 },
+            { id: 'alquran', label: "Al-Qur'an", points: 50, type: 'form' },
+            { id: 'hijrati', label: 'Hijrati', points: 30, type: 'form' },
+            { id: 'literasi', label: 'Literasi', points: 15, type: 'form' },
         ]
     },
     {
@@ -381,16 +381,18 @@ export const getPrayers = () => {
 
     if (!wajibCat) return [];
 
-    return wajibCat.items.map(item => {
-        const config = getActivityConfig(item.id);
-        return {
-            id: item.id,
-            label: item.label,
-            points: item.points,
-            Icon: config.icon || FaStar,
-            defaultTime: item.defaultTime || '12:00'
-        };
-    });
+    return wajibCat.items
+        .filter(item => !item.isArchived)
+        .map(item => {
+            const config = getActivityConfig(item.id);
+            return {
+                id: item.id,
+                label: item.label,
+                points: item.points,
+                Icon: config.icon || FaStar,
+                defaultTime: item.defaultTime || '12:00'
+            };
+        });
 };
 
 // Get sunnah worships for InputMobile
@@ -400,17 +402,20 @@ export const getSunnahWorships = () => {
 
     if (!sunnahCat) return [];
 
-    return sunnahCat.items.map(item => {
-        const config = getActivityConfig(item.id);
-        return {
-            id: item.id,
-            label: item.label,
-            points: item.points,
-            Icon: config.icon || FaStar,
-            color: config.colorName || 'amber',
-            placeholder: item.placeholder || 'Tambahkan catatan...'
-        };
-    });
+    return sunnahCat.items
+        .filter(item => !item.isArchived)
+        .map(item => {
+            const config = getActivityConfig(item.id);
+            return {
+                id: item.id,
+                label: item.label,
+                points: item.points,
+                Icon: config.icon || FaStar,
+                color: config.colorName || 'amber',
+                placeholder: item.placeholder || 'Tambahkan catatan...',
+                type: item.type || 'checkbox'
+            };
+        });
 };
 
 // Get additional worships for InputMobile
@@ -420,17 +425,20 @@ export const getAdditionalWorships = () => {
 
     if (!additionalCat) return [];
 
-    return additionalCat.items.map(item => {
-        const config = getActivityConfig(item.id);
-        return {
-            id: item.id,
-            label: item.label,
-            points: item.points,
-            Icon: config.icon || FaStar,
-            color: config.colorName || 'rose',
-            placeholder: item.placeholder || 'Tambahkan catatan...'
-        };
-    });
+    return additionalCat.items
+        .filter(item => !item.isArchived)
+        .map(item => {
+            const config = getActivityConfig(item.id);
+            return {
+                id: item.id,
+                label: item.label,
+                points: item.points,
+                Icon: config.icon || FaStar,
+                color: config.colorName || 'rose',
+                placeholder: item.placeholder || 'Tambahkan catatan...',
+                type: item.type || 'checkbox'
+            };
+        });
 };
 
 // Get tadarus config
@@ -450,39 +458,47 @@ export const getTadarusConfig = () => {
 
 // Get all custom categories (categories created by admin, not default ones)
 export const getCustomCategories = () => {
-    const categories = getWorshipCategories();
+    const categories = getWorshipCategories(); // This already filters archived
     const defaultIds = ['wajib', 'sunnah', 'tadarus', 'additional'];
 
     return categories
-        .filter(cat => !defaultIds.includes(cat.id))
+        .filter(cat => !defaultIds.includes(cat.id) && !cat.isArchived) // Also check isArchived here
         .map(cat => ({
             ...cat,
             Icon: cat.icon || getIconById(cat.iconId) || FaStar,
-            items: cat.items.map(item => {
-                const config = getActivityConfig(item.id);
-                return {
-                    id: item.id,
-                    label: item.label,
-                    points: item.points,
-                    Icon: config.icon || FaStar,
-                    color: config.colorName || 'purple',
-                    placeholder: item.placeholder || 'Tambahkan catatan...'
-                };
-            })
-        }));
+            items: cat.items
+                .filter(item => !item.isArchived) // Filter archived items
+                .map(item => {
+                    const config = getActivityConfig(item.id);
+                    return {
+                        id: item.id,
+                        label: item.label,
+                        points: item.points,
+                        Icon: config.icon || FaStar,
+                        color: config.colorName || 'purple',
+                        placeholder: item.placeholder || 'Tambahkan catatan...',
+                        type: item.type || 'checkbox'
+                    };
+                })
+        }))
+        .filter(cat => cat.items.length > 0); // Remove empty categories
 };
 
 // Get ALL categories for InputMobile (including custom)
-export const getAllWorshipCategories = () => {
-    // Request archived items as well for history display
-    const categories = getWorshipCategories(true);
+// Set includeArchived to true for history display
+export const getAllWorshipCategories = (includeArchived = false) => {
+    const categories = getWorshipCategories(includeArchived);
 
     return categories.map(cat => {
         const catIcon = cat.icon || getIconById(cat.iconId) || FaStar;
+
+        // Filter items: if includeArchived is false, exclude items with isArchived=true
+        const visibleItems = cat.items.filter(item => includeArchived || !item.isArchived);
+
         return {
             ...cat,
             Icon: catIcon,
-            items: cat.items.map(item => {
+            items: visibleItems.map(item => {
                 const config = getActivityConfig(item.id);
                 return {
                     id: item.id,
@@ -492,9 +508,10 @@ export const getAllWorshipCategories = () => {
                     color: config.colorName || 'blue',
                     placeholder: item.placeholder || 'Tambahkan catatan...',
                     defaultTime: item.defaultTime,
-                    isArchived: item.isArchived
+                    isArchived: item.isArchived,
+                    type: item.type || 'checkbox'
                 };
             })
         };
-    });
+    }).filter(cat => cat.items.length > 0); // Remove categories that have no visible items
 };

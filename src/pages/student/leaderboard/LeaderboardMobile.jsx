@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaStar, FaTrophy, FaCrown, FaMedal } from "react-icons/fa";
+import StudentHeader from '../../../components/student/StudentHeader';
+import { useAuth } from '../../../context/AuthContext';
 
 
 
@@ -9,6 +11,7 @@ const LeaderboardMobile = () => {
     const navigate = useNavigate();
     const [period, setPeriod] = useState('monthly');
     const [leaderboardData, setLeaderboardData] = useState([]);
+    const { user } = useAuth();
     const [currentUser, setCurrentUser] = useState(null);
     const [lastUpdate, setLastUpdate] = useState('');
 
@@ -138,27 +141,26 @@ const LeaderboardMobile = () => {
 
     return (
         <div className="h-screen bg-[#EEF7FF] font-sans relative overflow-hidden notranslate" translate="no">
-            <div className="h-full overflow-y-auto scrollbar-hide scroll-smooth pb-48 animate-fade-in">
+            <div className="h-full overflow-y-auto scrollbar-hide scroll-smooth pb-48">
                 {/* Smooth Background Gradient Decoration */}
                 <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
                 {/* Header */}
-                <div className="px-6 py-3 relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200 animate-fade-in">
-                    <div className="flex items-center gap-4">
-                        <div className="size-12 rounded-full ring-2 ring-teal-400/70 ring-offset-2 ring-offset-blue-50 shrink-0">
-                            <img src="/avatars/dani.png" alt="Avatar" className="size-full rounded-full object-cover" style={{ objectPosition: 'center 35%' }} />
-                        </div>
-                        <div>
-                            <h1 className="text-lg font-extrabold text-slate-800 leading-tight flex items-center gap-2">
+                <div className="animate-fade-in-up opacity-0" style={{ animationDuration: '0.6s', animationFillMode: 'forwards' }}>
+                    <StudentHeader
+                        user={user}
+                        variant="simple"
+                        title={
+                            <span className="flex items-center gap-2">
                                 Panggung Juara <FaTrophy className="text-yellow-500 text-lg drop-shadow-sm" />
-                            </h1>
-                            <div className="flex flex-col">
-                                <p className="text-[11px] text-blue-600 font-bold mt-0.5">
-                                    Update otomatis pukul 15:00 WIB 🕒
-                                </p>
-                                {lastUpdate && <p className="text-[9px] text-slate-400 font-medium mt-0.5">Data per: {lastUpdate}</p>}
-                            </div>
-                        </div>
-                    </div>
+                            </span>
+                        }
+                        subtitle={
+                            <span>
+                                Update otomatis pukul 15:00 WIB 🕒
+                                {lastUpdate && <span className="block text-[9px] text-slate-400 font-medium mt-0.5">Data per: {lastUpdate}</span>}
+                            </span>
+                        }
+                    />
                 </div>
 
                 {/* Scrollable Content */}
@@ -250,7 +252,7 @@ const LeaderboardMobile = () => {
                         </div>
 
                         {/* List - Minimalist Design */}
-                        <div className="space-y-2 animate-fade-in-up opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                        <div className="space-y-2 animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                             {leaderboardData.slice(3, 10).map((student, index) => (
                                 <div
                                     key={index}

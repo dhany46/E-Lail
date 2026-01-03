@@ -7,6 +7,8 @@ import MenuButtonNav from '../components/student/MenuButtonNav';
 import PWAInstallPrompt from '../components/ui/PWAInstallPrompt';
 import PullToRefresh from '../components/ui/PullToRefresh';
 import { StudentProvider, useStudentContext } from '../context/StudentContext';
+import { useAuth } from '../context/AuthContext';
+import StudentHeader from '../components/student/StudentHeader';
 
 const SidebarItem = ({ icon, label, to, active }) => {
     const { navigationBlocker } = useStudentContext();
@@ -50,16 +52,10 @@ const BottomNavItem = ({ icon, label, to, active }) => {
 };
 
 const StudentLayoutContent = () => {
+    const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-    // Mock Student Data
-    const student = {
-        name: "Ananda Ahmad",
-        class: "Kelas 4B",
-        avatar: "https://ui-avatars.com/api/?name=Ananda+Ahmad&background=dcfce7&color=16a34a"
-    };
 
     // Scroll to top when location changes
     React.useEffect(() => {
@@ -156,12 +152,16 @@ const StudentLayoutContent = () => {
 
                 <div className="px-4 py-4 border-t border-gray-100">
                     <div className="flex items-center gap-3 p-2 bg-gradient-to-r from-gray-50 to-white rounded-xl">
-                        <div className="size-10 rounded-full bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                            {student.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                        <div className="size-10 rounded-full bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center text-white font-bold text-sm shadow-md overflow-hidden">
+                            {user?.photo ? (
+                                <img src={user.photo} alt="Avatar" className="size-full rounded-full object-cover" />
+                            ) : (
+                                <span>{user?.initials || user?.name?.substring(0, 2).toUpperCase() || 'SIS'}</span>
+                            )}
                         </div>
                         <div className="flex flex-col flex-1 min-w-0">
-                            <span className="text-sm font-bold text-gray-800 truncate">{student.name}</span>
-                            <span className="text-[10px] text-gray-400 font-medium">{student.class}</span>
+                            <span className="text-sm font-bold text-gray-800 truncate">{user?.name || 'Siswa'}</span>
+                            <span className="text-[10px] text-gray-400 font-medium">{user?.class ? `Kelas ${user.class}` : '-'}</span>
                         </div>
                         <button
                             onClick={() => navigate('/login')}
@@ -181,13 +181,8 @@ const StudentLayoutContent = () => {
             <main className="flex-1 flex flex-col min-w-0 overflow-hidden z-10 relative bg-transparent">
                 {/* Header for Mobile (Optional, or just keep content) */}
                 {!['/student/dashboard', '/student/menu', '/student/history', '/student/input', '/student/leaderboard', '/student/profile'].includes(location.pathname) && (
-                    <div className="md:hidden p-4 pb-0 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className="size-8 rounded-full bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center text-white font-bold text-xs shadow-md">
-                                {student.name.substring(0, 2)}
-                            </div>
-                            <span className="font-bold text-gray-800 text-sm">Hai, {student.name.split(' ')[0]}!</span>
-                        </div>
+                    <div className="md:hidden">
+                        <StudentHeader user={user} variant="simple" />
                     </div>
                 )}
 

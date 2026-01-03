@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBell, FaMosque, FaCloudSun, FaBookOpen, FaHeart, FaStar, FaStickyNote, FaHourglassHalf, FaCheckCircle, FaTimesCircle, FaHandHoldingHeart, FaSmileWink, FaMagic, FaCommentSlash } from "react-icons/fa";
+import { FaHourglassHalf, FaCheckCircle, FaBell, FaMosque, FaBookOpen, FaCloudSun, FaHeart, FaHandHoldingHeart, FaSmileWink, FaMagic, FaCommentSlash, FaStickyNote, FaStar } from "react-icons/fa";
 import { MdNightsStay, MdNoFood } from "react-icons/md";
 import { BiSolidDonateHeart } from "react-icons/bi";
+import StudentHeader from '../../../components/student/StudentHeader';
 
 // --- Sub-Components ---
 
@@ -82,18 +83,23 @@ const HeaderMobile = ({ student, teacherNote, verifiedActivities }) => {
         <div className="flex items-center justify-between py-1">
             <div className="flex items-center gap-4">
                 {/* Avatar */}
-                <div className="size-12 rounded-full ring-2 ring-teal-400/70 ring-offset-2 ring-offset-blue-50 shrink-0">
-                    <img
-                        src="/avatars/dani.png"
-                        alt="Avatar"
-                        className="size-full rounded-full object-cover"
-                        style={{ objectPosition: 'center 35%' }}
-                    />
+                <div className="size-12 rounded-full ring-2 ring-teal-400/70 ring-offset-2 ring-offset-blue-50 shrink-0 overflow-hidden">
+                    {student?.photo ? (
+                        <img
+                            src={student.photo}
+                            alt="Avatar"
+                            className="size-full rounded-full object-cover"
+                        />
+                    ) : (
+                        <div className={`size-full rounded-full bg-gradient-to-br ${student?.color || 'from-blue-400 to-blue-600'} flex items-center justify-center text-white font-bold text-lg`}>
+                            {student?.initials || student?.name?.substring(0, 2).toUpperCase() || 'S'}
+                        </div>
+                    )}
                 </div>
                 {/* Text Content */}
                 <div className="flex flex-col">
                     <p className="text-[10px] text-blue-500 font-semibold tracking-wide mb-0.5">Assalamualaikum 👋</p>
-                    <h2 className="text-base font-extrabold text-slate-800 leading-tight truncate max-w-[180px]">Kakak {student?.name || 'Sarah'}!</h2>
+                    <h2 className="text-base font-extrabold text-slate-800 leading-tight truncate max-w-[180px]">Kakak {student?.name?.split(' ')[0] || 'Siswa'}!</h2>
                     <p className="text-[10px] text-slate-400 font-medium mt-1">{subGreeting}</p>
                 </div>
             </div>
@@ -671,7 +677,7 @@ const ActivityList = ({ activities }) => {
                                 const style = {
                                     bg: activity.bg || fallbackStyle.bg,
                                     color: activity.color || fallbackStyle.color,
-                                    icon: fallbackStyle.icon
+                                    icon: activity.icon || fallbackStyle.icon
                                 };
 
                                 return (
@@ -841,9 +847,10 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
             <div className="h-full relative overflow-y-auto scrollbar-hide">
                 <div className="min-h-full pb-24">
                     {/* Header - Sticky with Staggered Entrance */}
-                    <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] transition-all duration-300 animate-fade-in-up opacity-0 border-b border-slate-200" style={{ animationDuration: '0.6s' }}>
-                        <HeaderMobile
-                            student={studentInfo}
+                    <div className="animate-fade-in-up opacity-0" style={{ animationDuration: '0.6s', animationFillMode: 'forwards' }}>
+                        <StudentHeader
+                            user={studentInfo}
+                            variant="dashboard"
                             teacherNote={teacherNote}
                             verifiedActivities={verifiedActivities}
                         />
@@ -870,7 +877,7 @@ const DashboardMobile = ({ activities, stats, studentInfo, teacherNote }) => {
                         </div>
 
                         {/* 4. Recent Activity (Delay 0.4s) */}
-                        <div className="animate-fade-in-up opacity-0 pb-1" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.9s' }}>
+                        <div className="animate-fade-in-up opacity-0 pb-1" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                             <div className="flex items-center gap-2.5 mb-4">
                                 <div className="size-8 rounded-xl bg-blue-100/50 text-blue-600 flex items-center justify-center">
                                     <span className="material-symbols-outlined notranslate text-lg">history</span>

@@ -1,17 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, CheckCircle2, Clock, Calendar, ChevronRight, User } from 'lucide-react';
 import AdminHeader from '../components/AdminHeader';
+import { loadAllActivities } from '../../../services/activityService.jsx';
 
 const ActivitiesMobile = () => {
     const [filterStatus, setFilterStatus] = useState('Semua');
+    const [logs, setLogs] = useState([]);
 
-    const logs = [
-        { id: 1, student: 'Ahmad Fulan', class: '5A', activity: 'Sholat Subuh', time: '04:45', date: '2 Jan 2026', status: 'Verified', points: '+20' },
-        { id: 2, student: 'Siti Aminah', class: '4A', activity: 'Tilawah Quran', time: '05:15', date: '2 Jan 2026', status: 'Pending', points: '+15' },
-        { id: 3, student: 'Budi Santoso', class: '6B', activity: 'Sholat Dhuha', time: '07:30', date: '2 Jan 2026', status: 'Verified', points: '+10' },
-        { id: 4, student: 'Laila Husna', class: '3A', activity: 'Sedekah Subuh', time: '06:00', date: '2 Jan 2026', status: 'Pending', points: '+25' },
-        { id: 5, student: 'Zidan Ali', class: '5A', activity: 'Hafalan Surah', time: '08:00', date: '2 Jan 2026', status: 'Verified', points: '+50' },
-    ];
+    useEffect(() => {
+        const activities = loadAllActivities();
+        const mappedLogs = activities.map((act, index) => {
+            // Map student-side status to admin-side status names
+            let status = 'Pending';
+            if (act.status === 'Terverifikasi' || act.status === 'Disetujui') status = 'Verified';
+            else if (act.status === 'Ditolak') status = 'Rejected';
+
+            return {
+                id: act.id || index,
+                student: "Siswa",
+                class: 'Umum',
+                activity: act.title,
+                subtitle: act.subtitle,
+                time: act.time,
+                date: act.date,
+                status: status,
+                points: `+${act.points}`,
+                rawActivity: act // Keep original for more details if expanded
+            };
+        });
+        setLogs(mappedLogs);
+    }, []);
 
     const filteredLogs = filterStatus === 'Semua'
         ? logs
@@ -65,7 +83,10 @@ const ActivitiesMobile = () => {
                                     <span className={`text-[10px] font-black ${log.status === 'Verified' ? 'text-emerald-500' : 'text-amber-500'
                                         }`}>{log.points}</span>
                                 </div>
-                                <p className="text-xs text-slate-500 mt-0.5">{log.activity}</p>
+                                <div className="mt-0.5">
+                                    <p className="text-xs font-bold text-slate-700">{log.activity}</p>
+                                    {log.subtitle && <p className="text-[11px] text-slate-500 italic mt-0.5">"{log.subtitle}"</p>}
+                                </div>
                                 <div className="flex items-center gap-3 mt-2">
                                     <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
                                         <Clock size={10} /> {log.time}

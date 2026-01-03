@@ -35,6 +35,10 @@ import {
 import { MdVerified, MdCampaign, MdNotificationsOff, MdNightsStay, MdNoFood } from "react-icons/md";
 import { BiSolidDonateHeart } from "react-icons/bi";
 import { getActivityConfig, getAllWorshipCategories, AVAILABLE_COLORS } from '../../../utils/worshipConfig';
+import { getAppConfig } from '../../../utils/constants';
+import StudentHeader from '../../../components/student/StudentHeader';
+import { useAuth } from '../../../context/AuthContext';
+import { loadAllActivities } from '../../../services/activityService.jsx';
 
 
 const AchievementPopup = ({ onClose }) => {
@@ -272,14 +276,14 @@ const CalendarPicker = ({ isOpen, onClose, selectedDate, onDateSelect }) => {
     );
 };
 
-const HistoryHeader = ({ verifiedActivities, teacherNote }) => {
+const HistoryHeader = ({ user }) => {
     const navigate = useNavigate();
 
     return (
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
                 <div className="size-12 rounded-full ring-2 ring-teal-400/70 ring-offset-2 ring-offset-blue-50 shrink-0">
-                    <img src="/avatars/dani.png" alt="Avatar" className="size-full rounded-full object-cover" style={{ objectPosition: 'center 35%' }} />
+                    <img src={user?.photo || '/avatars/default.png'} alt="Avatar" className="size-full rounded-full object-cover" style={{ objectPosition: 'center 35%' }} />
                 </div>
                 <div>
                     <h1 className="text-lg font-extrabold text-slate-800 leading-tight">Riwayat Ibadahku ✨</h1>
@@ -365,243 +369,16 @@ const HeroStats = ({ stats }) => {
     );
 };
 
-// Helper function to get activity info from worshipConfig (outside component)
-// Helper function to get activity info from worshipConfig (outside component)
-const getActivityInfoFromConfig = (activityId) => {
-    // Ensure fresh config is loaded every time
-    const allWorshipCategories = getAllWorshipCategories();
 
-    // Normalize ID for comparison
-    const targetId = String(activityId).trim();
 
-    for (const cat of allWorshipCategories) {
-        // Robust find with string normalization
-        const foundItem = cat.items.find(item => String(item.id).trim() === targetId);
 
-        if (foundItem) {
-            const actConfig = getActivityConfig(targetId);
-            const colorName = actConfig.colorName || 'blue';
-            const IconComp = actConfig.icon || FaStar;
-
-            // Determine category colors safely
-            let catColorName = 'pink';
-            if (cat.color) {
-                // Try to extract color name from class like 'bg-amber-500' or default to pink
-                const match = cat.color.match(/bg-([a-z]+)-/);
-                if (match) catColorName = match[1];
-            }
-
-            return {
-                label: foundItem.label,
-                points: foundItem.points,
-                category: cat.title,
-                icon: <IconComp className="text-xl" />,
-                color: `text-${colorName}-600`,
-                bg: `bg-${colorName}-50`,
-                categoryColor: `text-${catColorName}-600`,
-                categoryBg: `bg-${catColorName}-100`
-            };
-        }
-    }
-
-    // Fallback for unknown/deleted activities
-    return {
-        label: activityId,
-        points: 10,
-        category: 'Ibadah Lainnya',
-        icon: <FaStar className="text-xl" />,
-        color: 'text-pink-600',
-        bg: 'bg-pink-50',
-        categoryColor: 'text-pink-600',
-        categoryBg: 'bg-pink-100'
-    };
-};
-
-// Function to load activities from localStorage
-const loadActivitiesFromStorage = () => {
-    const allActivities = [];
-
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('daily_report_')) {
-            const dateStr = key.replace('daily_report_', '');
-            let data = null;
-            try {
-                data = JSON.parse(localStorage.getItem(key));
-            } catch (e) {
-                continue;
-            }
-
-            if (!data) continue;
-
-            const dateObj = new Date(dateStr);
-            const formattedDate = dateObj.toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-            });
-
-            // Process prayers
-            if (data.prayers && Array.isArray(data.prayers)) {
-                data.prayers.forEach((prayer, idx) => {
-                    const isObject = typeof prayer === 'object' && prayer !== null;
-                    const prayerId = isObject ? prayer.id : prayer;
-                    const prayerTime = isObject && prayer.time ? prayer.time : null;
-                    const isCongregation = isObject ? prayer.isCongregation : false;
-                    const submittedAt = isObject && prayer.submittedAt ? prayer.submittedAt : null;
-                    const displayTime = submittedAt ? submittedAt.substring(0, 5) : (prayerTime || '-');
-
-                    allActivities.push({
-                        id: `${dateStr}-prayer-${idx}`,
-                        date: formattedDate,
-                        rawDate: dateStr,
-                        rawTime: submittedAt || prayerTime || '00:00',
-                        time: `${displayTime} WIB`,
-                        title: `Salat ${prayerId || 'Wajib'} ${isCongregation ? 'Berjamaah' : 'Sendiri'}`,
-                        subtitle: `${isCongregation ? 'Dilakukan berjamaah' : 'Munfarid (Sendiri)'}${prayerTime ? ` • ${prayerTime.replace(' WIB', '').replace('WIB', '')} WIB` : ''}`,
-                        category: "Salat Wajib",
-                        status: "Menunggu",
-                        points: isCongregation ? 25 : 10,
-                        icon: <FaMosque className="text-xl" />,
-                        color: 'text-blue-600',
-                        bg: 'bg-blue-50'
-                    });
-                });
-            }
-
-            // Process tadarus
-            const tadarusList = Array.isArray(data.tadarus)
-                ? data.tadarus
-                : (data.tadarus ? [data.tadarus] : []);
-
-            tadarusList.forEach((item, idx) => {
-                if (!item) return;
-
-                const isQuran = item.surah || item.ayatStart || item.ayatEnd;
-                if (isQuran) {
-                    allActivities.push({
-                        id: `${dateStr}-tadarus-quran-${idx}`,
-                        date: formattedDate,
-                        rawDate: dateStr,
-                        rawTime: item.submittedAt || '23:59:59',
-                        time: item.submittedAt ? `${item.submittedAt.substring(0, 5)} WIB` : '-',
-                        title: `Tadarus Al-Qur'an`,
-                        subtitle: `Surat ${item.surah || '-'} • Ayat ${item.ayatStart || '-'} - ${item.ayatEnd || '-'}`,
-                        category: "Tadarus Al-Qur'an",
-                        status: "Menunggu",
-                        points: 50,
-                        icon: <FaBookOpen className="text-xl" />,
-                        color: 'text-blue-600',
-                        bg: 'bg-blue-50',
-                        categoryColor: 'text-blue-600',
-                        categoryBg: 'bg-blue-100'
-                    });
-                }
-
-                const isHijrati = item.page || item.jilid;
-                if (isHijrati) {
-                    allActivities.push({
-                        id: `${dateStr}-tadarus-hijrati-${idx}`,
-                        date: formattedDate,
-                        rawDate: dateStr,
-                        rawTime: item.submittedAt || '23:59:59',
-                        time: item.submittedAt ? `${item.submittedAt.substring(0, 5)} WIB` : '-',
-                        title: `Hijrati`,
-                        subtitle: `Jilid ${item.jilid || '-'} • Halaman ${item.page || '-'}`,
-                        category: "Hijrati",
-                        status: "Menunggu",
-                        points: 30,
-                        icon: <FaBookOpen className="text-xl" />,
-                        color: 'text-amber-600',
-                        bg: 'bg-amber-50',
-                        categoryColor: 'text-amber-600',
-                        categoryBg: 'bg-amber-100'
-                    });
-                }
-            });
-
-            // Process additional worships
-            if (data.additional && Array.isArray(data.additional)) {
-                data.additional.forEach((item, idx) => {
-                    const isObject = typeof item === 'object' && item !== null;
-                    const itemId = isObject ? item.id : item;
-                    const itemTime = isObject && item.submittedAt ? item.submittedAt : null;
-
-                    const info = getActivityInfoFromConfig(itemId);
-                    allActivities.push({
-                        id: `${dateStr}-additional-${idx}`,
-                        date: formattedDate,
-                        rawDate: dateStr,
-                        rawTime: itemTime || '23:59:59',
-                        time: itemTime ? `${itemTime.substring(0, 5)} WIB` : '-',
-                        title: info.label,
-                        subtitle: (isObject && item.note) ? item.note : 'Ibadah tambahan hari ini',
-                        category: info.category,
-                        status: "Menunggu",
-                        points: info.points,
-                        icon: info.icon,
-                        color: info.color || 'text-pink-600',
-                        bg: info.bg || 'bg-pink-50',
-                        categoryColor: info.categoryColor || 'text-pink-600',
-                        categoryBg: info.categoryBg || 'bg-pink-100'
-                    });
-                });
-            }
-
-            // Process Literacy
-            if (data.literacy && typeof data.literacy === 'object') {
-                allActivities.push({
-                    id: `${dateStr}-literacy`,
-                    date: formattedDate,
-                    rawDate: dateStr,
-                    rawTime: data.literacy.submittedAt || '23:59:59',
-                    time: data.literacy.submittedAt ? `${data.literacy.submittedAt.substring(0, 5)} WIB` : '-',
-                    title: `Membaca Buku: ${data.literacy.title}`,
-                    subtitle: `Halaman ${data.literacy.page}`,
-                    category: "Literasi",
-                    status: "Menunggu",
-                    points: 15,
-                    icon: <FaBookOpen className="text-xl" />,
-                    color: 'text-indigo-600',
-                    bg: 'bg-indigo-50'
-                });
-            }
-
-            // Process General Notes
-            if (data.notes) {
-                allActivities.push({
-                    id: `${dateStr}-note`,
-                    date: formattedDate,
-                    rawDate: dateStr,
-                    rawTime: data.submittedAt || '23:59:59',
-                    time: data.submittedAt ? `${data.submittedAt.substring(0, 5)} WIB` : '-',
-                    title: 'Catatan Tambahan',
-                    subtitle: data.notes,
-                    category: "Catatan",
-                    status: "Disetujui",
-                    points: 0,
-                    icon: <FaStickyNote className="text-xl" />,
-                    color: 'text-blue-600',
-                    bg: 'bg-blue-50'
-                });
-            }
-        }
-    }
-
-    // Sort by date and time (newest first - latest input on top)
-    allActivities.sort((a, b) => {
-        const dateCompare = new Date(b.rawDate) - new Date(a.rawDate);
-        if (dateCompare !== 0) return dateCompare;
-        return b.rawTime.localeCompare(a.rawTime);
-    });
-    return allActivities;
-};
 
 const HistoryMobile = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     // Load activities from localStorage
-    const [activities, setActivities] = useState(() => loadActivitiesFromStorage());
+    const [activities, setActivities] = useState(() => loadAllActivities());
 
     const [filter, setFilter] = useState("Semua");
     const [stats, setStats] = useState({ totalPoints: 0, todayPoints: 0 });
@@ -627,7 +404,7 @@ const HistoryMobile = () => {
     const todayDate = new Date();
     const today = `${todayDate.getFullYear()}-${String(todayDate.getMonth() + 1).padStart(2, '0')}-${String(todayDate.getDate()).padStart(2, '0')}`;
     const todayActivitiesCount = activities.filter(a => a.rawDate === today).length;
-    const dailyTarget = 8;
+    const dailyTarget = getAppConfig().dailyTarget;
     const progressPercent = Math.min((todayActivitiesCount / dailyTarget) * 100, 100);
 
     // Toggle card expansion
@@ -641,7 +418,7 @@ const HistoryMobile = () => {
     // Load activities from localStorage with auto-refresh
     useEffect(() => {
         const loadActivities = () => {
-            const loadedActivities = loadActivitiesFromStorage();
+            const loadedActivities = loadAllActivities();
             setActivities(loadedActivities);
         };
 
@@ -814,72 +591,81 @@ const HistoryMobile = () => {
                 <div className="h-full relative overflow-y-auto scrollbar-hide">
                     <div className="min-h-full pb-32">
                         {/* Header - Only title */}
-                        <div className="px-6 py-4 pt-[calc(1rem+env(safe-area-inset-top))] relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
-                            <HistoryHeader verifiedActivities={verifiedActivities} />
+                        {/* Header - Sticky with Standardized Design */}
+                        <div className="animate-fade-in-up opacity-0" style={{ animationDuration: '0.6s', animationFillMode: 'forwards' }}>
+                            <StudentHeader
+                                user={user}
+                                verifiedActivities={verifiedActivities}
+                                variant="simple"
+                                title="Riwayat Ibadahku ✨"
+                                subtitle="Lihat semua kebaikanmu! 🤲"
+                            />
                         </div>
 
                         <div className="space-y-5 relative z-10 px-6 mt-6">
                             {/* Daily Target Progress Card - Clean & Theme Aligned */}
-                            <div className="bg-gradient-to-r from-blue-500 via-blue-500 to-sky-400 rounded-3xl p-5 shadow-lg shadow-blue-200/40 text-white relative overflow-hidden">
-                                {/* Background Decorations - Enhanced */}
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-16 -mt-16"></div>
-                                <div className="absolute bottom-0 left-0 w-28 h-28 bg-sky-300/15 rounded-full -ml-10 -mb-10"></div>
-                                <div className="absolute top-1/2 right-4 w-16 h-16 bg-white/5 rounded-full"></div>
-                                {/* Floating stars decoration */}
-                                <div className="absolute top-3 right-16 text-white/20 text-xl">✦</div>
-                                <div className="absolute top-8 right-8 text-white/15 text-sm">✦</div>
-                                <div className="absolute bottom-4 right-24 text-white/10 text-2xl">✦</div>
-                                {/* Decorative lines */}
-                                <div className="absolute top-0 left-1/3 w-px h-full bg-gradient-to-b from-white/0 via-white/10 to-white/0"></div>
+                            <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                                <div className="bg-gradient-to-r from-blue-500 via-blue-500 to-sky-400 rounded-3xl p-5 shadow-lg shadow-blue-200/40 text-white relative overflow-hidden">
+                                    {/* Background Decorations - Enhanced */}
+                                    <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                                    <div className="absolute bottom-0 left-0 w-28 h-28 bg-sky-300/15 rounded-full -ml-10 -mb-10"></div>
+                                    <div className="absolute top-1/2 right-4 w-16 h-16 bg-white/5 rounded-full"></div>
+                                    {/* Floating stars decoration */}
+                                    <div className="absolute top-3 right-16 text-white/20 text-xl">✦</div>
+                                    <div className="absolute top-8 right-8 text-white/15 text-sm">✦</div>
+                                    <div className="absolute bottom-4 right-24 text-white/10 text-2xl">✦</div>
+                                    {/* Decorative lines */}
+                                    <div className="absolute top-0 left-1/3 w-px h-full bg-gradient-to-b from-white/0 via-white/10 to-white/0"></div>
 
-                                <div className="relative z-10">
-                                    {/* Header Row */}
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="size-11 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
-                                                <span className="text-xl">🚀</span>
+                                    <div className="relative z-10">
+                                        {/* Header Row */}
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="size-11 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
+                                                    <span className="text-xl">🚀</span>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-base font-bold text-white">Misi Ibadah Harianmu</h3>
+                                                    <p className="text-[11px] font-medium text-blue-100 mt-0.5">
+                                                        Kumpulkan 8 Kebaikan! ✨
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h3 className="text-base font-bold text-white">Misi Ibadah Harianmu</h3>
-                                                <p className="text-[11px] font-medium text-blue-100 mt-0.5">
-                                                    Kumpulkan 8 Kebaikan! ✨
-                                                </p>
+                                            <div className="text-right">
+                                                <div className="flex items-baseline justify-end gap-0.5">
+                                                    <span className="text-2xl font-bold">{todayActivitiesCount}</span>
+                                                    <span className="text-sm font-medium opacity-80">/ {dailyTarget}</span>
+                                                </div>
+                                                <span className="text-[10px] font-medium bg-white/20 px-2 py-0.5 rounded-md inline-block mt-1">
+                                                    {progressPercent === 100 ? 'Sempurna! 🌟' : 'Semangat! 🔥'}
+                                                </span>
                                             </div>
                                         </div>
-                                        <div className="text-right">
-                                            <div className="flex items-baseline justify-end gap-0.5">
-                                                <span className="text-2xl font-bold">{todayActivitiesCount}</span>
-                                                <span className="text-sm font-medium opacity-80">/ {dailyTarget}</span>
-                                            </div>
-                                            <span className="text-[10px] font-medium bg-white/20 px-2 py-0.5 rounded-md inline-block mt-1">
-                                                {progressPercent === 100 ? 'Sempurna! 🌟' : 'Semangat! 🔥'}
-                                            </span>
-                                        </div>
-                                    </div>
 
-                                    {/* Progress Bar - Clean Fun Version */}
-                                    <div className="relative">
-                                        <div className="bg-blue-900/30 rounded-full h-3.5 overflow-hidden border border-white/10">
-                                            <div
-                                                className="bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 h-full rounded-full transition-all duration-700 ease-out"
-                                                style={{ width: `${progressPercent}%` }}
-                                            ></div>
+                                        {/* Progress Bar - Clean Fun Version */}
+                                        <div className="relative">
+                                            <div className="bg-blue-900/30 rounded-full h-3.5 overflow-hidden border border-white/10">
+                                                <div
+                                                    className="bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 h-full rounded-full transition-all duration-700 ease-out"
+                                                    style={{ width: `${progressPercent}%` }}
+                                                ></div>
+                                            </div>
+                                            {/* Star indicator at end */}
+                                            {progressPercent === 100 && (
+                                                <div className="absolute -right-1 -top-1.5 text-base animate-bounce">⭐</div>
+                                            )}
                                         </div>
-                                        {/* Star indicator at end */}
-                                        {progressPercent === 100 && (
-                                            <div className="absolute -right-1 -top-1.5 text-base animate-bounce">⭐</div>
-                                        )}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Hero Stats (Bintangku & Ibadahku) */}
-                            <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                            <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                                 <HeroStats stats={{ pendingCount: stats.pendingCount, monthCount: stats.monthCount, targetDaily: dailyTarget }} />
                             </div>
 
                             {/* Riwayat Container */}
-                            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] mb-8 overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] mb-8 overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                                 {/* Filter Header */}
                                 <div className="relative border-b border-slate-100 bg-slate-50/50">
                                     <div className="flex">

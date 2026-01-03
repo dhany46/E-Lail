@@ -7,7 +7,11 @@ import { BiSolidDonateHeart } from "react-icons/bi";
 import { MdVerified, MdOutlineWbTwilight, MdLightMode, MdSunny, MdNightsStay, MdBedtime, MdNoFood } from "react-icons/md";
 import { useStudentContext } from '../../../context/StudentContext';
 import { useToast } from '../../../context/ToastContext';
-import { getPrayers, getSunnahWorships, getAdditionalWorships, getTadarusConfig, getActivityConfig, getCustomCategories } from '../../../utils/worshipConfig';
+import { getPrayers, getSunnahWorships, getAdditionalWorships, getCustomCategories, getAllWorshipCategories } from '../../../utils/worshipConfig';
+import { INPUT_TYPES } from '../../../utils/constants';
+import StudentHeader from '../../../components/student/StudentHeader';
+import { useAuth } from '../../../context/AuthContext';
+import ActivityRenderer from '../../../components/activities/ActivityRenderer';
 
 // Komponen Pemilih Waktu Kustom (Berdasarkan Implementasi Desktop)
 const CustomTimePicker = ({ value, onChange }) => {
@@ -93,8 +97,8 @@ const CustomTimePicker = ({ value, onChange }) => {
                                     id={`mobile-hour-${h}`}
                                     onClick={() => handleHourClick(h)}
                                     className={`text-center py-2 my-1 mx-2 rounded-xl cursor-pointer text-base font-bold transition-all select-none ${selectedHour === h
-                                        ? 'bg-emerald-500 text-white scale-105 relative !z-50'
-                                        : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 relative !z-10'
+                                        ? 'bg-blue-500 text-white scale-105 relative !z-50 shadow-md shadow-blue-200'
+                                        : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50 relative !z-10'
                                         }`}
                                 >
                                     {h}
@@ -127,8 +131,8 @@ const CustomTimePicker = ({ value, onChange }) => {
                                     id={`mobile-minute-${m}`}
                                     onClick={() => handleMinuteClick(m)}
                                     className={`text-center py-2 my-1 mx-2 rounded-xl cursor-pointer text-base font-bold transition-all select-none ${selectedMinute === m
-                                        ? 'bg-blue-500 text-white scale-105 relative !z-50'
-                                        : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 relative !z-10'
+                                        ? 'bg-blue-500 text-white scale-105 relative !z-50 shadow-md shadow-blue-200'
+                                        : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50 relative !z-10'
                                         }`}
                                 >
                                     {m}
@@ -146,12 +150,12 @@ const CustomTimePicker = ({ value, onChange }) => {
 const PrayerCardMobile = ({ id, label, Icon, isChecked, onClick, onRemove, data, isSubmitted }) => {
     if (isSubmitted) {
         return (
-            <div className="relative rounded-2xl border border-gray-100 bg-gray-50 p-3 flex flex-col items-center gap-2 select-none opacity-60">
-                <div className="size-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-xl">
+            <div className="relative rounded-2xl border border-slate-100 bg-slate-50 p-3 flex flex-col items-center gap-2 select-none opacity-50">
+                <div className="size-11 rounded-xl bg-slate-200 flex items-center justify-center text-slate-400 text-xl">
                     {Icon && <Icon />}
                 </div>
-                <span className="text-xs font-bold text-gray-400">{label}</span>
-                <div className="absolute top-1 right-1 text-emerald-500 text-lg">
+                <span className="text-[11px] font-bold text-slate-400">{label}</span>
+                <div className="absolute top-1.5 right-1.5 text-emerald-500 text-base">
                     <MdVerified />
                 </div>
             </div>
@@ -161,46 +165,48 @@ const PrayerCardMobile = ({ id, label, Icon, isChecked, onClick, onRemove, data,
     return (
         <div
             className={`
-                relative rounded-2xl border transition-all duration-300 p-3 flex flex-col items-center gap-2 group select-none active:scale-[0.98]
-                animate-fade-in
+                relative rounded-2xl border transition-all duration-200 p-3 flex flex-col items-center gap-2 select-none cursor-pointer active:scale-95
                 ${isChecked
-                    ? 'bg-gradient-to-br from-blue-50 to-white border-blue-200 shadow-md shadow-blue-100/50'
-                    : 'bg-white border-slate-100/80 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md hover:border-blue-200'
+                    ? 'bg-blue-50/80 border-blue-200 shadow-md'
+                    : 'bg-white border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200'
                 }
             `}
             onClick={() => onClick(id)}
         >
             {isChecked && (
                 <div
-                    className="absolute top-1 right-1 text-blue-500 cursor-pointer p-1 z-10 hover:bg-blue-100 rounded-full transition-colors"
+                    className="absolute top-1.5 right-1.5 text-blue-400 cursor-pointer p-0.5 z-10 hover:bg-blue-100 rounded-lg transition-colors"
                     onClick={(e) => { e.stopPropagation(); onRemove(id); }}
                 >
                     <span className="material-symbols-outlined text-sm font-bold notranslate">close</span>
                 </div>
             )}
 
+            {/* Icon */}
             <div className={`
-                size-10 rounded-full flex items-center justify-center transition-colors text-xl
-                ${isChecked ? 'bg-blue-100 text-blue-600' : 'bg-gray-50 text-gray-400'}
+                size-11 rounded-xl flex items-center justify-center transition-all text-xl
+                ${isChecked ? 'bg-blue-500 text-white shadow-sm' : 'bg-slate-100 text-slate-400'}
             `}>
                 {Icon && <Icon />}
             </div>
 
+            {/* Label & Badge */}
             <div className="text-center w-full">
-                <span className={`block text-xs font-bold ${isChecked ? 'text-blue-700' : 'text-gray-600'}`}>
+                <span className={`block text-[11px] font-bold ${isChecked ? 'text-blue-700' : 'text-slate-600'}`}>
                     {label}
                 </span>
 
                 {isChecked ? (
-                    <div className="mt-1 animate-pop-in">
-                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full inline-block ${data?.isCongregation ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
+                    <div className="mt-1.5">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg inline-block ${data?.isCongregation ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
                             {data?.time}
                         </span>
                     </div>
                 ) : (
-                    <div className="mt-1">
-                        <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-md text-[9px] font-bold border border-blue-200 inline-block whitespace-nowrap">
-                            +{data?.points || 20} Poin
+                    <div className="mt-1.5">
+                        <span className="flex items-center justify-center gap-0.5 bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg text-[10px] font-bold border border-blue-100 inline-flex">
+                            <span>⭐</span>
+                            <span>+{data?.points || 20}</span>
                         </span>
                     </div>
                 )}
@@ -335,17 +341,17 @@ const PrayerModalMobile = ({ isOpen, onClose, onSave, prayerData }) => {
 
                 <CustomTimePicker value={time} onChange={setTime} />
 
-                <div className="mt-2">
-                    <div className="flex bg-gray-100 p-1.5 rounded-2xl gap-1.5">
+                <div className="mt-4">
+                    <div className="flex bg-slate-50 p-1.5 rounded-2xl gap-1.5 border border-slate-100">
                         <button
-                            className={`flex-1 py-3.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 outline-none border-0 ring-0 focus:outline-none focus:ring-0 relative min-h-[52px] ${isCongregation ? 'bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-300/50 hover:shadow-emerald-300/70' : 'bg-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-200/50'}`}
+                            className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 outline-none border-0 ring-0 focus:outline-none focus:ring-0 relative min-h-[48px] ${isCongregation ? 'bg-emerald-500 text-white shadow-md shadow-emerald-200' : 'bg-transparent text-slate-400 hover:text-slate-600 hover:bg-white'}`}
                             onClick={() => setIsCongregation(true)}
                         >
                             <span className="material-symbols-outlined text-lg notranslate">groups</span>
-                            <span>Berjamaah!</span>
+                            <span>Berjamaah</span>
                         </button>
                         <button
-                            className={`flex-1 py-3.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 outline-none border-0 ring-0 focus:outline-none focus:ring-0 relative min-h-[52px] ${!isCongregation ? 'bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-300/50 hover:shadow-blue-300/70' : 'bg-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-200/50'}`}
+                            className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 outline-none border-0 ring-0 focus:outline-none focus:ring-0 relative min-h-[48px] ${!isCongregation ? 'bg-blue-500 text-white shadow-md shadow-blue-200' : 'bg-transparent text-slate-400 hover:text-slate-600 hover:bg-white'}`}
                             onClick={() => setIsCongregation(false)}
                         >
                             <span className="material-symbols-outlined text-lg notranslate">person</span>
@@ -367,6 +373,7 @@ const PrayerModalMobile = ({ isOpen, onClose, onSave, prayerData }) => {
 const InputMobile = () => {
     const navigate = useNavigate();
     const { setNavigationBlocker } = useStudentContext();
+    const { user } = useAuth();
     const toast = useToast();
 
     // State (Sama seperti Desktop)
@@ -455,12 +462,12 @@ const InputMobile = () => {
 
 
 
-    // Get worship data from admin settings (synced via localStorage)
+    // Get worship data from worshipConfig (reads from localStorage + defaults)
     const prayers = getPrayers();
     const sunnahWorships = getSunnahWorships();
     const additionalWorships = getAdditionalWorships();
-    const tadarusConfig = getTadarusConfig();
     const customCategories = getCustomCategories();
+    const allCategories = getAllWorshipCategories();
 
     // Penanganan Event
     const handlePrayerClick = (id) => {
@@ -487,7 +494,11 @@ const InputMobile = () => {
     const hasNewTadarus = !!((form.surah && form.ayatStart && form.ayatEnd) || form.page || form.jilid);
     const hasNewLiteracy = !!(form.literacyTitle && form.literacyPage);
     const hasNewAdditional = Object.keys(selectedAdditionalWorships).filter(k => selectedAdditionalWorships[k]).length > 0;
-    const isDirty = hasNewPrayers || hasNewTadarus || hasNewLiteracy || hasNewAdditional || form.notes.length > 0;
+
+    // Fix: Check if any form fields (in additionalNotes) have content
+    const hasFilledForms = Object.values(additionalNotes).some(note => note && note.trim().length > 0);
+
+    const isDirty = hasNewPrayers || hasNewTadarus || hasNewLiteracy || hasNewAdditional || hasFilledForms || form.notes.length > 0;
 
     useEffect(() => {
         if (isDirty) {
@@ -591,7 +602,27 @@ const InputMobile = () => {
             const day = String(now.getDate()).padStart(2, '0');
             const today = `${year}-${month}-${day}`;
             const existingPrayers = alreadySubmitted.prayers.map(prayer => (typeof prayer === 'string' ? { id: prayer, time: '12:00', isCongregation: false } : prayer));
-            const newAdditional = Object.keys(selectedAdditionalWorships).filter(k => selectedAdditionalWorships[k]).map(id => ({ id, submittedAt: currentTime, note: additionalNotes[id] || '' }));
+            // Fix: Include form/text activities that have notes content, even if not "selected" (checked)
+            const allCustomItems = [
+                ...additionalWorships,
+                ...customCategories.flatMap(c => c.items || [])
+            ];
+
+            const formActivityIds = allCustomItems
+                .filter(item => (item.type === 'form' || item.type === 'text') && additionalNotes[item.id]?.trim())
+                .map(item => item.id);
+
+            // Combine checked items and filled forms (using Set to avoid duplicates)
+            const idsToSave = new Set([
+                ...Object.keys(selectedAdditionalWorships).filter(k => selectedAdditionalWorships[k]),
+                ...formActivityIds
+            ]);
+
+            const newAdditional = Array.from(idsToSave).map(id => ({
+                id,
+                submittedAt: currentTime,
+                note: additionalNotes[id] || ''
+            }));
 
             // Read latest data from LocalStorage to ensure no race conditions/stale state
             const currentSavedData = localStorage.getItem(`daily_report_${today}`);
@@ -609,7 +640,7 @@ const InputMobile = () => {
             const newData = {
                 prayers: [...(parsedCurrentData.prayers || existingPrayers), ...newPrayers],
                 tadarus: updatedTadarusArray,
-                literacy: parsedCurrentData.literacy || alreadySubmitted.literacy || newLiteracy,
+                literacy: newLiteracy || parsedCurrentData.literacy || alreadySubmitted.literacy,
                 additional: [...(parsedCurrentData.additional || alreadySubmitted.additional), ...newAdditional],
                 notes: form.notes || parsedCurrentData.notes || alreadySubmitted.notes,
                 submittedAt: currentTime
@@ -657,479 +688,346 @@ const InputMobile = () => {
             <ConfirmationModal isOpen={showConfirmModal} onClose={() => setShowConfirmModal(false)} onConfirm={confirmNavigation} />
 
             {/* Header - Sticky dengan Glassmorphism agar cocok dengan Dashboard */}
-            <div className="px-6 py-4 relative bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-[60] border-b border-slate-200">
-                <div className="flex items-center gap-4">
-                    <div className="size-12 rounded-full ring-2 ring-teal-400/70 ring-offset-2 ring-offset-blue-50 shrink-0">
-                        <img src="/avatars/dani.png" alt="Avatar" className="size-full rounded-full object-cover" style={{ objectPosition: 'center 35%' }} />
-                    </div>
-                    <div>
-                        <h1 className="text-lg font-extrabold text-slate-800 leading-tight">Catat Ibadah 📝</h1>
-                        <p className="text-[11px] text-slate-500 font-medium mt-0.5">Catat semua kebaikanmu hari ini! ✨</p>
-                    </div>
-                </div>
+            <div className="animate-fade-in-up opacity-0 sticky top-0 z-[60]" style={{ animationDuration: '0.6s', animationFillMode: 'forwards' }}>
+                <StudentHeader
+                    user={user}
+                    variant="simple"
+                    title="Catat Ibadah 📝"
+                    subtitle="Catat semua kebaikanmu hari ini! ✨"
+                />
             </div>
 
             {/* Kontainer Konten */}
             <div className="space-y-3 relative z-10 px-6 mt-6 mb-24">
                 {/* Main Prayer Grid */}
-                {/* Main Prayer Grid */}
-                <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <div
-                        className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.prayers ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
-                        onClick={() => toggleSection('prayers')}
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="size-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm">
-                                <FaMosque className="text-lg" />
+                {prayers.length > 0 && (
+                    <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                        <div
+                            className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.prayers ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
+                            onClick={() => toggleSection('prayers')}
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="size-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm">
+                                    <FaMosque className="text-lg" />
+                                </div>
+                                <h3 className="font-bold text-slate-800 text-[15px]">Salat Wajib</h3>
                             </div>
-                            <h3 className="font-bold text-slate-800 text-[15px]">Salat Wajib</h3>
+                            <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.prayers ? 'bg-blue-100 text-blue-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                                <FaChevronDown className="text-xs" />
+                            </div>
                         </div>
-                        <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.prayers ? 'bg-blue-100 text-blue-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
-                            <FaChevronDown className="text-xs" />
-                        </div>
-                    </div>
 
-                    <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.prayers ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                        <div className="overflow-hidden">
-                            <div className="grid grid-cols-3 gap-3 animate-fade-in p-5 pt-2">
-                                {prayers.map((prayer) => {
-                                    const isSubmitted = alreadySubmitted.prayers.some(p => p.id === prayer.id);
-                                    return (
-                                        <PrayerCardMobile
-                                            key={prayer.id}
-                                            {...prayer}
-                                            isChecked={selectedPrayers.includes(prayer.id)}
-                                            isSubmitted={isSubmitted}
-                                            data={prayerData[prayer.id]}
-                                            onClick={handlePrayerClick}
-                                            onRemove={handleRemovePrayer}
-                                        />
-                                    );
-                                })}
+                        <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.prayers ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                            <div className="overflow-hidden">
+                                <div className="grid grid-cols-3 gap-3 animate-fade-in p-5 pt-2">
+                                    {prayers.map((prayer) => {
+                                        const isSubmitted = alreadySubmitted.prayers.some(p => p.id === prayer.id);
+                                        return (
+                                            <PrayerCardMobile
+                                                key={prayer.id}
+                                                {...prayer}
+                                                isChecked={selectedPrayers.includes(prayer.id)}
+                                                isSubmitted={isSubmitted}
+                                                data={prayerData[prayer.id]}
+                                                onClick={handlePrayerClick}
+                                                onRemove={handleRemovePrayer}
+                                            />
+                                        );
+                                    })}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                )}
 
                 {/* Sunnah Worships */}
-                <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.15s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <div
-                        className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.sunnah ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
-                        onClick={() => toggleSection('sunnah')}
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="size-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center shadow-sm">
-                                <FaStar className="text-lg" />
+                {sunnahWorships.length > 0 && (
+                    <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                        <div
+                            className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.sunnah ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
+                            onClick={() => toggleSection('sunnah')}
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="size-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center shadow-sm">
+                                    <FaStar className="text-lg" />
+                                </div>
+                                <h3 className="font-bold text-slate-800 text-[15px]">Ibadah Sunah</h3>
                             </div>
-                            <h3 className="font-bold text-slate-800 text-[15px]">Ibadah Sunah</h3>
-                        </div>
-                        <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.sunnah ? 'bg-amber-100 text-amber-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
-                            <FaChevronDown className="text-xs" />
-                        </div>
-                    </div>
-
-                    <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.sunnah ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                        <div className="overflow-hidden">
-                            <div className="space-y-2 animate-fade-in p-5 pt-2">
-                                {sunnahWorships.map((item) => {
-                                    // Mapping warna manual untuk item baru
-                                    const colorClasses = {
-                                        amber: { border: 'border-amber-300', bg: 'bg-amber-50/50', checkBg: 'bg-amber-500 border-amber-500', iconColor: 'text-amber-500', ring: 'focus:ring-amber-200 focus:border-amber-400' },
-                                        indigo: { border: 'border-indigo-300', bg: 'bg-indigo-50/50', checkBg: 'bg-indigo-500 border-indigo-500', iconColor: 'text-indigo-600', ring: 'focus:ring-indigo-200 focus:border-indigo-400' },
-                                        cyan: { border: 'border-cyan-300', bg: 'bg-cyan-50/50', checkBg: 'bg-cyan-500 border-cyan-500', iconColor: 'text-cyan-600', ring: 'focus:ring-cyan-200 focus:border-cyan-400' },
-                                        rose: { border: 'border-rose-300', bg: 'bg-rose-50/50', checkBg: 'bg-rose-500 border-rose-500', iconColor: 'text-rose-600', ring: 'focus:ring-rose-200 focus:border-rose-400' },
-                                        purple: { border: 'border-purple-300', bg: 'bg-purple-50/50', checkBg: 'bg-purple-500 border-purple-500', iconColor: 'text-purple-600', ring: 'focus:ring-purple-200 focus:border-purple-400' },
-                                    }[item.color || 'amber'];
-
-                                    return (
-                                        <div key={item.id} className={`bg-white rounded-2xl border p-4 transition-all duration-300 ${selectedAdditionalWorships[item.id] ? `${colorClasses.border} ${colorClasses.bg} shadow-md` : 'border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md'}`}>
-                                            <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleAdditionalWorship(item.id)}>
-                                                <div className="flex items-center gap-3.5">
-                                                    <div className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedAdditionalWorships[item.id] ? colorClasses.checkBg : 'border-gray-200 bg-gray-50'}`}>
-                                                        {selectedAdditionalWorships[item.id] && <span className="text-white text-xs font-bold">✓</span>}
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className={`text-lg ${selectedAdditionalWorships[item.id] ? colorClasses.iconColor : 'text-gray-400'}`}>{item.Icon && <item.Icon />}</span>
-                                                        <span className={`text-sm font-bold ${selectedAdditionalWorships[item.id] ? 'text-gray-800' : 'text-gray-600'}`}>{item.label}</span>
-                                                    </div>
-                                                </div>
-                                                <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${selectedAdditionalWorships[item.id] ? 'bg-white shadow-sm text-gray-800' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>+{item.points} Poin</span>
-                                            </div>
-                                            {selectedAdditionalWorships[item.id] && (
-                                                <div className="mt-4 pl-10 animate-fade-in">
-                                                    <input
-                                                        type="text"
-                                                        placeholder={item.placeholder || "Tambahkan catatan..."}
-                                                        className={`w-full bg-white border border-transparent rounded-xl px-4 py-2.5 text-xs font-medium outline-none focus:ring-2 transition-all shadow-sm ${colorClasses.ring}`}
-                                                        value={additionalNotes[item.id] || ''}
-                                                        onChange={(e) => setAdditionalNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })}
+                            <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.sunnah ? 'bg-amber-100 text-amber-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                                <FaChevronDown className="text-xs" />
                             </div>
                         </div>
-                    </div>
-                </section>
+
+                        <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.sunnah ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                            <div className="overflow-hidden">
+                                <div className="space-y-2 animate-fade-in p-5 pt-2">
+                                    {sunnahWorships.map((item) => (
+                                        <ActivityRenderer
+                                            key={item.id}
+                                            activity={item}
+                                            value={selectedAdditionalWorships[item.id] ? { note: additionalNotes[item.id] } : null}
+                                            onToggle={toggleAdditionalWorship}
+                                            onNoteChange={(id, value) => setAdditionalNotes(prev => ({ ...prev, [id]: value }))}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                )}
 
                 {/* Bagian Tadarus - Gaya Kartu Native */}
-                <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <div
-                        className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.tadarus ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
-                        onClick={() => toggleSection('tadarus')}
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="size-10 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-sm">
-                                <FaBookOpen className="text-lg" />
-                            </div>
-                            <h3 className="font-bold text-slate-800 text-[15px]">Tadarus Al-Qur'an / Hijrati</h3>
-                        </div>
-                        <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.tadarus ? 'bg-emerald-100 text-emerald-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
-                            <FaChevronDown className="text-xs" />
-                        </div>
-                    </div>
-
-                    <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.tadarus ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                        <div className="overflow-hidden">
-                            <div className="relative overflow-hidden group active:scale-[0.99] transition-all animate-fade-in p-5 pt-2 pb-7" id="tadarus-form">
-                                {/* Header di dalam kartu dengan Skor - MARGIN DIKURANGI */}
-                                <div className="flex justify-between items-start mb-4 relative z-10">
-                                    <div>
-                                        <h4 className="text-sm font-bold text-slate-800">Bacaan Hari Ini</h4>
-                                        <p className="text-[10px] text-slate-500 font-medium">Jangan lupa catat suratnya ya!</p>
-                                    </div>
+                {allCategories.find(c => c.id === 'tadarus')?.items.filter(i => i.id !== 'literasi' && !i.isArchived).length > 0 && (
+                    <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                        <div
+                            className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.tadarus ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
+                            onClick={() => toggleSection('tadarus')}
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="size-10 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-sm">
+                                    <FaBookOpen className="text-lg" />
                                 </div>
+                                <h3 className="font-bold text-slate-800 text-[15px]">Tadarus Al-Qur'an / Hijrati</h3>
+                            </div>
+                            <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.tadarus ? 'bg-emerald-100 text-emerald-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                                <FaChevronDown className="text-xs" />
+                            </div>
+                        </div>
 
-                                {/* Ikon Latar Belakang Dekoratif */}
-                                <FaBookOpen className="absolute -bottom-6 -right-6 text-amber-500/5 text-[10rem] pointer-events-none rotate-12" />
-
-                                <div className="space-y-5 relative z-10">
-                                    {/* Bagian Al-Qur'an */}
-                                    <div className="bg-blue-50/50 rounded-2xl p-4 border border-blue-100">
-                                        <div className="flex justify-between items-center mb-3">
-                                            <h5 className="text-xs font-bold text-blue-600 tracking-wide flex items-center gap-2">
-                                                <span className="size-5 rounded-md bg-blue-500 text-white flex items-center justify-center text-[10px]">📖</span>
-                                                Al-Qur'an
-                                            </h5>
-                                            <div className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm border border-blue-200">
-                                                +50 Poin
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Nama Surat</label>
-                                            <input
-                                                type="text"
-                                                placeholder="Contoh: Al-Mulk"
-                                                className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 ${errors.surah ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-white border-slate-200 focus:border-blue-400 focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]'}`}
-                                                value={form.surah}
-                                                onChange={(e) => {
-                                                    setForm({ ...form, surah: e.target.value });
-                                                    if (errors.surah) setErrors({ ...errors, surah: null });
-                                                }}
-                                            />
-                                            {errors.surah && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse flex items-center gap-1"><span className="text-xs">⚠️</span> {errors.surah}</p>}
-                                        </div>
-                                        <div className="flex gap-4 mt-3">
-                                            <div className="flex-1">
-                                                <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Ayat Mulai</label>
-                                                <div className="relative">
-                                                    <input
-                                                        type="number"
-                                                        placeholder="1"
-                                                        className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 text-center ${errors.ayatStart ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-white border-slate-200 focus:border-blue-400 focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]'}`}
-                                                        value={form.ayatStart}
-                                                        onChange={(e) => {
-                                                            setForm({ ...form, ayatStart: e.target.value });
-                                                            if (errors.ayatStart) setErrors({ ...errors, ayatStart: null });
-                                                        }}
-                                                    />
+                        <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.tadarus ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                            <div className="overflow-hidden">
+                                <div className="p-5 pt-2 space-y-8 animate-fade-in">
+                                    {allCategories.find(c => c.id === 'tadarus')?.items.filter(i => i.id !== 'literasi' && !i.isArchived).map((item) => (
+                                        <ActivityRenderer
+                                            key={item.id}
+                                            activity={item}
+                                            error={item.id === 'alquran' ? (errors.surah || errors.ayatStart || errors.ayatEnd) : (errors.page || errors.jilid)}
+                                        >
+                                            {item.id === 'alquran' ? (
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Nama Surat</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: Al-Mulk"
+                                                            className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 ${errors.surah ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-white border-slate-200 focus:border-blue-400 shadow-sm'}`}
+                                                            value={form.surah}
+                                                            onChange={(e) => setForm({ ...form, surah: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div className="flex gap-4">
+                                                        <div className="flex-1">
+                                                            <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Ayat Mulai</label>
+                                                            <input
+                                                                type="number"
+                                                                placeholder="1"
+                                                                className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all text-center ${errors.ayatStart ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-white border-slate-200 focus:border-blue-400 shadow-sm'}`}
+                                                                value={form.ayatStart}
+                                                                onChange={(e) => setForm({ ...form, ayatStart: e.target.value })}
+                                                            />
+                                                        </div>
+                                                        <div className="flex items-center pt-8 text-slate-300">
+                                                            <span className="material-symbols-outlined notranslate">arrow_right_alt</span>
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Ayat Selesai</label>
+                                                            <input
+                                                                type="number"
+                                                                placeholder="10"
+                                                                className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all text-center ${errors.ayatEnd ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-white border-slate-200 focus:border-blue-400 shadow-sm'}`}
+                                                                value={form.ayatEnd}
+                                                                onChange={(e) => setForm({ ...form, ayatEnd: e.target.value })}
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                {errors.ayatStart && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse text-center">{errors.ayatStart}</p>}
-                                            </div>
-                                            <div className="flex items-center pt-8 text-slate-300">
-                                                <span className="material-symbols-outlined notranslate">arrow_right_alt</span>
-                                            </div>
-                                            <div className="flex-1">
-                                                <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Ayat Akhir</label>
-                                                <div className="relative">
-                                                    <input
-                                                        type="number"
-                                                        placeholder="10"
-                                                        className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 text-center ${errors.ayatEnd ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-white border-slate-200 focus:border-blue-400 focus:shadow-[0_0_0_4px_rgba(59,130,246,0.1)]'}`}
-                                                        value={form.ayatEnd}
-                                                        onChange={(e) => {
-                                                            setForm({ ...form, ayatEnd: e.target.value });
-                                                            if (errors.ayatEnd) setErrors({ ...errors, ayatEnd: null });
-                                                        }}
-                                                    />
+                                            ) : (
+                                                <div className="flex gap-4">
+                                                    <div className="flex-1">
+                                                        <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Halaman</label>
+                                                        <input
+                                                            type="number"
+                                                            placeholder="1"
+                                                            className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all text-center ${errors.page ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-white border-slate-200 focus:border-amber-400 shadow-sm'}`}
+                                                            value={form.page || ''}
+                                                            onChange={(e) => setForm({ ...form, page: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Jilid</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: 1"
+                                                            className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all text-center ${errors.jilid ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-white border-slate-200 focus:border-amber-400 shadow-sm'}`}
+                                                            value={form.jilid || ''}
+                                                            onChange={(e) => setForm({ ...form, jilid: e.target.value })}
+                                                        />
+                                                    </div>
                                                 </div>
-                                                {errors.ayatEnd && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse text-center">{errors.ayatEnd}</p>}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Field Hijrati - Halaman & Jilid */}
-                                    <div className="bg-amber-50/50 rounded-2xl p-4 border border-amber-100">
-                                        <div className="flex justify-between items-center mb-3">
-                                            <h5 className="text-xs font-bold text-amber-600 tracking-wide flex items-center gap-2">
-                                                <span className="size-5 rounded-md bg-amber-500 text-white flex items-center justify-center text-[10px]">📚</span>
-                                                Hijrati
-                                            </h5>
-                                            <div className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm border border-blue-200">
-                                                +30 Poin
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-4">
-                                            <div className="flex-1">
-                                                <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Halaman</label>
-                                                <input
-                                                    type="number"
-                                                    placeholder="1"
-                                                    className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 text-center ${errors.page ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-white border-slate-200 focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)]'}`}
-                                                    value={form.page || ''}
-                                                    onChange={(e) => {
-                                                        setForm({ ...form, page: e.target.value });
-                                                        if (errors.page) setErrors({ ...errors, page: null });
-                                                    }}
-                                                />
-                                                {errors.page && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse text-center">{errors.page}</p>}
-                                            </div>
-                                            <div className="flex-1">
-                                                <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Jilid</label>
-                                                <input
-                                                    type="number"
-                                                    placeholder="1"
-                                                    className={`w-full border rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none transition-all placeholder:font-medium placeholder:text-slate-300 text-center ${errors.jilid ? 'bg-red-50 border-red-200 focus:border-red-400' : 'bg-white border-slate-200 focus:border-amber-400 focus:shadow-[0_0_0_4px_rgba(251,191,36,0.1)]'}`}
-                                                    value={form.jilid || ''}
-                                                    onChange={(e) => {
-                                                        setForm({ ...form, jilid: e.target.value });
-                                                        if (errors.jilid) setErrors({ ...errors, jilid: null });
-                                                    }}
-                                                />
-                                                {errors.jilid && <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 animate-pulse text-center">{errors.jilid}</p>}
-                                            </div>
-                                        </div>
-                                    </div>
+                                            )}
+                                        </ActivityRenderer>
+                                    ))}
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
-
+                    </section>
+                )}
                 {/* Bagian Literasi */}
-                <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.25s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <div
-                        className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.literacy ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
-                        onClick={() => toggleSection('literacy')}
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="size-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-sm">
-                                <FaBook className="text-lg" />
-                            </div>
-                            <h3 className="font-bold text-slate-800 text-[15px]">Literasi</h3>
-                        </div>
-                        <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.literacy ? 'bg-indigo-100 text-indigo-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
-                            <FaChevronDown className="text-xs" />
-                        </div>
-                    </div>
-
-                    <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.literacy ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                        <div className="overflow-hidden">
-                            <div className="relative overflow-hidden group active:scale-[0.99] transition-all animate-fade-in p-5 pt-2 pb-7">
-                                {/* Header inside card with Score - REDUCED MARGIN */}
-                                <div className="flex justify-between items-start mb-4 relative z-10 w-full">
-                                    <div>
-                                        <h4 className="text-sm font-bold text-slate-800">Baca Buku Hari Ini</h4>
-                                        <p className="text-[10px] text-slate-500 font-medium">Buku apa yang kamu baca?</p>
-                                    </div>
-                                    <div className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm border border-blue-200">
-                                        +15 Poin
-                                    </div>
+                {allCategories.find(c => c.id === 'tadarus')?.items.filter(i => i.id === 'literasi' && !i.isArchived).length > 0 && (
+                    <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                        <div
+                            className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.literacy ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
+                            onClick={() => toggleSection('literacy')}
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="size-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center shadow-sm">
+                                    <FaBook className="text-lg" />
                                 </div>
+                                <h3 className="font-bold text-slate-800 text-[15px]">Literasi</h3>
+                            </div>
+                            <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.literacy ? 'bg-indigo-100 text-indigo-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                                <FaChevronDown className="text-xs" />
+                            </div>
+                        </div>
 
-                                {/* Decorative Background Icon */}
-                                <FaBook className="absolute -bottom-6 -right-6 text-indigo-500/5 text-[10rem] pointer-events-none rotate-12" />
+                        <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.literacy ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                            <div className="overflow-hidden">
+                                <div className="p-5 pt-2 space-y-8 animate-fade-in">
+                                    {allCategories.find(c => c.id === 'tadarus')?.items.filter(i => i.id === 'literasi' && !i.isArchived).map((item) => (
+                                        <ActivityRenderer
+                                            key={item.id}
+                                            activity={{ ...item, label: 'Baca Buku Yuk! 📖' }}
+                                        >
+                                            <div className="space-y-4 pl-2">
+                                                <div>
+                                                    <label className="text-xs font-bold text-slate-500 tracking-wide mb-2 block">📚 Baca buku apa hari ini?</label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Tulis judul bukunya ya..."
+                                                        className="w-full border bg-white border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:border-indigo-400 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.1)] transition-all placeholder:font-medium placeholder:text-slate-300 shadow-sm"
+                                                        value={form.literacyTitle}
+                                                        onChange={(e) => setForm({ ...form, literacyTitle: e.target.value })}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs font-bold text-slate-500 tracking-wide mb-2 block">📖 Sampai halaman berapa?</label>
+                                                    <input
+                                                        type="number"
+                                                        placeholder="Contoh: 10"
+                                                        className="w-full border bg-white border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:border-indigo-400 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.1)] transition-all placeholder:font-medium placeholder:text-slate-300 shadow-sm"
+                                                        value={form.literacyPage}
+                                                        onChange={(e) => setForm({ ...form, literacyPage: e.target.value })}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </ActivityRenderer>
+                                    ))}
 
-                                <div className="space-y-4 relative z-10">
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Judul Buku</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Contoh: Kisah Nabi Muhammad"
-                                            className="w-full border bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:bg-white focus:border-indigo-400 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.1)] transition-all placeholder:font-medium placeholder:text-slate-300"
-                                            value={form.literacyTitle}
-                                            onChange={(e) => setForm({ ...form, literacyTitle: e.target.value })}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-600 tracking-wide ml-1 mb-2 block">Halaman</label>
-                                        <input
-                                            type="number"
-                                            placeholder="Contoh: 15"
-                                            className="w-full border bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:bg-white focus:border-indigo-400 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.1)] transition-all placeholder:font-medium placeholder:text-slate-300"
-                                            value={form.literacyPage}
-                                            onChange={(e) => setForm({ ...form, literacyPage: e.target.value })}
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                )}
 
 
 
 
 
                 {/* Ibadah Lainnya */}
-                <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0 relative z-0" style={{ animationDelay: '0.35s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                    <div
-                        className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.additional ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
-                        onClick={() => toggleSection('additional')}
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="size-10 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center shadow-sm">
-                                <FaHeart className="text-lg" />
+                {additionalWorships.length > 0 && (
+                    <section className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0 relative z-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                        <div
+                            className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections.additional ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
+                            onClick={() => toggleSection('additional')}
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="size-10 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center shadow-sm">
+                                    <FaHeart className="text-lg" />
+                                </div>
+                                <h3 className="font-bold text-slate-800 text-[15px]">Ibadah Lainnya</h3>
                             </div>
-                            <h3 className="font-bold text-slate-800 text-[15px]">Ibadah Lainnya</h3>
-                        </div>
-                        <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.additional ? 'bg-pink-100 text-pink-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
-                            <FaChevronDown className="text-xs" />
-                        </div>
-                    </div>
-
-                    <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.additional ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                        <div className="overflow-hidden">
-                            <div className="space-y-2 animate-fade-in p-5 pt-2">
-                                {additionalWorships.map((item) => {
-                                    // Manual color mapping for new items
-                                    const colorClasses = {
-                                        amber: { border: 'border-amber-300', bg: 'bg-amber-50/50', checkBg: 'bg-amber-500 border-amber-500', iconColor: 'text-amber-500', ring: 'focus:ring-amber-200 focus:border-amber-400' },
-                                        purple: { border: 'border-purple-300', bg: 'bg-purple-50/50', checkBg: 'bg-purple-500 border-purple-500', iconColor: 'text-purple-600', ring: 'focus:ring-purple-200 focus:border-purple-400' },
-                                        emerald: { border: 'border-emerald-300', bg: 'bg-emerald-50/50', checkBg: 'bg-emerald-500 border-emerald-500', iconColor: 'text-emerald-600', ring: 'focus:ring-emerald-200 focus:border-emerald-400' },
-                                        rose: { border: 'border-rose-300', bg: 'bg-rose-50/50', checkBg: 'bg-rose-500 border-rose-500', iconColor: 'text-rose-600', ring: 'focus:ring-rose-200 focus:border-rose-400' },
-                                        blue: { border: 'border-blue-300', bg: 'bg-blue-50/50', checkBg: 'bg-blue-500 border-blue-500', iconColor: 'text-blue-600', ring: 'focus:ring-blue-200 focus:border-blue-400' },
-                                        teal: { border: 'border-teal-300', bg: 'bg-teal-50/50', checkBg: 'bg-teal-500 border-teal-500', iconColor: 'text-teal-600', ring: 'focus:ring-teal-200 focus:border-teal-400' },
-                                    }[item.color || 'emerald'];
-
-                                    return (
-                                        <div key={item.id} className={`bg-white rounded-2xl border p-4 transition-all duration-300 ${selectedAdditionalWorships[item.id] ? `${colorClasses.border} ${colorClasses.bg} shadow-md` : 'border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md'}`}>
-                                            <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleAdditionalWorship(item.id)}>
-                                                <div className="flex items-center gap-3.5">
-                                                    <div className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedAdditionalWorships[item.id] ? colorClasses.checkBg : 'border-gray-200 bg-gray-50'}`}>
-                                                        {selectedAdditionalWorships[item.id] && <span className="text-white text-xs font-bold">✓</span>}
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className={`text-lg ${selectedAdditionalWorships[item.id] ? colorClasses.iconColor : 'text-gray-400'}`}>{item.Icon && <item.Icon />}</span>
-                                                        <span className={`text-sm font-bold ${selectedAdditionalWorships[item.id] ? 'text-gray-800' : 'text-gray-600'}`}>{item.label}</span>
-                                                    </div>
-                                                </div>
-                                                <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${selectedAdditionalWorships[item.id] ? 'bg-white shadow-sm text-gray-800' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>+{item.points} Poin</span>
-                                            </div>
-                                            {selectedAdditionalWorships[item.id] && (
-                                                <div className="mt-4 pl-10 animate-fade-in">
-                                                    <input
-                                                        type="text"
-                                                        placeholder={item.placeholder || "Tambahkan catatan..."}
-                                                        className={`w-full bg-white border border-transparent rounded-xl px-4 py-2.5 text-xs font-medium outline-none focus:ring-2 transition-all shadow-sm ${colorClasses.ring}`}
-                                                        value={additionalNotes[item.id] || ''}
-                                                        onChange={(e) => setAdditionalNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })}
+                            <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections.additional ? 'bg-pink-100 text-pink-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                                <FaChevronDown className="text-xs" />
                             </div>
                         </div>
-                    </div>
-                </section>
+
+                        <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections.additional ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                            <div className="overflow-hidden">
+                                <div className="space-y-2 animate-fade-in p-5 pt-2">
+                                    {additionalWorships.map((item) => (
+                                        <ActivityRenderer
+                                            key={item.id}
+                                            activity={item}
+                                            value={selectedAdditionalWorships[item.id] ? { note: additionalNotes[item.id] } : null}
+                                            onToggle={toggleAdditionalWorship}
+                                            onNoteChange={(id, value) => setAdditionalNotes(prev => ({ ...prev, [id]: value }))}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                )}
 
                 {/* Custom Categories from Admin */}
-                {customCategories.map((category, catIndex) => {
-                    // Safety check: Filter out archived items
-                    const activeItems = category.items ? category.items.filter(item => !item.isArchived) : [];
-                    if (activeItems.length === 0) return null;
+                {
+                    customCategories.map((category, catIndex) => {
+                        // Safety check: Filter out archived items
+                        const activeItems = category.items ? category.items.filter(item => !item.isArchived) : [];
+                        if (activeItems.length === 0) return null;
 
-                    return (
-                        <section key={category.id} className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0 relative z-0" style={{ animationDelay: `${0.4 + catIndex * 0.05}s`, animationFillMode: 'forwards', animationDuration: '0.8s' }}>
-                            <div
-                                className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections[category.id] ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
-                                onClick={() => toggleSection(category.id)}
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className={`size-10 rounded-2xl ${category.color || 'bg-purple-500'} text-white flex items-center justify-center shadow-sm`}>
-                                        {category.Icon && <category.Icon className="text-lg" />}
+                        return (
+                            <section key={category.id} className="bg-white rounded-3xl border border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden animate-fade-in-up opacity-0 relative z-0" style={{ animationDelay: `${0.6 + catIndex * 0.1}s`, animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                                <div
+                                    className={`p-5 flex items-center justify-between cursor-pointer transition-colors duration-300 ${expandedSections[category.id] ? 'bg-slate-50/80' : 'bg-white hover:bg-slate-50/50'}`}
+                                    onClick={() => toggleSection(category.id)}
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className={`size-10 rounded-2xl ${category.color || 'bg-purple-500'} text-white flex items-center justify-center shadow-sm`}>
+                                            {category.Icon && <category.Icon className="text-lg" />}
+                                        </div>
+                                        <h3 className="font-bold text-slate-800 text-[15px]">{category.title}</h3>
                                     </div>
-                                    <h3 className="font-bold text-slate-800 text-[15px]">{category.title}</h3>
+                                    <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections[category.id] ? 'bg-purple-100 text-purple-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                                        <FaChevronDown className="text-xs" />
+                                    </div>
                                 </div>
-                                <div className={`size-8 rounded-full flex items-center justify-center transition-all duration-300 ${expandedSections[category.id] ? 'bg-purple-100 text-purple-600 rotate-180' : 'bg-slate-100 text-slate-400'}`}>
-                                    <FaChevronDown className="text-xs" />
-                                </div>
-                            </div>
 
-                            <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections[category.id] ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                                <div className="overflow-hidden">
-                                    <div className="space-y-2 animate-fade-in p-5 pt-2">
-                                        {category.items.map((item) => {
-                                            const colorClasses = {
-                                                amber: { border: 'border-amber-300', bg: 'bg-amber-50/50', checkBg: 'bg-amber-500 border-amber-500', iconColor: 'text-amber-500', ring: 'focus:ring-amber-200 focus:border-amber-400' },
-                                                purple: { border: 'border-purple-300', bg: 'bg-purple-50/50', checkBg: 'bg-purple-500 border-purple-500', iconColor: 'text-purple-600', ring: 'focus:ring-purple-200 focus:border-purple-400' },
-                                                emerald: { border: 'border-emerald-300', bg: 'bg-emerald-50/50', checkBg: 'bg-emerald-500 border-emerald-500', iconColor: 'text-emerald-600', ring: 'focus:ring-emerald-200 focus:border-emerald-400' },
-                                                rose: { border: 'border-rose-300', bg: 'bg-rose-50/50', checkBg: 'bg-rose-500 border-rose-500', iconColor: 'text-rose-600', ring: 'focus:ring-rose-200 focus:border-rose-400' },
-                                                blue: { border: 'border-blue-300', bg: 'bg-blue-50/50', checkBg: 'bg-blue-500 border-blue-500', iconColor: 'text-blue-600', ring: 'focus:ring-blue-200 focus:border-blue-400' },
-                                                teal: { border: 'border-teal-300', bg: 'bg-teal-50/50', checkBg: 'bg-teal-500 border-teal-500', iconColor: 'text-teal-600', ring: 'focus:ring-teal-200 focus:border-teal-400' },
-                                                indigo: { border: 'border-indigo-300', bg: 'bg-indigo-50/50', checkBg: 'bg-indigo-500 border-indigo-500', iconColor: 'text-indigo-600', ring: 'focus:ring-indigo-200 focus:border-indigo-400' },
-                                                cyan: { border: 'border-cyan-300', bg: 'bg-cyan-50/50', checkBg: 'bg-cyan-500 border-cyan-500', iconColor: 'text-cyan-600', ring: 'focus:ring-cyan-200 focus:border-cyan-400' },
-                                                orange: { border: 'border-orange-300', bg: 'bg-orange-50/50', checkBg: 'bg-orange-500 border-orange-500', iconColor: 'text-orange-600', ring: 'focus:ring-orange-200 focus:border-orange-400' },
-                                                pink: { border: 'border-pink-300', bg: 'bg-pink-50/50', checkBg: 'bg-pink-500 border-pink-500', iconColor: 'text-pink-600', ring: 'focus:ring-pink-200 focus:border-pink-400' },
-                                                lime: { border: 'border-lime-300', bg: 'bg-lime-50/50', checkBg: 'bg-lime-500 border-lime-500', iconColor: 'text-lime-600', ring: 'focus:ring-lime-200 focus:border-lime-400' },
-                                                sky: { border: 'border-sky-300', bg: 'bg-sky-50/50', checkBg: 'bg-sky-500 border-sky-500', iconColor: 'text-sky-600', ring: 'focus:ring-sky-200 focus:border-sky-400' },
-                                                violet: { border: 'border-violet-300', bg: 'bg-violet-50/50', checkBg: 'bg-violet-500 border-violet-500', iconColor: 'text-violet-600', ring: 'focus:ring-violet-200 focus:border-violet-400' },
-                                                fuchsia: { border: 'border-fuchsia-300', bg: 'bg-fuchsia-50/50', checkBg: 'bg-fuchsia-500 border-fuchsia-500', iconColor: 'text-fuchsia-600', ring: 'focus:ring-fuchsia-200 focus:border-fuchsia-400' },
-                                                red: { border: 'border-red-300', bg: 'bg-red-50/50', checkBg: 'bg-red-500 border-red-500', iconColor: 'text-red-600', ring: 'focus:ring-red-200 focus:border-red-400' },
-                                                slate: { border: 'border-slate-300', bg: 'bg-slate-50/50', checkBg: 'bg-slate-500 border-slate-500', iconColor: 'text-slate-600', ring: 'focus:ring-slate-200 focus:border-slate-400' },
-                                            }[item.color || 'purple'] || { border: 'border-purple-300', bg: 'bg-purple-50/50', checkBg: 'bg-purple-500 border-purple-500', iconColor: 'text-purple-600', ring: 'focus:ring-purple-200 focus:border-purple-400' };
-
-                                            return (
-                                                <div key={item.id} className={`bg-white rounded-2xl border p-4 transition-all duration-300 ${selectedAdditionalWorships[item.id] ? `${colorClasses.border} ${colorClasses.bg} shadow-md` : 'border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-md'}`}>
-                                                    <div className="flex items-center justify-between cursor-pointer" onClick={() => toggleAdditionalWorship(item.id)}>
-                                                        <div className="flex items-center gap-3.5">
-                                                            <div className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedAdditionalWorships[item.id] ? colorClasses.checkBg : 'border-gray-200 bg-gray-50'}`}>
-                                                                {selectedAdditionalWorships[item.id] && <span className="text-white text-xs font-bold">✓</span>}
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className={`text-lg ${selectedAdditionalWorships[item.id] ? colorClasses.iconColor : 'text-gray-400'}`}>{item.Icon && <item.Icon />}</span>
-                                                                <span className={`text-sm font-bold ${selectedAdditionalWorships[item.id] ? 'text-gray-800' : 'text-gray-600'}`}>{item.label}</span>
-                                                            </div>
-                                                        </div>
-                                                        <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${selectedAdditionalWorships[item.id] ? 'bg-white shadow-sm text-gray-800' : 'bg-blue-100 text-blue-700 border border-blue-200'}`}>+{item.points} Poin</span>
-                                                    </div>
-                                                    {selectedAdditionalWorships[item.id] && (
-                                                        <div className="mt-4 pl-10 animate-fade-in">
-                                                            <input
-                                                                type="text"
-                                                                placeholder={item.placeholder || "Tambahkan catatan..."}
-                                                                className={`w-full bg-white border border-transparent rounded-xl px-4 py-2.5 text-xs font-medium outline-none focus:ring-2 transition-all shadow-sm ${colorClasses.ring}`}
+                                <div className={`grid transition-[grid-template-rows,opacity,margin] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedSections[category.id] ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                                    <div className="overflow-hidden">
+                                        <div className="space-y-2 animate-fade-in p-5 pt-2">
+                                            {category.items.map((item) => (
+                                                <ActivityRenderer
+                                                    key={item.id}
+                                                    activity={{ ...item, color: item.color || category.themeColor }}
+                                                    value={selectedAdditionalWorships[item.id] ? { note: additionalNotes[item.id] } : null}
+                                                    onToggle={toggleAdditionalWorship}
+                                                    onNoteChange={(id, value) => setAdditionalNotes(prev => ({ ...prev, [id]: value }))}
+                                                >
+                                                    {(item.type === 'form' || item.type === 'text') && (
+                                                        <div>
+                                                            <label className="text-xs font-bold text-slate-500 tracking-wide mb-2 block">📝 {item.placeholder || 'Catatan'}</label>
+                                                            <textarea
+                                                                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all placeholder:font-medium placeholder:text-slate-300 shadow-sm resize-none"
+                                                                rows="3"
+                                                                placeholder={item.placeholder || "Tulis catatanmu di sini..."}
                                                                 value={additionalNotes[item.id] || ''}
                                                                 onChange={(e) => setAdditionalNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
                                                             />
                                                         </div>
                                                     )}
-                                                </div>
-                                            );
-                                        })}
+                                                </ActivityRenderer>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </section>
-                    );
-                })}
+                            </section>
+                        );
+                    })
+                }
 
                 {/* Aksi Kirim - Gradien Native Besar */}
-                <div className="mt-8 pointer-events-auto flex justify-center animate-fade-in-up opacity-0" style={{ animationDelay: `${0.4 + customCategories.length * 0.05}s`, animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                <div className="mt-8 pointer-events-auto flex justify-center animate-fade-in-up opacity-0" style={{ animationDelay: `${0.6 + customCategories.length * 0.1}s`, animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                     <button
                         onClick={handleSendReport}
                         disabled={isSubmitting}

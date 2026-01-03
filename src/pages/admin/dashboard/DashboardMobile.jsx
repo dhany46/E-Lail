@@ -1,30 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AdminHeader from '../components/AdminHeader';
 import { FaUserGraduate, FaChalkboardTeacher, FaSchool, FaBookOpen, FaArrowRight } from "react-icons/fa";
+import { loadAllActivities } from '../../../services/activityService.jsx';
 
 const DashboardMobile = () => {
-    // Dummy Data for Logic
+    const [recentLogs, setRecentLogs] = useState([]);
+
+    useEffect(() => {
+        const activities = loadAllActivities();
+        // Limit to 5 most recent for the dashboard feed
+        setRecentLogs(activities.slice(0, 5).map((act, index) => ({
+            id: act.id || index,
+            name: "Siswa", // Since we don't have student names in localStorage yet, using placeholder or info from context if available
+            action: act.title,
+            time: act.time,
+            class: "Umum",
+            color: act.bg || 'bg-blue-500',
+            textColor: act.color || 'text-white'
+        })));
+    }, []);
+
+    // Dummy Data for Logic (keeping generic stats for now)
     const stats = {
         totalStudents: 450,
         studentGrowth: 12,
         totalTeachers: 24,
         activeClasses: 12,
         todayAttendance: 85,
-        pendingReports: 5
+        pendingReports: recentLogs.length // Using real count for pending if applicable
     };
-
-    const recentLogs = [
-        { id: 1, name: "Ahmad Fulan", action: "Sholat Subuh", time: "04:45", class: "5A", color: "bg-blue-500" },
-        { id: 2, name: "Siti Aminah", action: "Tilawah Quran", time: "05:15", class: "4B", color: "bg-indigo-500" },
-        { id: 3, name: "Umar Al-Faruq", action: "Sholat Dhuha", time: "07:30", class: "6A", color: "bg-cyan-500" },
-    ];
 
     return (
         <div className="min-h-[100dvh] bg-gradient-to-br from-slate-50 via-slate-50 to-indigo-50/50 font-sans pb-28 scrollbar-hide">
             {/* Sticky Header Section with Border */}
             <div className="bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl z-30 border-b border-slate-200 px-5 pt-4 pb-1">
-                <AdminHeader showGreeting={true} showBell={true} />
+                <AdminHeader showGreeting={true} showBell={true} user={{ name: "Fulan" }} />
             </div>
 
             <div className="p-5 max-w-lg mx-auto">
@@ -215,15 +226,15 @@ const DashboardMobile = () => {
 
                     <div className="bg-white/60 backdrop-blur-xl rounded-[2rem] border border-white/60 shadow-xl shadow-slate-200/40 p-2 relative overflow-hidden">
                         <div className="absolute top-0 right-0 size-40 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
-                        {recentLogs.map((log, idx) => (
+                        {recentLogs.map((log) => (
                             <div key={log.id} className="flex items-center gap-4 p-3.5 rounded-3xl hover:bg-white/80 transition-all border border-transparent hover:border-white/50 group relative">
-                                <div className={`size-12 rounded-2xl ${log.color} bg-gradient-to-br from-current to-current/80 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-current/30 shrink-0 group-hover:scale-105 transition-transform`}>
-                                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                                <div className={`size-12 rounded-2xl ${log.color} flex items-center justify-center font-black text-sm shadow-lg shadow-current/10 shrink-0 group-hover:scale-105 transition-transform ${log.textColor}`}>
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
                                     {log.name.substring(0, 2).toUpperCase()}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-center">
-                                        <p className="text-[13px] font-bold text-slate-800 truncate tracking-tight group-hover:text-blue-700 transition-colors">{log.name}</p>
+                                        <p className="text-[13px] font-bold text-slate-800 truncate tracking-tight group-hover:text-blue-700 transition-colors">Siswa</p>
                                         <span className="text-[10px] font-bold text-slate-400 font-mono tracking-tight bg-slate-100 px-1.5 py-0.5 rounded-md group-hover:bg-blue-50 group-hover:text-blue-400 transition-colors">{log.time}</span>
                                     </div>
                                     <div className="flex items-center gap-2 mt-1">

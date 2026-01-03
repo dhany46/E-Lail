@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaExclamationTriangle, FaCheckCircle, FaTrash } from "react-icons/fa";
 import { BookOpen, User, Mail, Sparkles, Phone } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
+import StudentHeader from '../../../components/student/StudentHeader';
 
 
 import iconWarning from '../../../assets/icon_warning.png';
@@ -185,7 +186,7 @@ const loadAllActivities = () => {
 
 const ProfileMobile = () => {
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const [activities, setActivities] = useState([]);
     const [stats, setStats] = useState({
         totalPoints: 0,
@@ -204,15 +205,6 @@ const ProfileMobile = () => {
         const timer = setTimeout(() => setIsAnimating(false), 5500);
         return () => clearTimeout(timer);
     }, []);
-
-    const studentInfo = {
-        name: "Ahmad",
-        fullName: "Ahmad Zaki",
-        classRoom: "4B",
-        className: "Kelas 4 Abu Bakar",
-        nis: "12345678",
-        teacher: "Ust. Abdullah"
-    };
 
     useEffect(() => {
         const allActivities = loadAllActivities();
@@ -309,28 +301,28 @@ const ProfileMobile = () => {
                 <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-white/40 via-white/10 to-transparent pointer-events-none z-0"></div>
 
                 {/* Header - Native Style */}
-                <div className="relative z-[60] bg-gradient-to-b from-blue-100/95 via-blue-50/95 to-white/95 backdrop-blur-xl border-b border-slate-200 px-6 py-4 flex items-center justify-between transition-all duration-300">
-                    <div className="flex items-center gap-4">
-                        <div className="size-12 rounded-full ring-2 ring-teal-400/70 ring-offset-2 ring-offset-blue-50 shrink-0">
-                            <img src="/avatars/dani.png" alt="Avatar" className="size-full rounded-full object-cover" style={{ objectPosition: 'center 35%' }} />
-                        </div>
-                        <div>
-                            <h1 className="text-lg font-extrabold text-slate-900 leading-tight flex items-center gap-1">
-                                <span className="text-xl">👋</span>
-                                Hai {studentInfo.name}!
-                            </h1>
-                            <p className="text-[11px] text-slate-500 font-medium mt-0.5">Ini profil dan pencapaianmu. ✨</p>
-                        </div>
-                    </div>
+                <div className="animate-fade-in-up opacity-0" style={{ animationDuration: '0.6s', animationFillMode: 'forwards' }}>
+                    <StudentHeader
+                        user={user}
+                        variant="profile"
+                        title="Profil Saya"
+                        subtitle="Identitas & Pencapaian ✨"
+                    />
                 </div>
 
                 <div className="px-5 mt-6 space-y-6 relative z-10">
 
                     {/* Profile Card - Large & Clean */}
-                    <div className="flex flex-col items-center animate-fade-in-up">
+                    <div className="flex flex-col items-center animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                         <div className="relative mb-3 group">
                             <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-emerald-400 shadow-xl shadow-primary/20 ring-4 ring-white relative z-10 overflow-hidden">
-                                <img src="/avatars/dani.png" alt={studentInfo.fullName} className="w-full h-full object-cover" style={{ objectPosition: 'center 35%' }} />
+                                {user?.photo ? (
+                                    <img src={user.photo} alt={user?.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className={`w-full h-full bg-gradient-to-br ${user?.color || 'from-blue-400 to-blue-600'} flex items-center justify-center text-white font-bold text-3xl`}>
+                                        {user?.initials || user?.name?.substring(0, 2).toUpperCase() || 'S'}
+                                    </div>
+                                )}
                             </div>
                             {/* Status Indicator */}
                             <div className="absolute 0 -bottom-1 -right-1 bg-white p-1.5 rounded-full z-20 shadow-sm">
@@ -340,20 +332,20 @@ const ProfileMobile = () => {
                             </div>
                         </div>
 
-                        <h2 className="text-xl font-extrabold text-slate-900 text-center tracking-tight mb-2">{studentInfo.fullName}</h2>
+                        <h2 className="text-xl font-extrabold text-slate-900 text-center tracking-tight mb-2">{user?.name || 'Nama Siswa'}</h2>
                         <div className="flex flex-wrap items-center justify-center gap-2.5 mt-0">
                             <span className="px-3.5 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold border border-blue-100">
-                                {studentInfo.className}
+                                Kelas {user?.class || '-'}
                             </span>
                             <span className="px-3.5 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-bold border border-slate-200">
-                                NIS: {studentInfo.nis}
+                                NIS: {user?.nis || '-'}
                             </span>
                         </div>
                     </div>
 
                     {/* Total Points Card - Mobile Dashboard Style */}
                     {/* Total Points Card - Mobile Dashboard Style */}
-                    <div className="bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-3xl p-5 text-white shadow-xl relative overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
+                    <div className="bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-3xl p-5 text-white shadow-xl relative overflow-hidden animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                         {/* White glow effects */}
                         <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-white/30 to-transparent rounded-full -mr-20 -mt-20"></div>
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-white/20 to-transparent rounded-full -ml-16 -mb-16"></div>

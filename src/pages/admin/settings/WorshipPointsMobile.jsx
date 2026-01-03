@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Search, Save, RotateCcw, Plus, X, ChevronDown, Check, Trash2, Star, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Search, Save, RotateCcw, Plus, X, ChevronDown, Check, Trash2, Star, AlertTriangle, Edit2, EyeOff, Target } from 'lucide-react';
 import { FaStar } from 'react-icons/fa';
 import { useToast } from '../../../context/ToastContext';
+import { getAppConfig, saveAppConfig } from '../../../utils/constants';
 import {
     DEFAULT_CATEGORIES,
     getActivityConfig,
@@ -70,7 +71,9 @@ const WorshipPointsMobile = ({ onBack }) => {
         points: '',
         category: 'wajib',
         iconId: 'star',
-        colorId: 'blue'
+        colorId: 'blue',
+        inputType: 'checkbox',
+        placeholder: ''
     });
     const [isNewCategory, setIsNewCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
@@ -79,13 +82,28 @@ const WorshipPointsMobile = ({ onBack }) => {
     const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
     const [showIconPicker, setShowIconPicker] = useState(false);
     const [showColorPicker, setShowColorPicker] = useState(false);
+    // State declarations fixed
     const [showCatIconPicker, setShowCatIconPicker] = useState(false);
     const [showCatColorPicker, setShowCatColorPicker] = useState(false);
+
+    // Edit Mode States
+    const [editingActivityId, setEditingActivityId] = useState(null);
+    const [isEditCategoryModalOpen, setIsEditCategoryModalOpen] = useState(false);
+    const [editingCategoryData, setEditingCategoryData] = useState({
+        id: '',
+        title: '',
+        color: '', // bg-class
+        colorId: 'blue',
+        iconId: 'star'
+    });
 
     const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
     const [originalCategories, setOriginalCategories] = useState(DEFAULT_CATEGORIES);
     const [hasChanges, setHasChanges] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+    // Daily Target State
+    const [dailyTarget, setDailyTarget] = useState(getAppConfig().dailyTarget);
 
     // Check for changes whenever categories change
     useEffect(() => {
@@ -105,6 +123,7 @@ const WorshipPointsMobile = ({ onBack }) => {
                 iconId: cat.iconId,
                 colorId: cat.colorId,
                 color: cat.color,
+                isArchived: cat.isArchived, // Explicitly save archived status
                 items: cat.items
             }));
             localStorage.setItem('worship_points_settings', JSON.stringify(dataToSave));
@@ -140,7 +159,18 @@ const WorshipPointsMobile = ({ onBack }) => {
                 const parsedData = JSON.parse(savedData);
                 const mergedCategories = DEFAULT_CATEGORIES.map(defCat => {
                     const savedCat = parsedData.find(c => c.id === defCat.id);
-                    return savedCat ? { ...defCat, items: savedCat.items } : defCat;
+                    if (savedCat) {
+                        return {
+                            ...defCat,
+                            title: savedCat.title,
+                            color: savedCat.color,
+                            colorId: savedCat.colorId,
+                            iconId: savedCat.iconId,
+                            isArchived: savedCat.isArchived, // Restore archived status
+                            items: savedCat.items
+                        };
+                    }
+                    return defCat;
                 });
 
                 // Add custom categories created by admin
@@ -163,22 +193,7 @@ const WorshipPointsMobile = ({ onBack }) => {
         setIsInitialLoad(false);
     }, []);
 
-    const handlePointChange = (catId, itemId, newPoints) => {
-        setCategories(prev => prev.map(cat => {
-            if (cat.id === catId) {
-                return {
-                    ...cat,
-                    items: cat.items.map(item => {
-                        if (item.id === itemId) {
-                            return { ...item, points: parseInt(newPoints) || 0 };
-                        }
-                        return item;
-                    })
-                };
-            }
-            return cat;
-        }));
-    };
+
 
     const filteredCategories = categories.map(cat => ({
         ...cat,
@@ -186,6 +201,22 @@ const WorshipPointsMobile = ({ onBack }) => {
             !item.isArchived && item.label.toLowerCase().includes(searchQuery.toLowerCase())
         )
     })).filter(cat => !cat.isArchived && cat.items.length > 0);
+
+    const handleOpenAddModal = () => {
+        const nextColor = getNextAvailableColor();
+        setNewActivity(prev => ({
+            ...prev,
+            colorId: nextColor.id,
+            category: 'wajib', // Default category
+            label: '',
+            points: '',
+            iconId: 'star',
+            inputType: 'checkbox',
+            placeholder: ''
+        }));
+        setEditingActivityId(null);
+        setIsAddModalOpen(true);
+    };
 
     const handleAddActivity = () => {
         if (!newActivity.label || !newActivity.points) {
@@ -205,10 +236,37 @@ const WorshipPointsMobile = ({ onBack }) => {
         const formattedActivityLabel = formatToEYD(newActivity.label);
         const formattedCategoryName = formatToEYD(newCategoryName);
 
-        // Save custom activity config for icon and color
-        saveCustomActivityConfig(activityId, newActivity.iconId, newActivity.colorId);
+        // Save custom activity config for icon and color (only for new activities)
+        if (!editingActivityId) {
+            saveCustomActivityConfig(activityId, newActivity.iconId, newActivity.colorId);
+        }
 
-        if (isNewCategory) {
+        if (editingActivityId) {
+            // Save config with editing ID
+            saveCustomActivityConfig(editingActivityId, newActivity.iconId, newActivity.colorId);
+            // Update Existing Activity
+            setCategories(prev => prev.map(cat => {
+                if (cat.id === newActivity.category) {
+                    return {
+                        ...cat,
+                        items: cat.items.map(item => {
+                            if (item.id === editingActivityId) {
+                                return {
+                                    id: item.id,
+                                    label: formattedActivityLabel,
+                                    points: parseInt(newActivity.points) || 0,
+                                    type: newActivity.inputType,
+                                    placeholder: newActivity.inputType === 'text' ? newActivity.placeholder : undefined
+                                };
+                            }
+                            return item;
+                        })
+                    };
+                }
+                return cat;
+            }));
+            toast.success('Kegiatan berhasil diperbarui!');
+        } else if (isNewCategory) {
             // Add new category with the activity
             const newCatId = `custom_cat_${Date.now()}`;
             const catColorConfig = AVAILABLE_COLORS.find(c => c.id === newCategoryColor) || AVAILABLE_COLORS[0];
@@ -222,7 +280,9 @@ const WorshipPointsMobile = ({ onBack }) => {
                 items: [{
                     id: activityId,
                     label: formattedActivityLabel,
-                    points: parseInt(newActivity.points) || 0
+                    points: parseInt(newActivity.points) || 0,
+                    type: newActivity.inputType,
+                    placeholder: newActivity.inputType === 'text' ? newActivity.placeholder : undefined
                 }]
             };
             setCategories(prev => [...prev, newCategory]);
@@ -236,7 +296,9 @@ const WorshipPointsMobile = ({ onBack }) => {
                         items: [...cat.items, {
                             id: activityId,
                             label: formattedActivityLabel,
-                            points: parseInt(newActivity.points) || 0
+                            points: parseInt(newActivity.points) || 0,
+                            type: newActivity.inputType,
+                            placeholder: newActivity.inputType === 'text' ? newActivity.placeholder : undefined
                         }]
                     };
                 }
@@ -245,10 +307,21 @@ const WorshipPointsMobile = ({ onBack }) => {
             toast.success('Kegiatan berhasil ditambahkan!');
         }
 
+        // Log data ke console (simulasi penyimpanan database)
+        console.log('📦 Data Kegiatan Baru:', {
+            id: activityId,
+            label: formattedActivityLabel,
+            points: parseInt(newActivity.points) || 0,
+            inputType: newActivity.inputType,
+            category: isNewCategory ? formattedCategoryName : newActivity.category,
+            iconId: newActivity.iconId,
+            colorId: newActivity.colorId
+        });
+
         // Reset form with next available color
         const nextColor = getNextAvailableColor();
         setIsAddModalOpen(false);
-        setNewActivity({ label: '', points: '', category: 'wajib', iconId: 'star', colorId: nextColor.id });
+        setNewActivity({ label: '', points: '', category: 'wajib', iconId: 'star', colorId: nextColor.id, inputType: 'checkbox', placeholder: '' });
         setIsNewCategory(false);
         setNewCategoryName('');
         setNewCategoryColor(nextColor.id);
@@ -257,11 +330,59 @@ const WorshipPointsMobile = ({ onBack }) => {
         setShowColorPicker(false);
         setShowCatIconPicker(false);
         setShowCatColorPicker(false);
+        setEditingActivityId(null);
+    };
+
+    const handleEditActivity = (catId, activity) => {
+        const config = getActivityConfig(activity.id);
+        setNewActivity({
+            label: activity.label,
+            points: activity.points,
+            category: catId,
+            iconId: config.iconId || 'star',
+            colorId: config.colorName || 'blue',
+            inputType: activity.type || 'checkbox',
+            placeholder: activity.placeholder || ''
+        });
+        setEditingActivityId(activity.id);
+        setIsNewCategory(false);
+        setIsAddModalOpen(true);
+    };
+
+    const handleEditCategory = (catId) => {
+        const category = categories.find(c => c.id === catId);
+        if (!category) return;
+        setEditingCategoryData({
+            id: category.id,
+            title: category.title,
+            color: category.color,
+            colorId: category.colorId || 'blue',
+            iconId: category.iconId || 'star'
+        });
+        setIsEditCategoryModalOpen(true);
+    };
+
+    const handleUpdateCategory = () => {
+        setCategories(prev => prev.map(cat => {
+            if (cat.id === editingCategoryData.id) {
+                const colorConfig = AVAILABLE_COLORS.find(c => c.id === editingCategoryData.colorId) || AVAILABLE_COLORS[0];
+                return {
+                    ...cat,
+                    title: editingCategoryData.title,
+                    color: colorConfig.bg,
+                    colorId: editingCategoryData.colorId,
+                    iconId: editingCategoryData.iconId,
+                    icon: getIconById(editingCategoryData.iconId)
+                };
+            }
+            return cat;
+        }));
+        setIsEditCategoryModalOpen(false);
+        toast.success('Kategori berhasil diperbarui!');
     };
 
     const toggleCollapse = (catId) => {
         setExpandedCategories(prev => ({
-            ...prev,
             [catId]: !prev[catId]
         }));
     };
@@ -269,19 +390,19 @@ const WorshipPointsMobile = ({ onBack }) => {
     const handleDeleteCategory = (catId) => {
         const category = categories.find(c => c.id === catId);
         showConfirm(
-            'Hapus Kategori?',
-            `Kategori "${category?.title}" dan semua kegiatannya akan dihapus.`,
+            'Nonaktifkan Kategori?',
+            `Kategori "${category?.title}" akan disembunyikan dari input siswa, namun riwayat lama tetap tersimpan.`,
             () => {
-                // Soft Delete: Mark as archived instead of removing
+                // Soft Delete (Disable) for ALL Categories (Default & Custom)
                 setCategories(prev => prev.map(cat => {
                     if (cat.id === catId) {
                         return { ...cat, isArchived: true };
                     }
                     return cat;
                 }));
-                toast.success('Kategori berhasil dihapus');
+                toast.success('Kategori dinonaktifkan');
             },
-            'danger'
+            'warning'
         );
     };
 
@@ -290,10 +411,10 @@ const WorshipPointsMobile = ({ onBack }) => {
         const item = category?.items.find(i => i.id === itemId);
 
         showConfirm(
-            'Hapus Kegiatan?',
-            `Kegiatan "${item?.label}" akan dihapus dari daftar input siswa. Riwayat siswa tidak akan hilang.`,
+            'Nonaktifkan Kegiatan?',
+            `Kegiatan "${item?.label}" akan disembunyikan dari input siswa, namun riwayat lama tetap tersimpan.`,
             () => {
-                // Soft Delete: Mark as archived instead of filtering
+                // Soft Delete (Disable) for ALL Activities (Default & Custom)
                 setCategories(prev => prev.map(cat => {
                     if (cat.id === catId) {
                         return {
@@ -308,11 +429,44 @@ const WorshipPointsMobile = ({ onBack }) => {
                     }
                     return cat;
                 }));
-                toast.success('Kegiatan berhasil dihapus');
+                toast.success('Kegiatan dinonaktifkan');
             },
-            'danger'
+            'warning'
         );
     };
+
+    const handleRestoreCategory = (catId) => {
+        setCategories(prev => prev.map(cat => {
+            if (cat.id === catId) {
+                return { ...cat, isArchived: false };
+            }
+            return cat;
+        }));
+        toast.success('Kategori diaktifkan kembali');
+    };
+
+    const handleRestoreActivity = (catId, itemId) => {
+        setCategories(prev => prev.map(cat => {
+            if (cat.id === catId) {
+                return {
+                    ...cat,
+                    items: cat.items.map(item => {
+                        if (item.id === itemId) {
+                            return { ...item, isArchived: false };
+                        }
+                        return item;
+                    })
+                };
+            }
+            return cat;
+        }));
+        toast.success('Kegiatan diaktifkan kembali');
+    };
+
+    // Filter disabled items for the management card
+    const disabledCategories = categories.filter(cat => cat.isArchived);
+    const activeCategoriesWithDisabledItems = categories.filter(cat => !cat.isArchived && cat.items.some(i => i.isArchived));
+    const hasDisabledItems = disabledCategories.length > 0 || activeCategoriesWithDisabledItems.length > 0;
 
     const handleSave = () => {
         // Data sudah auto-save, cukup tampilkan toast dan kembali
@@ -357,7 +511,57 @@ const WorshipPointsMobile = ({ onBack }) => {
                 </div>
             </div>
 
-            <div className="p-5">
+            <div className="p-5 space-y-4">
+                {/* Daily Target Setting Card */}
+                <div className="bg-white rounded-[1.5rem] border border-slate-200/60 shadow-sm overflow-hidden">
+                    <div className="px-5 py-4 bg-gradient-to-br from-emerald-500 to-teal-600 relative overflow-hidden">
+                        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,_white_1px,_transparent_1px)] bg-[length:20px_20px]"></div>
+                        <div className="relative flex items-center gap-3">
+                            <div className="size-10 rounded-xl bg-white/20 flex items-center justify-center">
+                                <Target size={20} className="text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-base font-bold text-white">Target Harian</h3>
+                                <p className="text-[11px] text-emerald-100">Jumlah ibadah yang harus dicapai siswa per hari</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="px-5 py-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => {
+                                    const newTarget = Math.max(1, dailyTarget - 1);
+                                    setDailyTarget(newTarget);
+                                    saveAppConfig({ dailyTarget: newTarget });
+                                    toast.success(`Target harian: ${newTarget} ibadah`);
+                                }}
+                                className="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-lg active:scale-95 transition-transform hover:bg-slate-200"
+                            >
+                                −
+                            </button>
+                            <div className="text-center min-w-[60px]">
+                                <span className="text-3xl font-black text-slate-800">{dailyTarget}</span>
+                                <p className="text-[10px] text-slate-400 font-medium">ibadah/hari</p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    const newTarget = Math.min(20, dailyTarget + 1);
+                                    setDailyTarget(newTarget);
+                                    saveAppConfig({ dailyTarget: newTarget });
+                                    toast.success(`Target harian: ${newTarget} ibadah`);
+                                }}
+                                className="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-lg active:scale-95 transition-transform hover:bg-slate-200"
+                            >
+                                +
+                            </button>
+                        </div>
+                        <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-full">
+                            <Check size={14} className="text-emerald-600" />
+                            <span className="text-xs font-bold text-emerald-600">Auto-Save</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="bg-white rounded-[1.5rem] border border-slate-200/60 shadow-sm overflow-hidden">
                     {/* Card Header with Title & Search */}
                     <div className="px-5 pt-5 pb-5 bg-gradient-to-br from-blue-500 to-indigo-600 relative overflow-hidden">
@@ -366,7 +570,7 @@ const WorshipPointsMobile = ({ onBack }) => {
                             <div className="flex items-center justify-between mb-1">
                                 <h3 className="text-lg font-bold text-white">Atur Poin Ibadah</h3>
                                 <button
-                                    onClick={() => setIsAddModalOpen(true)}
+                                    onClick={handleOpenAddModal}
                                     className="size-10 rounded-xl bg-white text-blue-600 flex items-center justify-center active:scale-90 transition-all shadow-lg shadow-blue-900/20 hover:shadow-xl"
                                 >
                                     <Plus size={22} strokeWidth={2.5} />
@@ -409,11 +613,21 @@ const WorshipPointsMobile = ({ onBack }) => {
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
+                                                handleEditCategory(cat.id);
+                                            }}
+                                            className="size-7 rounded-full flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                        >
+                                            <Edit2 size={14} />
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
                                                 handleDeleteCategory(cat.id);
                                             }}
-                                            className="size-7 rounded-full flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                            className="size-7 rounded-full flex items-center justify-center text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+                                            title="Nonaktifkan Kategori"
                                         >
-                                            <Trash2 size={14} />
+                                            <EyeOff size={14} />
                                         </button>
                                         <div
                                             onClick={() => toggleCollapse(cat.id)}
@@ -448,58 +662,28 @@ const WorshipPointsMobile = ({ onBack }) => {
                                                 </div>
 
                                                 <div className="flex items-center gap-2">
-                                                    <div className="flex items-center bg-slate-100 rounded-full">
-                                                        <button
-                                                            onClick={() => handlePointChange(cat.id, item.id, Math.max(0, item.points - 5))}
-                                                            className="size-8 flex items-center justify-center text-slate-500 hover:text-blue-600 active:scale-90 transition-all"
-                                                        >
-                                                            <span className="text-lg font-bold">−</span>
-                                                        </button>
-                                                        <input
-                                                            type="text"
-                                                            inputMode="numeric"
-                                                            value={item.points}
-                                                            onChange={(e) => handlePointChange(cat.id, item.id, e.target.value.replace(/\D/g, ''))}
-                                                            className="w-8 bg-transparent text-center text-sm font-bold text-slate-700 focus:text-blue-600 transition-colors outline-none"
-                                                        />
-                                                        <button
-                                                            onClick={() => handlePointChange(cat.id, item.id, item.points + 5)}
-                                                            className="size-8 flex items-center justify-center text-slate-500 hover:text-blue-600 active:scale-90 transition-all"
-                                                        >
-                                                            <span className="text-lg font-bold">+</span>
-                                                        </button>
+                                                    <div className="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200">
+                                                        <span className="text-xs font-black text-slate-600">{item.points} Pts</span>
                                                     </div>
 
-                                                    <button
-                                                        onClick={() => handleDeleteActivity(cat.id, item.id)}
-                                                        className="size-8 flex items-center justify-center rounded-full text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
+                                                    <div className="flex items-center gap-1">
+                                                        <button
+                                                            onClick={() => handleEditActivity(cat.id, item)}
+                                                            className="size-8 flex items-center justify-center rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                                        >
+                                                            <Edit2 size={14} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteActivity(cat.id, item.id)}
+                                                            className="size-8 flex items-center justify-center rounded-full text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+                                                            title="Nonaktifkan Kegiatan"
+                                                        >
+                                                            <EyeOff size={14} />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
-
-                                        {/* Action buttons per category */}
-                                        <div className="flex gap-2 pt-2">
-                                            <button
-                                                onClick={handleReset}
-                                                className="size-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 active:scale-95 transition-all"
-                                            >
-                                                <RotateCcw size={15} />
-                                            </button>
-                                            <button
-                                                onClick={handleSave}
-                                                disabled={!hasChanges}
-                                                className={`flex-1 h-9 rounded-lg flex items-center justify-center gap-1.5 text-xs font-medium transition-all ${hasChanges
-                                                    ? 'bg-blue-500 text-white active:scale-95'
-                                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                                    }`}
-                                            >
-                                                <Save size={14} />
-                                                <span>Simpan</span>
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -510,12 +694,84 @@ const WorshipPointsMobile = ({ onBack }) => {
 
 
 
+
+            {/* Disabled Activities Management Card */}
+            {hasDisabledItems && (
+                <div className="px-5 pb-8">
+                    <div className="bg-slate-100 rounded-[1.5rem] border border-slate-200 overflow-hidden animate-fade-in-up">
+                        <div className="px-5 py-4 bg-slate-200 border-b border-slate-300 flex items-center gap-3">
+                            <div className="size-8 rounded-lg bg-slate-400 text-white flex items-center justify-center">
+                                <EyeOff size={16} />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-bold text-slate-700">Kegiatan Nonaktif</h3>
+                                <p className="text-[10px] text-slate-500 font-medium">Data disembunyikan dari input siswa</p>
+                            </div>
+                        </div>
+
+                        <div className="p-3 space-y-2">
+                            {/* Disabled Categories */}
+                            {disabledCategories.map(cat => (
+                                <div key={cat.id} className="bg-white rounded-xl p-3 border border-slate-200 flex items-center justify-between opacity-75 hover:opacity-100 transition-opacity">
+                                    <div className="flex items-center gap-3">
+                                        <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400">
+                                            <cat.icon size={14} />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-bold text-slate-600 line-through decoration-slate-400">{cat.title}</h4>
+                                            <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">Kategori Nonaktif</span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => handleRestoreCategory(cat.id)}
+                                        className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-bold flex items-center gap-1.5 hover:bg-blue-100 active:scale-95 transition-all"
+                                    >
+                                        <RotateCcw size={12} />
+                                        Aktifkan
+                                    </button>
+                                </div>
+                            ))}
+
+                            {/* Disabled Activities in Active Categories */}
+                            {activeCategoriesWithDisabledItems.map(cat => (
+                                <React.Fragment key={`disabled-group-${cat.id}`}>
+                                    {cat.items.filter(i => i.isArchived).map(item => (
+                                        <div key={item.id} className="bg-white rounded-xl p-3 border border-slate-200 flex items-center justify-between opacity-75 hover:opacity-100 transition-opacity">
+                                            <div className="flex items-center gap-3">
+                                                <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400">
+                                                    {(() => {
+                                                        const config = getActivityConfig(item.id);
+                                                        const IconComp = config.icon;
+                                                        return <IconComp size={14} />;
+                                                    })()}
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-xs font-bold text-slate-600 line-through decoration-slate-400">{item.label}</h4>
+                                                    <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">dalam {cat.title}</span>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => handleRestoreActivity(cat.id, item.id)}
+                                                className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-bold flex items-center gap-1.5 hover:bg-blue-100 active:scale-95 transition-all"
+                                            >
+                                                <RotateCcw size={12} />
+                                                Aktifkan
+                                            </button>
+                                        </div>
+                                    ))}
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Modal Tambah Kegiatan */}
             {isAddModalOpen && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
                     <div className="bg-white rounded-[2rem] w-full max-w-sm p-6 shadow-2xl animate-pop-up">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-lg font-black text-slate-800">Tambah Kegiatan</h3>
+                            <h3 className="text-lg font-black text-slate-800">{editingActivityId ? 'Edit Kegiatan' : 'Tambah Kegiatan'}</h3>
                             <button
                                 onClick={() => setIsAddModalOpen(false)}
                                 className="size-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 active:scale-90 transition-transform"
@@ -528,28 +784,30 @@ const WorshipPointsMobile = ({ onBack }) => {
                             <div>
                                 <label className="block text-xs font-bold text-slate-500 mb-2 ml-1">KATEGORI</label>
 
-                                {/* Toggle between existing and new category */}
-                                <div className="flex gap-2 mb-3">
-                                    <button
-                                        onClick={() => setIsNewCategory(false)}
-                                        className={`flex-1 h-10 rounded-xl text-xs font-semibold transition-all ${!isNewCategory
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-slate-100 text-slate-500'
-                                            }`}
-                                    >
-                                        Pilih Kategori
-                                    </button>
-                                    <button
-                                        onClick={() => setIsNewCategory(true)}
-                                        className={`flex-1 h-10 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1 ${isNewCategory
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-slate-100 text-slate-500'
-                                            }`}
-                                    >
-                                        <Plus size={14} />
-                                        Buat Baru
-                                    </button>
-                                </div>
+                                {/* Toggle between existing and new category (Only show if NOT editing) */}
+                                {!editingActivityId && (
+                                    <div className="flex gap-2 mb-3">
+                                        <button
+                                            onClick={() => setIsNewCategory(false)}
+                                            className={`flex-1 h-10 rounded-xl text-xs font-semibold transition-all ${!isNewCategory
+                                                ? 'bg-blue-500 text-white'
+                                                : 'bg-slate-100 text-slate-500'
+                                                }`}
+                                        >
+                                            Pilih Kategori
+                                        </button>
+                                        <button
+                                            onClick={() => setIsNewCategory(true)}
+                                            className={`flex-1 h-10 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1 ${isNewCategory
+                                                ? 'bg-blue-500 text-white'
+                                                : 'bg-slate-100 text-slate-500'
+                                                }`}
+                                        >
+                                            <Plus size={14} />
+                                            Buat Baru
+                                        </button>
+                                    </div>
+                                )}
 
                                 {!isNewCategory ? (
                                     <div className="relative">
@@ -711,26 +969,47 @@ const WorshipPointsMobile = ({ onBack }) => {
                                             </div>
                                         )}
                                     </div>
-                                    {/* Activity Color Picker */}
+                                    {/* Activity Color Picker (Read Only) */}
                                     <div className="flex-1">
-                                        <div className="flex flex-wrap gap-1.5">
-                                            {AVAILABLE_COLORS.map(color => (
-                                                <button
-                                                    key={color.id}
-                                                    onClick={() => setNewActivity({ ...newActivity, colorId: color.id })}
-                                                    title={color.name}
-                                                    className={`size-8 rounded-lg ${color.bg} flex items-center justify-center transition-all ${newActivity.colorId === color.id
-                                                        ? 'ring-2 ring-offset-1 ring-blue-500 scale-110'
-                                                        : 'opacity-50 hover:opacity-100'
-                                                        }`}
-                                                >
-                                                    {newActivity.colorId === color.id && <Check size={12} className="text-white" />}
-                                                </button>
-                                            ))}
+                                        <div className="w-full h-12 px-3 bg-slate-50 rounded-2xl flex items-center gap-3">
+                                            <div className={`size-6 rounded-lg ${AVAILABLE_COLORS.find(c => c.id === newActivity.colorId)?.bg || 'bg-slate-300'} flex items-center justify-center shadow-sm`}></div>
+                                            <span className="text-xs font-bold text-slate-500">
+                                                {AVAILABLE_COLORS.find(c => c.id === newActivity.colorId)?.name || 'Warna'}
+                                                <span className="ml-1 text-[10px] font-normal text-slate-400">(Auto)</span>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-2 ml-1">TIPE INPUT</label>
+                                <select
+                                    value={newActivity.inputType}
+                                    onChange={(e) => setNewActivity({ ...newActivity, inputType: e.target.value })}
+                                    className="w-full h-12 px-4 bg-slate-50 rounded-2xl text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all appearance-none cursor-pointer"
+                                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', backgroundSize: '20px' }}
+                                >
+                                    <option value="checkbox">Checkbox (Centang)</option>
+                                    <option value="text">Form Input (Isian)</option>
+                                </select>
+                            </div>
+
+                            {newActivity.inputType === 'text' && (
+                                <div className="animate-fade-in">
+                                    <label className="block text-xs font-bold text-slate-500 mb-2 ml-1">LABEL FORM</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Contoh: Baca buku apa hari ini?"
+                                        value={newActivity.placeholder}
+                                        onChange={(e) => setNewActivity({ ...newActivity, placeholder: e.target.value })}
+                                        className="w-full h-12 px-4 bg-slate-50 rounded-2xl text-sm font-bold text-slate-700 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                                    />
+                                    <p className="text-[10px] text-slate-400 mt-1.5 ml-1">
+                                        Teks ini akan muncul sebagai pertanyaan di halaman input siswa.
+                                    </p>
+                                </div>
+                            )}
 
                             <div>
                                 <label className="block text-xs font-bold text-slate-500 mb-2 ml-1">BOBOT POIN</label>
@@ -758,6 +1037,93 @@ const WorshipPointsMobile = ({ onBack }) => {
                 </div>
             )}
 
+            {/* Modal Edit Kategori */}
+            {
+                isEditCategoryModalOpen && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+                        <div className="bg-white rounded-[2rem] w-full max-w-sm p-6 shadow-2xl animate-pop-up">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-lg font-black text-slate-800">Edit Kategori</h3>
+                                <button
+                                    onClick={() => setIsEditCategoryModalOpen(false)}
+                                    className="size-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-600 active:scale-90 transition-transform"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-2 ml-1">NAMA KATEGORI</label>
+                                    <input
+                                        type="text"
+                                        value={editingCategoryData.title}
+                                        onChange={(e) => setEditingCategoryData({ ...editingCategoryData, title: e.target.value })}
+                                        className="w-full h-12 px-4 bg-slate-50 rounded-2xl text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
+                                        placeholder="Nama kategori"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 mb-2 ml-1">WARNA</label>
+                                        <div className="w-full h-12 px-3 bg-slate-50 rounded-2xl flex items-center gap-3">
+                                            <div className={`size-6 rounded-lg ${AVAILABLE_COLORS.find(c => c.id === editingCategoryData.colorId)?.bg || 'bg-slate-300'} flex items-center justify-center shadow-sm`}></div>
+                                            <span className="text-xs font-bold text-slate-600">
+                                                {AVAILABLE_COLORS.find(c => c.id === editingCategoryData.colorId)?.name}
+                                                <span className="ml-1 text-[10px] font-normal text-slate-400">(Auto)</span>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 mb-2 ml-1">IKON</label>
+                                        <div className="relative">
+                                            <button
+                                                onClick={() => setShowCatIconPicker(!showCatIconPicker)}
+                                                className="w-full h-12 px-3 bg-slate-50 rounded-2xl flex items-center gap-3 active:scale-95 transition-all outline-none focus:ring-2 focus:ring-blue-100"
+                                            >
+                                                <div className="size-6 rounded-lg bg-slate-200 flex items-center justify-center text-slate-600">
+                                                    {(() => {
+                                                        const Icon = getIconById(editingCategoryData.iconId);
+                                                        return Icon ? <Icon size={14} /> : <Star size={14} />;
+                                                    })()}
+                                                </div>
+                                                <span className="text-xs font-bold text-slate-600">Ikon</span>
+                                            </button>
+
+                                            {showCatIconPicker && (
+                                                <div className="absolute top-14 right-0 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 p-3 z-20 h-48 overflow-y-auto custom-scrollbar animate-fade-in grid grid-cols-5 gap-2">
+                                                    {ALL_ICONS.map(icon => (
+                                                        <button
+                                                            key={icon.id}
+                                                            onClick={() => {
+                                                                setEditingCategoryData({ ...editingCategoryData, iconId: icon.id });
+                                                                setShowCatIconPicker(false);
+                                                            }}
+                                                            className={`size-9 rounded-xl flex items-center justify-center transition-all ${editingCategoryData.iconId === icon.id ? 'bg-blue-50 text-blue-600 ring-2 ring-blue-100' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                                                        >
+                                                            <icon.icon size={16} />
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={handleUpdateCategory}
+                                    className="w-full h-14 mt-4 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-white rounded-2xl shadow-xl shadow-blue-200 flex items-center justify-center gap-2 text-sm font-black active:scale-95 transition-all"
+                                >
+                                    <Check size={18} />
+                                    <span>SIMPAN PERUBAHAN</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
             {/* Confirmation Modal */}
             <ConfirmModal
                 isOpen={confirmModal.isOpen}
@@ -767,7 +1133,7 @@ const WorshipPointsMobile = ({ onBack }) => {
                 message={confirmModal.message}
                 type={confirmModal.type}
             />
-        </div>
+        </div >
     );
 };
 
