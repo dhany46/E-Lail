@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaExclamationTriangle, FaCheckCircle, FaTrash } from "react-icons/fa";
-import { BookOpen, User, Mail, Sparkles, Phone } from 'lucide-react';
+import { BookOpen, User, Mail, Sparkles, Phone, Camera, ZoomIn, ZoomOut, Check, X } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import StudentHeader from '../../../components/student/StudentHeader';
 
@@ -186,7 +187,7 @@ const loadAllActivities = () => {
 
 const ProfileMobile = () => {
     const navigate = useNavigate();
-    const { logout, user } = useAuth();
+    const { logout, user, updateUserPhoto } = useAuth();
     const [activities, setActivities] = useState([]);
     const [stats, setStats] = useState({
         totalPoints: 0,
@@ -200,11 +201,149 @@ const ProfileMobile = () => {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [isAnimating, setIsAnimating] = useState(true);
 
+    // Photo upload states
+    const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+    const [cropImageSrc, setCropImageSrc] = useState(null);
+    const [cropScale, setCropScale] = useState(1);
+    const [cropPosition, setCropPosition] = useState({ x: 0, y: 0 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [isCompressing, setIsCompressing] = useState(false);
+    const fileInputRef = useRef(null);
+
     useEffect(() => {
         // 5500ms allows the bounce to finish at the "bottom" (landed) state
         const timer = setTimeout(() => setIsAnimating(false), 5500);
         return () => clearTimeout(timer);
     }, []);
+
+    // Handle photo upload - Intercept for cropping
+    const handlePhotoUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setCropImageSrc(reader.result);
+                setIsCropModalOpen(true);
+                setCropScale(1);
+                setCropPosition({ x: 0, y: 0 });
+            };
+            reader.readAsDataURL(file);
+            e.target.value = null;
+        }
+    };
+
+    const handleCropComplete = async () => {
+        if (!cropImageSrc) return;
+
+        setIsCompressing(true);
+        const img = new Image();
+        img.src = cropImageSrc;
+
+        await new Promise(resolve => { img.onload = resolve; });
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const size = 300;
+
+        canvas.width = size;
+        canvas.height = size;
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, size, size);
+
+        const scale = cropScale;
+        const x = cropPosition.x;
+        const y = cropPosition.y;
+        const ratio = size / 260;
+
+        ctx.save();
+        ctx.translate(size / 2, size / 2);
+        ctx.translate(x * ratio, y * ratio);
+        ctx.scale(scale, scale);
+
+        const aspect = img.width / img.height;
+        let drawWidth, drawHeight;
+
+        if (aspect > 1) {
+            drawHeight = size;
+            drawWidth = size * aspect;
+        } else {
+            drawWidth = size;
+            drawHeight = size / aspect;
+        }
+
+        ctx.drawImage(img, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
+        ctx.restore();
+
+        const finalBase64 = canvas.toDataURL('image/jpeg', 0.8);
+
+        // Log compression result
+        const originalSize = Math.round((cropImageSrc.length * 3) / 4 / 1024);
+        const compressedSize = Math.round((finalBase64.length * 3) / 4 / 1024);
+        console.log(`📸 Foto Profil - Kompresi: ${originalSize}KB → ${compressedSize}KB (${Math.round((1 - compressedSize/originalSize) * 100)}% lebih kecil)`);
+
+        // Update photo via AuthContext
+        if (updateUserPhoto) {
+            updateUserPhoto(finalBase64);
+        }
+
+        setIsCropModalOpen(false);
+        setIsCompressing(false);
+    };
+
+    // Pan Handlers for crop - using refs to avoid passive event listener issues
+    const cropAreaRef = useRef(null);
+    const dragStateRef = useRef({ isDragging: false, startX: 0, startY: 0 });
+
+    useEffect(() => {
+        const cropArea = cropAreaRef.current;
+        if (!cropArea || !isCropModalOpen) return;
+
+        const handleStart = (e) => {
+            e.preventDefault();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            dragStateRef.current = {
+                isDragging: true,
+                startX: clientX - cropPosition.x,
+                startY: clientY - cropPosition.y
+            };
+            setIsDragging(true);
+        };
+
+        const handleMove = (e) => {
+            if (!dragStateRef.current.isDragging) return;
+            e.preventDefault();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            setCropPosition({
+                x: clientX - dragStateRef.current.startX,
+                y: clientY - dragStateRef.current.startY
+            });
+        };
+
+        const handleEnd = () => {
+            dragStateRef.current.isDragging = false;
+            setIsDragging(false);
+        };
+
+        // Add event listeners with { passive: false } to allow preventDefault
+        cropArea.addEventListener('mousedown', handleStart, { passive: false });
+        cropArea.addEventListener('touchstart', handleStart, { passive: false });
+        window.addEventListener('mousemove', handleMove, { passive: false });
+        window.addEventListener('touchmove', handleMove, { passive: false });
+        window.addEventListener('mouseup', handleEnd);
+        window.addEventListener('touchend', handleEnd);
+
+        return () => {
+            cropArea.removeEventListener('mousedown', handleStart);
+            cropArea.removeEventListener('touchstart', handleStart);
+            window.removeEventListener('mousemove', handleMove);
+            window.removeEventListener('touchmove', handleMove);
+            window.removeEventListener('mouseup', handleEnd);
+            window.removeEventListener('touchend', handleEnd);
+        };
+    }, [isCropModalOpen, cropPosition.x, cropPosition.y]);
 
     useEffect(() => {
         const allActivities = loadAllActivities();
@@ -315,7 +454,10 @@ const ProfileMobile = () => {
                     {/* Profile Card - Large & Clean */}
                     <div className="flex flex-col items-center animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards', animationDuration: '0.8s' }}>
                         <div className="relative mb-3 group">
-                            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-emerald-400 shadow-xl shadow-primary/20 ring-4 ring-white relative z-10 overflow-hidden">
+                            <div 
+                                className="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-emerald-400 shadow-xl shadow-primary/20 ring-4 ring-white relative z-10 overflow-hidden cursor-pointer"
+                                onClick={() => fileInputRef.current?.click()}
+                            >
                                 {user?.photo ? (
                                     <img src={user.photo} alt={user?.name} className="w-full h-full object-cover" />
                                 ) : (
@@ -323,13 +465,26 @@ const ProfileMobile = () => {
                                         {user?.initials || user?.name?.substring(0, 2).toUpperCase() || 'S'}
                                     </div>
                                 )}
-                            </div>
-                            {/* Status Indicator */}
-                            <div className="absolute 0 -bottom-1 -right-1 bg-white p-1.5 rounded-full z-20 shadow-sm">
-                                <div className="bg-green-500 w-6 h-6 rounded-full flex items-center justify-center border-2 border-white">
-                                    <span className="material-symbols-outlined notranslate text-xs text-white font-bold">check</span>
+                                {/* Hover overlay */}
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Camera size={24} className="text-white" />
                                 </div>
                             </div>
+                            {/* Camera Button */}
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="absolute -bottom-1 -right-1 bg-blue-500 p-2 rounded-full z-20 shadow-lg shadow-blue-200 active:scale-95 transition-transform border-2 border-white"
+                            >
+                                <Camera size={14} className="text-white" />
+                            </button>
+                            {/* Hidden file input */}
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handlePhotoUpload}
+                            />
                         </div>
 
                         <h2 className="text-xl font-extrabold text-slate-900 text-center tracking-tight mb-2">{user?.name || 'Nama Siswa'}</h2>
@@ -713,6 +868,86 @@ const ProfileMobile = () => {
 
 
             </div>
+
+            {/* Crop Modal - Using Portal to escape z-index stacking */}
+            {isCropModalOpen && cropImageSrc && createPortal(
+                <div className="fixed inset-0 z-[9999] bg-black/95 flex flex-col pt-8 pb-24 px-5 animate-fade-in">
+                    <div className="flex justify-between items-center mb-4 text-white">
+                        <h3 className="text-lg font-bold">Sesuaikan Foto</h3>
+                        <button onClick={() => setIsCropModalOpen(false)} className="p-2 bg-white/10 rounded-full hover:bg-white/20 active:scale-95 transition-transform">
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden">
+                        {/* Circular Mask Viewport */}
+                        <div
+                            ref={cropAreaRef}
+                            className="relative size-[260px] rounded-full border-[4px] border-white/30 shadow-[0_0_0_9999px_rgba(0,0,0,0.7)] z-10 overflow-hidden cursor-move touch-none select-none"
+                        >
+                            <img
+                                src={cropImageSrc}
+                                alt="Crop Target"
+                                draggable={false}
+                                className="absolute max-w-none origin-center transition-transform duration-75 ease-out select-none"
+                                style={{
+                                    transform: `translate(-50%, -50%) translate(${cropPosition.x}px, ${cropPosition.y}px) scale(${cropScale})`,
+                                    left: '50%',
+                                    top: '50%',
+                                    height: 'auto',
+                                    width: '100%',
+                                    minWidth: '260px',
+                                    minHeight: '260px'
+                                }}
+                            />
+                        </div>
+                        <p className="absolute bottom-2 text-white/50 text-xs font-medium z-20 pointer-events-none">
+                            Geser untuk atur posisi
+                        </p>
+                    </div>
+
+                    {/* Controls */}
+                    <div className="w-full max-w-[320px] mx-auto space-y-4 pt-4">
+                        <div className="flex items-center gap-4 px-2">
+                            <ZoomOut size={20} className="text-white/60" />
+                            <input
+                                type="range"
+                                min="1"
+                                max="3"
+                                step="0.1"
+                                value={cropScale}
+                                onChange={(e) => setCropScale(parseFloat(e.target.value))}
+                                className="flex-1 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-lg"
+                            />
+                            <ZoomIn size={20} className="text-white/60" />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <button
+                                onClick={() => setIsCropModalOpen(false)}
+                                className="h-12 rounded-xl bg-slate-700 text-white font-bold text-sm hover:bg-slate-600 active:scale-95 transition-all"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={handleCropComplete}
+                                disabled={isCompressing}
+                                className="h-12 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-500 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 disabled:opacity-50"
+                            >
+                                {isCompressing ? (
+                                    <span className="animate-spin">⏳</span>
+                                ) : (
+                                    <>
+                                        <Check size={18} />
+                                        Gunakan Foto
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
 
         </div>
     );

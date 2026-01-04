@@ -1,4 +1,5 @@
 import { FaMosque, FaStar, FaBookOpen, FaHeart, FaCloudSun, FaSmileWink, FaMagic, FaHandHoldingHeart, FaCommentSlash, FaPray, FaHandsHelping, FaSeedling, FaLeaf, FaGraduationCap, FaPencilAlt, FaUsers, FaHome, FaChild, FaRunning, FaMoon, FaWater, FaHandPaper, FaBroom, FaUtensils, FaBed, FaClock, FaCalendarCheck, FaClipboardCheck, FaThumbsUp, FaHandshake } from 'react-icons/fa';
+import { ConfigRepositorySync } from '../services/storage/repositories/configRepository.js';
 
 // Format text to proper Indonesian EYD (title case with exceptions)
 const LOWERCASE_WORDS = ['dan', 'atau', 'di', 'ke', 'dari', 'yang', 'untuk', 'dengan', 'pada', 'oleh', 'sebagai', 'dalam', 'atas', 'bagi', 'tentang', 'tanpa', 'antara', 'sampai', 'hingga', 'serta', 'maupun', 'namun', 'tetapi', 'melainkan', 'sedangkan', 'karena', 'sebab', 'jika', 'bila', 'apabila', 'kalau', 'meskipun', 'walaupun', 'walau', 'supaya', 'agar', 'ketika', 'saat', 'waktu'];
@@ -225,17 +226,16 @@ export const CATEGORY_ICONS = {
     'additional': { icon: FaHeart, iconId: 'heart' },
 };
 
-// Get custom activity configs from localStorage
+// Get custom activity configs from storage
+// Now uses ConfigRepositorySync for abstraction
 export const getCustomActivityConfigs = () => {
-    const saved = localStorage.getItem('custom_activity_configs');
-    return saved ? JSON.parse(saved) : {};
+    return ConfigRepositorySync.getCustomActivityConfigs();
 };
 
-// Save custom activity config to localStorage
+// Save custom activity config to storage
+// Now uses ConfigRepositorySync for abstraction
 export const saveCustomActivityConfig = (activityId, iconId, colorName) => {
-    const configs = getCustomActivityConfigs();
-    configs[activityId] = { iconId, colorName };
-    localStorage.setItem('custom_activity_configs', JSON.stringify(configs));
+    ConfigRepositorySync.saveCustomActivityConfig(activityId, iconId, colorName);
 };
 
 // Get activity config (checks custom configs first, then defaults)
@@ -294,16 +294,18 @@ export const getNextAvailableColor = () => {
     return AVAILABLE_COLORS[Math.floor(Math.random() * AVAILABLE_COLORS.length)];
 };
 
-// Get worship categories from localStorage or return defaults
+// Get worship categories from storage or return defaults
+// Now uses ConfigRepositorySync for abstraction
 export const getWorshipCategories = (includeArchived = false) => {
-    const savedData = localStorage.getItem('worship_points_settings');
+    const savedData = ConfigRepositorySync.getWorshipSettings();
 
     // Default categories processing
     let finalCategories = [];
 
     if (savedData) {
         try {
-            const parsedData = JSON.parse(savedData);
+            // savedData is already parsed by repository, no need for JSON.parse
+            const parsedData = savedData;
             // Merge saved items with default structure to preserve icons/colors
             const mergedCategories = DEFAULT_CATEGORIES.map(defCat => {
                 const savedCat = parsedData.find(c => c.id === defCat.id);

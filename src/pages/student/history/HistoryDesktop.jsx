@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAppConfig } from '../../../utils/constants';
 
 const AchievementPopup = ({ onClose }) => {
     const [isVisible, setIsVisible] = useState(false);
@@ -56,7 +57,7 @@ const HistoryDesktop = () => {
     const itemsPerPage = 8;
     const navigate = useNavigate();
 
-    // Check for achievement when activities follow
+    // Check for achievement when activities change
     useEffect(() => {
         if (activities.length === 0) return;
 
@@ -64,10 +65,13 @@ const HistoryDesktop = () => {
         const todayActivities = activities.filter(a => a.rawDate === today);
         const todayCount = todayActivities.length;
 
-        const achievementKey = `daily_achievement_${today}`;
+        // Get current daily target from config
+        const currentDailyTarget = getAppConfig().dailyTarget;
+
+        const achievementKey = `daily_achievement_${today}_${currentDailyTarget}`;
         const hasShownAchievement = localStorage.getItem(achievementKey);
 
-        if (todayCount >= 8 && !hasShownAchievement) {
+        if (todayCount >= currentDailyTarget && !hasShownAchievement) {
             setShowPopup(true);
             localStorage.setItem(achievementKey, 'true');
         }

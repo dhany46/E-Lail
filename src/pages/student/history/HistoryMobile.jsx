@@ -466,17 +466,16 @@ const HistoryMobile = () => {
         // Count ALL activities for today
         const todayCount = activities.filter(a => a.rawDate === today).length;
 
-        const achievementKey = `daily_achievement_${today}`;
+        // Get current daily target from config
+        const currentDailyTarget = getAppConfig().dailyTarget;
+
+        const achievementKey = `daily_achievement_${today}_${currentDailyTarget}`;
         const hasShownAchievement = localStorage.getItem(achievementKey);
 
-        // Debug log - temporarily enabled for testing
-        // console.log("🎯 Achievement Check:", { today, todayCount, hasShownAchievement, activitiesLength: activities.length });
-
-        // Show popup when daily target (8 activities) is reached
-        if (todayCount >= 8 && !hasShownAchievement) {
+        // Show popup when daily target is reached
+        if (todayCount >= currentDailyTarget && !hasShownAchievement) {
             // Small delay to ensure UI is ready
             const timer = setTimeout(() => {
-                // console.log("🎉 Showing achievement popup!");
                 setShowPopup(true);
                 localStorage.setItem(achievementKey, 'true');
             }, 1000);

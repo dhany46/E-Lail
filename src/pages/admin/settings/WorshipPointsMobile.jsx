@@ -512,52 +512,40 @@ const WorshipPointsMobile = ({ onBack }) => {
             </div>
 
             <div className="p-5 space-y-4">
-                {/* Daily Target Setting Card */}
-                <div className="bg-white rounded-[1.5rem] border border-slate-200/60 shadow-sm overflow-hidden">
-                    <div className="px-5 py-4 bg-gradient-to-br from-emerald-500 to-teal-600 relative overflow-hidden">
-                        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,_white_1px,_transparent_1px)] bg-[length:20px_20px]"></div>
-                        <div className="relative flex items-center gap-3">
-                            <div className="size-10 rounded-xl bg-white/20 flex items-center justify-center">
-                                <Target size={20} className="text-white" />
+                {/* Daily Target Setting - Modern Minimal */}
+                <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="size-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-sm">
+                                <Target size={18} className="text-white" />
                             </div>
                             <div>
-                                <h3 className="text-base font-bold text-white">Target Harian</h3>
-                                <p className="text-[11px] text-emerald-100">Jumlah ibadah yang harus dicapai siswa per hari</p>
+                                <h3 className="text-sm font-bold text-slate-800">Target Harian</h3>
+                                <p className="text-[11px] text-slate-400">Min. ibadah per hari</p>
                             </div>
                         </div>
-                    </div>
-                    <div className="px-5 py-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
                             <button
                                 onClick={() => {
                                     const newTarget = Math.max(1, dailyTarget - 1);
                                     setDailyTarget(newTarget);
                                     saveAppConfig({ dailyTarget: newTarget });
-                                    toast.success(`Target harian: ${newTarget} ibadah`);
                                 }}
-                                className="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-lg active:scale-95 transition-transform hover:bg-slate-200"
+                                className="size-9 rounded-lg bg-white shadow-sm flex items-center justify-center text-slate-500 font-bold text-lg active:scale-95 transition-all hover:text-slate-700"
                             >
                                 −
                             </button>
-                            <div className="text-center min-w-[60px]">
-                                <span className="text-3xl font-black text-slate-800">{dailyTarget}</span>
-                                <p className="text-[10px] text-slate-400 font-medium">ibadah/hari</p>
-                            </div>
+                            <span className="w-10 text-center text-lg font-black text-slate-800">{dailyTarget}</span>
                             <button
                                 onClick={() => {
                                     const newTarget = Math.min(20, dailyTarget + 1);
                                     setDailyTarget(newTarget);
                                     saveAppConfig({ dailyTarget: newTarget });
-                                    toast.success(`Target harian: ${newTarget} ibadah`);
                                 }}
-                                className="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-lg active:scale-95 transition-transform hover:bg-slate-200"
+                                className="size-9 rounded-lg bg-white shadow-sm flex items-center justify-center text-slate-500 font-bold text-lg active:scale-95 transition-all hover:text-slate-700"
                             >
                                 +
                             </button>
-                        </div>
-                        <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-full">
-                            <Check size={14} className="text-emerald-600" />
-                            <span className="text-xs font-bold text-emerald-600">Auto-Save</span>
                         </div>
                     </div>
                 </div>

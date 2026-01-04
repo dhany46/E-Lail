@@ -33,11 +33,34 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('user');
     };
 
+    const updateUserPhoto = (photoBase64) => {
+        if (!user) return;
+        
+        const updatedUser = { ...user, photo: photoBase64 };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+
+        // Also update in students_data if exists
+        const studentsData = localStorage.getItem('students_data');
+        if (studentsData) {
+            try {
+                const students = JSON.parse(studentsData);
+                const updatedStudents = students.map(s => 
+                    s.nis === user.nis ? { ...s, photo: photoBase64 } : s
+                );
+                localStorage.setItem('students_data', JSON.stringify(updatedStudents));
+            } catch (e) {
+                console.error('Failed to update student photo in students_data', e);
+            }
+        }
+    };
+
     const value = {
         user,
         login,
         logout,
-        loading
+        loading,
+        updateUserPhoto
     };
 
     return (
